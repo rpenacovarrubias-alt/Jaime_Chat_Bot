@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot Jaime — Kit de Implementación</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Kodchasan:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:      #1B3C6B;
+      --navy-dark: #0F2647;
+      --navy-light:#2A5299;
+      --gold:      #C9A84C;
+      --gold-lt:   #E8C96A;
+      --white:     #FFFFFF;
+      --gray-50:   #F8FAFC;
+      --gray-100:  #F1F5F9;
+      --gray-300:  #CBD5E1;
+      --gray-500:  #64748B;
+      --gray-700:  #334155;
+      --radius:    12px;
+      --shadow:    0 4px 24px rgba(27,60,107,.12);
+      --shadow-lg: 0 12px 48px rgba(27,60,107,.18);
+    }
+
+    body {
+      font-family: 'Kodchasan', sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-700);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+      color: white;
+      padding: 64px 32px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 110%, rgba(201,168,76,.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 50px;
+      padding: 6px 18px;
+      font-size: .75rem;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      backdrop-filter: blur(6px);
+    }
+    .header-badge i { color: var(--gold-lt); }
+    header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 300;
+      line-height: 1.15;
+      margin-bottom: 8px;
+      letter-spacing: -.02em;
+    }
+    header h1 span {
+      font-weight: 600;
+      color: var(--gold-lt);
+    }
+    header p {
+      font-size: 1rem;
+      opacity: .75;
+      font-weight: 300;
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── WAVE ── */
+    .wave {
+      display: block;
+      width: 100%;
+      height: 56px;
+      background: var(--gray-50);
+      clip-path: ellipse(60% 100% at 50% 100%);
+      margin-top: -2px;
+    }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 48px 0 20px;
+    }
+    .section-label span {
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--navy);
+      white-space: nowrap;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--gray-300);
+    }
+
+    /* ── CARDS GRID ── */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+
+    .card {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform .2s ease, box-shadow .2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card-top {
+      padding: 28px 24px 20px;
+      flex: 1;
+    }
+    .card-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+    }
+    .card-icon.blue   { background: rgba(27,60,107,.1);  color: var(--navy); }
+    .card-icon.gold   { background: rgba(201,168,76,.12); color: #9A7A2E; }
+    .card-icon.teal   { background: rgba(13,148,136,.1);  color: #0D9488; }
+    .card-icon.violet { background: rgba(109,40,217,.1);  color: #6D28D9; }
+
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--navy-dark);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+    .card p {
+      font-size: .82rem;
+      color: var(--gray-500);
+      line-height: 1.65;
+      font-weight: 300;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 0 24px 18px;
+    }
+    .tag {
+      font-size: .68rem;
+      font-weight: 500;
+      letter-spacing: .04em;
+      padding: 3px 10px;
+      border-radius: 50px;
+      background: var(--gray-100);
+      color: var(--gray-500);
+      text-transform: uppercase;
+    }
+
+    .card-foot {
+      border-top: 1px solid var(--gray-100);
+      padding: 14px 24px;
+      display: flex;
+      gap: 10px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-family: 'Kodchasan', sans-serif;
+      font-size: .78rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--navy);
+      color: white;
+      flex: 1;
+      justify-content: center;
+    }
+    .btn-primary:hover { background: var(--navy-dark); }
+    .btn-outline {
+      background: transparent;
+      color: var(--navy);
+      border: 1.5px solid var(--gray-300);
+    }
+    .btn-outline:hover { background: var(--gray-100); }
+
+    /* ── HIGHLIGHTED CARD (featured) ── */
+    .card.featured .card-top {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+      color: white;
+    }
+    .card.featured h3 { color: white; }
+    .card.featured p  { color: rgba(255,255,255,.7); }
+    .card.featured .card-icon { background: rgba(255,255,255,.12); color: white; }
+    .card.featured .btn-primary { background: var(--gold); color: var(--navy-dark); }
+    .card.featured .btn-primary:hover { background: var(--gold-lt); }
+
+    /* ── STEPS BLOCK ── */
+    .steps {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px 32px;
+    }
+    .steps h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--navy-dark);
+      margin-bottom: 6px;
+    }
+    .steps > p { font-size: .83rem; color: var(--gray-500); margin-bottom: 24px; font-weight: 300; }
+    .step-list { display: flex; flex-direction: column; gap: 16px; }
+    .step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .step-num {
+      width: 32px; height: 32px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+      color: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem;
+      font-weight: 700;
+    }
+    .step-body strong { display: block; font-size: .88rem; color: var(--navy-dark); margin-bottom: 3px; }
+    .step-body span   { font-size: .8rem; color: var(--gray-500); font-weight: 300; line-height: 1.6; }
+    .step-body code   {
+      display: inline-block;
+      background: var(--gray-100);
+      border: 1px solid var(--gray-300);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: .75rem;
+      color: var(--navy);
+      font-family: 'Kodchasan', monospace;
+      margin-top: 4px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 32px;
+      font-size: .75rem;
+      color: var(--gray-500);
+      font-weight: 300;
+      border-top: 1px solid var(--gray-300);
+    }
+    footer a { color: var(--navy); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      header { padding: 48px 20px 64px; }
+      main { padding: 0 16px 60px; }
+      .steps { padding: 20px 18px; }
+      .card-foot { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-badge"><i class="fa-solid fa-robot"></i> Chatbot para Hoteles</div>
+    <h1>Chatbot <span>Jaime</span></h1>
+    <p>Kit completo de implementación: plantillas, formularios y flujos de conversación para hotelería.</p>
+  </header>
+  <div class="wave"></div>
+
+  <main>
+
+    <!-- FORMULARIOS -->
+    <div class="section-label"><span>Formularios Interactivos</span></div>
+    <div class="cards">
+
+      <div class="card featured">
+        <div class="card-top">
+          <div class="card-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+          <h3>Formulario de Onboarding</h3>
+          <p>Recopila toda la información del hotel en un solo formulario. 15 secciones, más de 100 campos cubiertos.</p>
+        </div>
+        <div class="card-tags">
+          <span class="tag" style="background:rgba(255,255,255,.15);color:rgba(255,255,255,.8);">15 secciones</span>
+          <span class="tag" style="background:rgba(255,255,255,.15);color:rgba(255,255,255,.8);">Habitaciones</span>
+          <span class="tag" style="background:rgba(255,255,255,.15);color:rgba(255,255,255,.8);">Servicios</span>
+          <span class="tag" style="background:rgba(255,255,255,.15);color:rgba(255,255,255,.8);">Directorio</span>
+        </div>
+        <div class="card-foot" style="border-top:1px solid rgba(255,255,255,.1)">
+          <a href="plantillas/FORMULARIO_ONBOARDING_HOTEL.html" class="btn btn-primary">
+            <i class="fa-solid fa-arrow-right"></i> Abrir Formulario
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div class="card-icon gold"><i class="fa-solid fa-file-signature"></i></div>
+          <h3>Plantilla de Convenio</h3>
+          <p>Formulario de convenio corporativo listo para personalizar con los colores, logo y datos de cada hotel.</p>
+        </div>
+        <div class="card-tags">
+          <span class="tag">Corporativo</span>
+          <span class="tag">White-label</span>
+          <span class="tag">PDF</span>
+        </div>
+        <div class="card-foot">
+          <a href="plantillas/PLANTILLA_FORMULARIO_CONVENIO.html" class="btn btn-primary">
+            <i class="fa-solid fa-arrow-right"></i> Abrir Plantilla
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- DOCUMENTACIÓN -->
+    <div class="section-label"><span>Documentación</span></div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-top">
+          <div class="card-icon teal"><i class="fa-solid fa-database"></i></div>
+          <h3>Ficha de Configuración</h3>
+          <p>Hoja de referencia en Markdown con todos los campos y placeholders para configurar a Jaime en cualquier hotel.</p>
+        </div>
+        <div class="card-tags">
+          <span class="tag">Markdown</span>
+          <span class="tag">Placeholders</span>
+          <span class="tag">15 secciones</span>
+        </div>
+        <div class="card-foot">
+          <a href="https://github.com/rpenacovarrubias-alt/Jaime_Chat_Bot/blob/main/plantillas/PLANTILLA_FICHA_HOTEL.md"
+             target="_blank" class="btn btn-primary">
+            <i class="fa-brands fa-github"></i> Ver en GitHub
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div class="card-icon violet"><i class="fa-solid fa-diagram-project"></i></div>
+          <h3>Flujos de Conversación</h3>
+          <p>Mapeo completo de todos los flujos de ManyChat con sus mensajes, condiciones y acciones para cada hotel.</p>
+        </div>
+        <div class="card-tags">
+          <span class="tag">ManyChat</span>
+          <span class="tag">WhatsApp</span>
+          <span class="tag">Flujos</span>
+        </div>
+        <div class="card-foot">
+          <a href="https://github.com/rpenacovarrubias-alt/Jaime_Chat_Bot/blob/main/plantillas/PLANTILLA_FLUJOS_JAIME.md"
+             target="_blank" class="btn btn-primary">
+            <i class="fa-brands fa-github"></i> Ver en GitHub
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ACTIVAR PAGES -->
+    <div class="section-label"><span>¿Cómo comparto este portal con un cliente?</span></div>
+    <div class="steps">
+      <h2>Activar GitHub Pages</h2>
+      <p>El portal ya está listo. Solo necesitas habilitarlo una vez desde la configuración del repositorio.</p>
+      <div class="step-list">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Abre la configuración del repositorio</strong>
+            <span>Ve a <a href="https://github.com/rpenacovarrubias-alt/Jaime_Chat_Bot/settings/pages" target="_blank">github.com/rpenacovarrubias-alt/Jaime_Chat_Bot → Settings → Pages</a></span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Selecciona el branch y carpeta</strong>
+            <span>En <em>Source</em> elige <code>main</code> branch → carpeta <code>/ (root)</code> → clic en <strong>Save</strong></span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Tu portal estará en línea en ~1 minuto</strong>
+            <span>URL pública: <code>https://rpenacovarrubias-alt.github.io/Jaime_Chat_Bot/</code></span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>Formulario de onboarding listo para compartir</strong>
+            <span>Envía este link al hotel cliente: <code>https://rpenacovarrubias-alt.github.io/Jaime_Chat_Bot/plantillas/FORMULARIO_ONBOARDING_HOTEL.html</code></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    Chatbot Jaime &mdash; Kit de Implementación &nbsp;·&nbsp;
+    <a href="https://github.com/rpenacovarrubias-alt/Jaime_Chat_Bot" target="_blank">
+      <i class="fa-brands fa-github"></i> rpenacovarrubias-alt/Jaime_Chat_Bot
+    </a>
+  </footer>
+
+</body>
+</html>
