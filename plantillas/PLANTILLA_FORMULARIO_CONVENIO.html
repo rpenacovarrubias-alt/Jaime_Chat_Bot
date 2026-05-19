@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>{{HOTEL_NOMBRE}} — Convenio Corporativo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!--
+  ╔══════════════════════════════════════════════════════════════════╗
+  ║  PLANTILLA FORMULARIO DE CONVENIO CORPORATIVO                   ║
+  ║  Versión: 1.0  |  Compatible con: n8n + Vercel PDF API          ║
+  ║                                                                  ║
+  ║  INSTRUCCIONES DE USO:                                           ║
+  ║  1. Busca y reemplaza TODOS los {{PLACEHOLDERS}} de la lista     ║
+  ║  2. Sube tu logo al repo (o usa URL externa)                     ║
+  ║  3. Configura el webhook de n8n y la URL de Vercel               ║
+  ║  4. Despliega en GitHub Pages, Vercel o cualquier hosting        ║
+  ║                                                                  ║
+  ║  PLACEHOLDERS REQUERIDOS:                                        ║
+  ║  {{HOTEL_NOMBRE}}           Nombre completo del hotel            ║
+  ║  {{HOTEL_COLOR_PRIMARIO}}   Color hex principal  ej. #7FA44A     ║
+  ║  {{HOTEL_COLOR_OSCURO}}     Color hex oscuro     ej. #5F7F34     ║
+  ║  {{HOTEL_LOGO_URL}}         Ruta o URL del logo  ej. logo.png    ║
+  ║  {{ASIDE_TITULAR}}          Titular panel izq.  (2-3 líneas)     ║
+  ║  {{ASIDE_DESCRIPCION}}      Texto panel izquierdo                ║
+  ║  {{FORM_TITULO}}            Título principal del formulario      ║
+  ║  {{FORM_SUBTITULO}}         Subtítulo / descripción              ║
+  ║  {{BOTON_TEXTO}}            Texto del botón enviar               ║
+  ║  {{SUCCESS_TITULO}}         Título mensaje éxito                 ║
+  ║  {{SUCCESS_MENSAJE}}        Cuerpo mensaje éxito                 ║
+  ║  {{HOTEL_CONTACTO_NOMBRE}}  Nombre del ejecutivo comercial       ║
+  ║  {{HOTEL_CONTACTO_CARGO}}   Cargo del ejecutivo comercial        ║
+  ║  {{HOTEL_GOOGLEMAPS_URL}}   URL de Google Maps del hotel         ║
+  ║  {{HOTEL_WEB_URL}}          URL del sitio web                    ║
+  ║  {{HOTEL_WHATSAPP_URL}}     URL wa.me/52XXXXXXXXXX               ║
+  ║  {{HOTEL_FACEBOOK_URL}}     URL de Facebook                      ║
+  ║  {{HOTEL_INSTAGRAM_URL}}    URL de Instagram                     ║
+  ║  {{HOTEL_EMAIL_COMERCIAL}}  Email comercial del hotel            ║
+  ║  {{CONVENIO_PREFIJO}}       Prefijo nº convenio  ej. AVA / BWW   ║
+  ║  {{N8N_WEBHOOK_URL}}        URL del webhook en n8n               ║
+  ║  {{VERCEL_API_URL}}         URL del endpoint Vercel PDF          ║
+  ╚══════════════════════════════════════════════════════════════════╝
+-->
+
+<!-- TIPOGRAFÍAS -->
+<link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+/* ===== VARIABLES — reemplaza con los colores del hotel ===== */
+:root {
+  --green:      {{HOTEL_COLOR_PRIMARIO}};
+  --green-dark: {{HOTEL_COLOR_OSCURO}};
+  --text:   #1F2933;
+  --muted:  #9CA3AF;
+  --bg:     #F5F5F5;
+  --card:   #FFFFFF;
+  --border: #E5E7EB;
+}
+
+/* ===== BASE ===== */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Kodchasan", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ===== CONTENEDOR ===== */
+.wrapper {
+  max-width: 1200px;
+  margin: 40px auto;
+  display: flex;
+  background: var(--card);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,.08);
+  min-height: 700px;
+}
+
+/* ===== PANEL IZQUIERDO ===== */
+.aside {
+  width: 45%;
+  background: linear-gradient(135deg, {{HOTEL_COLOR_PRIMARIO}} 0%, {{HOTEL_COLOR_OSCURO}} 100%);
+  padding: 80px 60px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.aside::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px; height: 400px;
+  background-image: url('{{HOTEL_LOGO_URL}}');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.aside-content { position: relative; z-index: 1; }
+
+.aside h2 {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 56px;
+  line-height: 1.2;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.01em;
+  margin: 0 0 30px 0;
+}
+
+.aside-divider {
+  width: 60px; height: 2px;
+  background: rgba(255,255,255,0.5);
+  margin: 30px 0;
+}
+
+.aside p {
+  font-size: 16px;
+  line-height: 1.7;
+  opacity: .92;
+  font-weight: 400;
+  margin: 0;
+}
+
+/* ===== FORMULARIO ===== */
+.main {
+  width: 55%;
+  padding: 60px 70px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.main::before {
+  content: '';
+  position: absolute;
+  bottom: -80px; right: -80px;
+  width: 380px; height: 380px;
+  background-image: url('{{HOTEL_LOGO_URL}}');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.form-content { position: relative; z-index: 1; }
+
+.logo { text-align: center; margin-bottom: 35px; }
+.logo img { max-width: 100px; opacity: 0.85; }
+
+h1 {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 28px;
+  margin: 0 0 8px 0;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: #1F2933;
+}
+
+.subtitle {
+  color: var(--muted);
+  margin-bottom: 35px;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* ===== CAMPOS ===== */
+.form-row { display: flex; gap: 16px; }
+.form-group { flex: 1; margin-bottom: 20px; }
+
+label {
+  display: block;
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+input {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #FAFAFA;
+  color: var(--text);
+  transition: all 0.2s ease;
+  font-family: "Kodchasan", sans-serif;
+}
+
+input::placeholder { color: #C1C7CD; }
+
+input:focus {
+  outline: none;
+  border-color: var(--green);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(127,164,74,0.08);
+}
+
+/* ===== CHECKBOX ===== */
+.checkbox {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+  align-items: flex-start;
+}
+
+.checkbox input {
+  accent-color: var(--green);
+  margin-top: 2px;
+  cursor: pointer;
+  width: auto;
+}
+
+.checkbox label {
+  text-transform: none;
+  letter-spacing: normal;
+  cursor: pointer;
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ===== BOTÓN ===== */
+button {
+  margin-top: 25px;
+  width: 100%;
+  padding: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all .2s ease;
+  letter-spacing: 0.01em;
+  font-family: "Kodchasan", sans-serif;
+}
+
+button:hover {
+  background: var(--green-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+}
+
+button:active  { transform: translateY(0); }
+button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ===== FOOTER ===== */
+.footer {
+  margin-top: 50px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  position: relative;
+  z-index: 1;
+}
+
+.footer p { margin: 6px 0; line-height: 1.6; }
+.footer strong { color: var(--text); font-weight: 600; }
+
+.footer a {
+  color: var(--green);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.footer a:hover { color: var(--green-dark); }
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.social-icons a {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: #F5F5F5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9CA3AF;
+  transition: all 0.2s ease;
+  font-size: 16px;
+}
+
+.social-icons a:hover {
+  background: var(--green);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* ===== CONFIRMACIÓN ===== */
+#success {
+  display: none;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+#success h2 {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 36px;
+  color: var(--green);
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+#success p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--muted);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.success-icon {
+  width: 80px; height: 80px;
+  background: var(--green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 30px;
+  animation: successPop 0.6s ease;
+}
+
+.success-icon svg {
+  width: 40px; height: 40px;
+  stroke: white; stroke-width: 3; fill: none;
+}
+
+@keyframes successPop {
+  0%   { transform: scale(0); opacity: 0; }
+  50%  { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ===== LOADING ===== */
+.loading {
+  display: inline-block;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .wrapper { flex-direction: column; margin: 20px; }
+  .aside, .main { width: 100%; padding: 50px 35px; }
+  .aside h2 { font-size: 44px; }
+}
+
+@media (max-width: 600px) {
+  .form-row { flex-direction: column; gap: 0; }
+  .aside { padding: 40px 28px; }
+  .aside h2 { font-size: 38px; }
+  .main { padding: 40px 28px; }
+  .logo img { max-width: 85px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+  <!-- ═══════════════════════════════════════════
+       PANEL IZQUIERDO
+       ═══════════════════════════════════════════ -->
+  <div class="aside">
+    <div class="aside-content">
+      <h2>{{ASIDE_TITULAR}}</h2>
+      <div class="aside-divider"></div>
+      <p>{{ASIDE_DESCRIPCION}}</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       FORMULARIO
+       ═══════════════════════════════════════════ -->
+  <div class="main">
+    <div class="form-content">
+
+      <div class="logo">
+        <img src="{{HOTEL_LOGO_URL}}" alt="{{HOTEL_NOMBRE}}">
+      </div>
+
+      <h1>{{FORM_TITULO}}</h1>
+      <p class="subtitle">{{FORM_SUBTITULO}}</p>
+
+      <form id="convenioForm">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre</label>
+            <input type="text" name="nombre" placeholder="Ej. Tu Nombre" required>
+          </div>
+          <div class="form-group">
+            <label>Apellidos</label>
+            <input type="text" name="apellidos" placeholder="Ej. Tus Apellidos" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Empresa</label>
+          <input type="text" name="empresa" placeholder="Nombre de su compañía" required>
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="correo@empresa.com" required>
+        </div>
+
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="tel" name="telefono" placeholder="+52 (55) 0000 0000" required>
+        </div>
+
+        <div class="checkbox">
+          <input type="checkbox" id="terms" required>
+          <label for="terms">He leído y acepto los términos y condiciones de servicio</label>
+        </div>
+
+        <button type="submit" id="submitBtn">{{BOTON_TEXTO}}</button>
+      </form>
+
+      <!-- Mensaje de éxito post-envío -->
+      <div id="success">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <h2>{{SUCCESS_TITULO}}</h2>
+        <p>{{SUCCESS_MENSAJE}}</p>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>
+          <strong>{{HOTEL_NOMBRE}}</strong><br>
+          {{HOTEL_CONTACTO_NOMBRE}} — {{HOTEL_CONTACTO_CARGO}}
+        </p>
+        <p>
+          <a href="{{HOTEL_GOOGLEMAPS_URL}}" target="_blank">
+            <i class="fas fa-map-marker-alt"></i> Ver ubicación en Google Maps
+          </a>
+        </p>
+        <div class="social-icons">
+          <a href="{{HOTEL_WEB_URL}}"       target="_blank" title="Sitio web"><i class="fas fa-globe"></i></a>
+          <a href="{{HOTEL_WHATSAPP_URL}}"  target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+          <a href="{{HOTEL_FACEBOOK_URL}}"  target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="{{HOTEL_INSTAGRAM_URL}}" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  CONFIGURACIÓN — reemplaza con las URLs reales del hotel
+// ═══════════════════════════════════════════════════════
+const N8N_WEBHOOK_URL  = "{{N8N_WEBHOOK_URL}}";
+const VERCEL_API_URL   = "{{VERCEL_API_URL}}";
+const CONVENIO_PREFIJO = "{{CONVENIO_PREFIJO}}";   // ej. "AVA", "BWW", "HTL"
+const EMAIL_SOPORTE    = "{{HOTEL_EMAIL_COMERCIAL}}";
+
+// ═══════════════════════════════════════════════════════
+//  LÓGICA DEL FORMULARIO — no modificar salvo necesidad
+// ═══════════════════════════════════════════════════════
+document.getElementById("convenioForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const submitBtn    = document.getElementById("submitBtn");
+  const originalText = submitBtn.innerHTML;
+
+  submitBtn.disabled  = true;
+  submitBtn.innerHTML = 'Generando convenio<span class="loading"></span>';
+
+  const numeroConvenio = `${CONVENIO_PREFIJO}-${Date.now()}`;
+  const fechaActual    = new Date().toISOString().split('T')[0];
+
+  const clienteData = {
+    nombre:         this.nombre.value.trim(),
+    apellidos:      this.apellidos.value.trim(),
+    nombreCompleto: `${this.nombre.value.trim()} ${this.apellidos.value.trim()}`,
+    email:          this.email.value.trim().toLowerCase(),
+    telefono:       this.telefono.value.trim(),
+    empresa:        this.empresa.value.trim()
+  };
+
+  try {
+    // PASO 1 — Generar PDF con Vercel
+    submitBtn.innerHTML = 'Generando PDF<span class="loading"></span>';
+
+    const pdfResponse = await fetch(VERCEL_API_URL, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ numeroConvenio, cliente: clienteData, fecha: fechaActual })
+    });
+
+    if (!pdfResponse.ok) throw new Error(`Error al generar PDF: ${pdfResponse.status}`);
+
+    const pdfData = await pdfResponse.json();
+
+    // PASO 2 — Enviar datos + PDF a n8n
+    submitBtn.innerHTML = 'Enviando correo<span class="loading"></span>';
+
+    const n8nResponse = await fetch(N8N_WEBHOOK_URL, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({
+        timestamp:      new Date().toISOString(),
+        numeroConvenio,
+        cliente:        clienteData,
+        pdf: { fileName: pdfData.fileName, base64: pdfData.pdfBase64 },
+        origen: "formulario_web",
+        estado: "pendiente"
+      })
+    });
+
+    if (n8nResponse.ok) {
+      try { await n8nResponse.json(); } catch (_) {}
+      this.style.display = "none";
+      document.getElementById("success").style.display = "block";
+    } else {
+      const errorText = await n8nResponse.text();
+      throw new Error(`Error al enviar a n8n: ${n8nResponse.status} - ${errorText}`);
+    }
+
+  } catch (error) {
+    console.error("Error:", error);
+    alert(
+      "Hubo un error al procesar la solicitud. Intente nuevamente o contacte a " +
+      EMAIL_SOPORTE + "\n\nDetalle: " + error.message
+    );
+    submitBtn.disabled  = false;
+    submitBtn.innerHTML = originalText;
+  }
+});
+</script>
+
+</body>
+</html>
