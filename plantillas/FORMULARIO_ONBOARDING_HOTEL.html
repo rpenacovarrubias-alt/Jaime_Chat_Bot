@@ -574,11 +574,27 @@ textarea { resize: vertical; min-height: 72px; }
   <div class="sb" id="s15">
     <p class="s-num">Sección 15</p><h2 class="s-title">Directorio Interno</h2><div class="s-line"></div>
 
-    <div class="row"><div class="fg"><label class="lbl">Nombre</label><input type="text" name="d1_nom" placeholder="Ej. Miguel Ángel López"></div><div class="fg"><label class="lbl">Puesto</label><input type="text" name="d1_puesto" placeholder="Ej. Supervisor Recepción"></div><div class="fg"><label class="lbl">Departamento(s)</label><input type="text" name="d1_dept" placeholder="Recepción, Reservas"></div><div class="fg"><label class="lbl">WhatsApp</label><input type="tel" name="d1_wa" placeholder="+52 442 000 0000"></div></div>
-    <div class="row"><div class="fg"><label class="lbl">Nombre</label><input type="text" name="d2_nom" placeholder=""></div><div class="fg"><label class="lbl">Puesto</label><input type="text" name="d2_puesto" placeholder=""></div><div class="fg"><label class="lbl">Departamento(s)</label><input type="text" name="d2_dept" placeholder=""></div><div class="fg"><label class="lbl">WhatsApp</label><input type="tel" name="d2_wa" placeholder=""></div></div>
-    <div class="row"><div class="fg"><label class="lbl">Nombre</label><input type="text" name="d3_nom" placeholder=""></div><div class="fg"><label class="lbl">Puesto</label><input type="text" name="d3_puesto" placeholder=""></div><div class="fg"><label class="lbl">Departamento(s)</label><input type="text" name="d3_dept" placeholder=""></div><div class="fg"><label class="lbl">WhatsApp</label><input type="tel" name="d3_wa" placeholder=""></div></div>
-    <div class="row"><div class="fg"><label class="lbl">Nombre</label><input type="text" name="d4_nom" placeholder=""></div><div class="fg"><label class="lbl">Puesto</label><input type="text" name="d4_puesto" placeholder=""></div><div class="fg"><label class="lbl">Departamento(s)</label><input type="text" name="d4_dept" placeholder=""></div><div class="fg"><label class="lbl">WhatsApp</label><input type="tel" name="d4_wa" placeholder=""></div></div>
-    <div class="row"><div class="fg"><label class="lbl">Nombre</label><input type="text" name="d5_nom" placeholder=""></div><div class="fg"><label class="lbl">Puesto</label><input type="text" name="d5_puesto" placeholder=""></div><div class="fg"><label class="lbl">Departamento(s)</label><input type="text" name="d5_dept" placeholder=""></div><div class="fg"><label class="lbl">WhatsApp</label><input type="tel" name="d5_wa" placeholder=""></div></div>
+    <div id="directorio-list">
+      <div class="row dir-row"><div class="fg"><label class="lbl">Nombre</label><input type="text" name="d1_nom" placeholder="Ej. Miguel Ángel López"></div><div class="fg"><label class="lbl">Puesto</label><input type="text" name="d1_puesto" placeholder="Ej. Supervisor Recepción"></div><div class="fg"><label class="lbl">Departamento(s)</label><input type="text" name="d1_dept" placeholder="Recepción, Reservas"></div><div class="fg"><label class="lbl">WhatsApp</label><input type="tel" name="d1_wa" placeholder="+52 442 000 0000"></div></div>
+      <div class="row dir-row"><div class="fg"><label class="lbl">Nombre</label><input type="text" name="d2_nom" placeholder=""></div><div class="fg"><label class="lbl">Puesto</label><input type="text" name="d2_puesto" placeholder=""></div><div class="fg"><label class="lbl">Departamento(s)</label><input type="text" name="d2_dept" placeholder=""></div><div class="fg"><label class="lbl">WhatsApp</label><input type="tel" name="d2_wa" placeholder=""></div></div>
+      <div class="row dir-row"><div class="fg"><label class="lbl">Nombre</label><input type="text" name="d3_nom" placeholder=""></div><div class="fg"><label class="lbl">Puesto</label><input type="text" name="d3_puesto" placeholder=""></div><div class="fg"><label class="lbl">Departamento(s)</label><input type="text" name="d3_dept" placeholder=""></div><div class="fg"><label class="lbl">WhatsApp</label><input type="tel" name="d3_wa" placeholder=""></div></div>
+      <div class="row dir-row"><div class="fg"><label class="lbl">Nombre</label><input type="text" name="d4_nom" placeholder=""></div><div class="fg"><label class="lbl">Puesto</label><input type="text" name="d4_puesto" placeholder=""></div><div class="fg"><label class="lbl">Departamento(s)</label><input type="text" name="d4_dept" placeholder=""></div><div class="fg"><label class="lbl">WhatsApp</label><input type="tel" name="d4_wa" placeholder=""></div></div>
+      <div class="row dir-row"><div class="fg"><label class="lbl">Nombre</label><input type="text" name="d5_nom" placeholder=""></div><div class="fg"><label class="lbl">Puesto</label><input type="text" name="d5_puesto" placeholder=""></div><div class="fg"><label class="lbl">Departamento(s)</label><input type="text" name="d5_dept" placeholder=""></div><div class="fg"><label class="lbl">WhatsApp</label><input type="tel" name="d5_wa" placeholder=""></div></div>
+    </div>
+
+    <button type="button" id="btn-add-contacto" onclick="agregarContacto()" style="
+      display:inline-flex;align-items:center;gap:8px;
+      margin-top:12px;padding:9px 20px;
+      background:#fff;border:2px dashed var(--accent,#1B3C6B);
+      border-radius:8px;color:var(--accent,#1B3C6B);
+      font-size:14px;font-weight:600;cursor:pointer;
+      transition:background .15s,border-color .15s;
+    "
+    onmouseover="this.style.background='#f0f4ff'"
+    onmouseout="this.style.background='#fff'">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v6M5 8h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Agregar contacto
+    </button>
 
     <p class="lbl" style="margin-top:24px;margin-bottom:12px;">Lógica de escalamiento para Jaime</p>
     <div class="et-head"><span>Tipo de solicitud</span><span>Prioridad</span><span>Notificar a (nombre + WhatsApp)</span></div>
@@ -645,6 +661,51 @@ document.getElementById('fichaForm').addEventListener('submit', async function(e
     alert('Error al enviar. Intente nuevamente.');
   }
 });
+
+// ── DIRECTORIO DINÁMICO ──
+var dirCount = 5;
+
+function agregarContacto() {
+  dirCount++;
+  var n = dirCount;
+  var list = document.getElementById('directorio-list');
+
+  var row = document.createElement('div');
+  row.className = 'row dir-row';
+  row.style.cssText = 'position:relative;animation:fadeInRow .25s ease;';
+  row.innerHTML =
+    '<div class="fg"><label class="lbl">Nombre</label><input type="text" name="d'+n+'_nom" placeholder=""></div>' +
+    '<div class="fg"><label class="lbl">Puesto</label><input type="text" name="d'+n+'_puesto" placeholder=""></div>' +
+    '<div class="fg"><label class="lbl">Departamento(s)</label><input type="text" name="d'+n+'_dept" placeholder=""></div>' +
+    '<div class="fg"><label class="lbl">WhatsApp</label><input type="tel" name="d'+n+'_wa" placeholder="+52 442 000 0000"></div>' +
+    '<button type="button" onclick="eliminarContacto(this)" title="Eliminar contacto" style="' +
+      'position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;' +
+      'background:#fee2e2;border:none;color:#dc2626;font-size:16px;line-height:1;' +
+      'cursor:pointer;display:flex;align-items:center;justify-content:center;' +
+      'transition:background .15s;" ' +
+      'onmouseover="this.style.background=\'#fca5a5\'" ' +
+      'onmouseout="this.style.background=\'#fee2e2\'">×</button>';
+
+  list.appendChild(row);
+  // Focus en el primer campo del nuevo contacto
+  row.querySelector('input').focus();
+}
+
+function eliminarContacto(btn) {
+  var row = btn.closest('.dir-row');
+  row.style.opacity = '0';
+  row.style.transform = 'translateX(10px)';
+  row.style.transition = 'all .2s ease';
+  setTimeout(function() { row.remove(); }, 200);
+}
 </script>
+
+<style>
+@keyframes fadeInRow {
+  from { opacity:0; transform:translateY(-6px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.dir-row { position:relative; }
+</style>
 </body>
 </html>
