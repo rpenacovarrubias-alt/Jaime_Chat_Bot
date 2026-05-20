@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Chatbot Jaime — Kit de Implementación</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+  .golden-glow {
+    box-shadow: 0 4px 14px 0 rgba(200, 151, 74, 0.18);
+  }
+  .golden-glow-sm {
+    box-shadow: 0 4px 14px 0 rgba(200, 151, 74, 0.08);
+  }
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease-out;
+  }
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .wave-path { fill: #fcf8fb; }
+
+  /* Social buttons */
+  .social-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 14px;
+    color: white;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .social-pill:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.22); }
+
+  /* Footer icon buttons */
+  .footer-social {
+    width: 34px; height: 34px;
+    border-radius: 9999px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+    font-size: 14px;
+  }
+  .footer-social:hover { transform: translateY(-2px); color: white; }
+  .footer-social.wa:hover  { background: #25D366; }
+  .footer-social.ig:hover  { background: linear-gradient(135deg, #833AB4, #FD1D1D, #FCAF45); }
+  .footer-social.fb:hover  { background: #1877F2; }
+  .footer-social.li:hover  { background: #0A66C2; }
+  .footer-social.yt:hover  { background: #FF0000; }
+  .footer-social.gh:hover  { background: #333; }
+</style>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "on-error": "#ffffff",
+          "on-tertiary-fixed": "#291800",
+          "tertiary-container": "#ce953c",
+          "on-background": "#1b1b1d",
+          "inverse-surface": "#303032",
+          "on-surface": "#1b1b1d",
+          "on-primary": "#ffffff",
+          "surface": "#fcf8fb",
+          "surface-container": "#f0edef",
+          "on-tertiary": "#ffffff",
+          "surface-container-highest": "#e4e2e4",
+          "tertiary": "#815500",
+          "secondary-fixed": "#ffddaf",
+          "surface-container-lowest": "#ffffff",
+          "secondary": "#7d5713",
+          "primary-container": "#c8974a",
+          "on-tertiary-fixed-variant": "#624000",
+          "secondary-fixed-dim": "#f0be71",
+          "on-secondary": "#ffffff",
+          "error-container": "#ffdad6",
+          "surface-dim": "#dcd9dc",
+          "on-secondary-container": "#795510",
+          "background": "#fcf8fb",
+          "inverse-on-surface": "#f3f0f2",
+          "surface-container-high": "#eae7ea",
+          "surface-bright": "#fcf8fb",
+          "primary-fixed-dim": "#f3bd6c",
+          "on-error-container": "#93000a",
+          "primary": "#7e570c",
+          "on-secondary-fixed-variant": "#614000",
+          "inverse-primary": "#f3bd6c",
+          "surface-container-low": "#f6f3f5",
+          "tertiary-fixed-dim": "#fabb5e",
+          "on-primary-fixed": "#281800",
+          "tertiary-fixed": "#ffddb2",
+          "on-primary-container": "#4c3100",
+          "on-tertiary-container": "#4d3100",
+          "on-primary-fixed-variant": "#614000",
+          "surface-tint": "#7e570c",
+          "primary-fixed": "#ffddb0",
+          "outline-variant": "#d3c4b3",
+          "on-secondary-fixed": "#281800",
+          "on-surface-variant": "#4f4538",
+          "outline": "#817566",
+          "secondary-container": "#ffcc7e",
+          "error": "#ba1a1a",
+          "surface-variant": "#e4e2e4"
+        },
+        borderRadius: {
+          "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"
+        },
+        spacing: {
+          "sm": "12px", "container-max": "1280px", "md": "24px",
+          "margin-desktop": "32px", "lg": "40px", "xs": "4px",
+          "xl": "64px", "base": "8px", "margin-mobile": "16px", "gutter": "24px"
+        },
+        fontFamily: {
+          "body-md": ["Inter"], "headline-lg": ["Plus Jakarta Sans"],
+          "display-lg": ["Plus Jakarta Sans"], "body-lg": ["Inter"],
+          "label-sm": ["Inter"], "display-lg-mobile": ["Plus Jakarta Sans"],
+          "body-sm": ["Inter"], "headline-md": ["Plus Jakarta Sans"],
+          "label-md": ["Inter"], "headline-sm": ["Plus Jakarta Sans"],
+          "headline-lg-mobile": ["Plus Jakarta Sans"]
+        },
+        fontSize: {
+          "body-md":  ["16px", { lineHeight:"24px", fontWeight:"400" }],
+          "headline-lg": ["32px", { lineHeight:"40px", fontWeight:"700" }],
+          "display-lg": ["48px", { lineHeight:"56px", letterSpacing:"-0.02em", fontWeight:"700" }],
+          "body-lg":  ["18px", { lineHeight:"28px", fontWeight:"400" }],
+          "label-sm": ["12px", { lineHeight:"16px", fontWeight:"600" }],
+          "display-lg-mobile": ["32px", { lineHeight:"40px", letterSpacing:"-0.01em", fontWeight:"700" }],
+          "body-sm":  ["14px", { lineHeight:"20px", fontWeight:"400" }],
+          "headline-md": ["24px", { lineHeight:"32px", fontWeight:"600" }],
+          "label-md": ["14px", { lineHeight:"20px", letterSpacing:"0.01em", fontWeight:"500" }],
+          "headline-sm": ["20px", { lineHeight:"28px", fontWeight:"600" }],
+          "headline-lg-mobile": ["24px", { lineHeight:"32px", fontWeight:"700" }]
+        }
+      }
+    }
+  }
+</script>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container">
+
+<!-- ── NAV ── -->
+<nav class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-outline-variant shadow-sm">
+  <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex justify-between items-center h-20">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-[#C8974A] text-[22px]">smart_toy</span>
+      <span class="text-headline-sm font-headline-sm font-bold text-primary">Chatbot Jaime</span>
+    </div>
+    <div class="hidden md:flex gap-md">
+      <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#herramienta">Herramienta</a>
+      <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#formularios">Formularios</a>
+      <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#documentacion">Documentación</a>
+      <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#compartir">Compartir</a>
+    </div>
+    <a href="extractor/" class="bg-primary text-on-primary px-md py-sm rounded-lg font-bold hover:translate-y-[-2px] transition-transform text-body-sm">
+      Comenzar →
+    </a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<header class="pt-32 pb-0 bg-[#1C1C1E] relative overflow-hidden">
+  <!-- subtle grid overlay -->
+  <div class="absolute inset-0 opacity-[0.04]"
+       style="background-image: linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px); background-size: 48px 48px;"></div>
+
+  <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop relative z-10">
+    <div class="flex flex-col items-center text-center space-y-md reveal">
+
+      <div class="inline-flex items-center gap-xs px-sm py-xs bg-white/5 border border-white/15 rounded-full text-primary-fixed-dim font-label-sm text-label-sm">
+        <span class="material-symbols-outlined text-[16px] text-[#C8974A]">smart_toy</span>
+        Chatbot para Hoteles
+      </div>
+
+      <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-white">
+        Chatbot <span class="text-[#C8974A]">Jaime</span>
+      </h1>
+
+      <p class="max-w-2xl font-body-lg text-body-lg text-white/65">
+        Kit completo de implementación: plantillas, formularios y flujos de conversación para la hotelería moderna.
+      </p>
+
+      <a href="extractor/" class="mt-md px-xl py-md bg-[#C8974A] text-white rounded-full font-bold inline-flex items-center gap-sm hover:scale-105 transition-all shadow-lg golden-glow">
+        <span class="material-symbols-outlined text-[20px]">magic_button</span>
+        Abrir Extractor IA →
+      </a>
+
+      <!-- Stats bar -->
+      <div class="mt-lg w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-0 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden">
+        <div class="text-center py-md px-sm border-r border-white/10">
+          <div class="text-headline-md font-headline-md text-[#C8974A]">5 min</div>
+          <div class="text-label-sm text-white/45 mt-1">Setup Rápido</div>
+        </div>
+        <div class="text-center py-md px-sm border-r border-white/10">
+          <div class="text-headline-md font-headline-md text-[#C8974A]">80+</div>
+          <div class="text-label-sm text-white/45 mt-1">Campos IA</div>
+        </div>
+        <div class="text-center py-md px-sm border-r border-white/10">
+          <div class="text-headline-md font-headline-md text-[#C8974A]">15</div>
+          <div class="text-label-sm text-white/45 mt-1">Secciones</div>
+        </div>
+        <div class="text-center py-md px-sm">
+          <div class="text-headline-md font-headline-md text-[#C8974A]">3</div>
+          <div class="text-label-sm text-white/45 mt-1">Canales</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Wave -->
+  <div class="relative w-full leading-[0] mt-xl">
+    <svg class="w-full h-auto" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path class="wave-path" d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"/>
+    </svg>
+  </div>
+</header>
+
+<!-- ── MAIN ── -->
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-xl space-y-xl">
+
+  <!-- HERRAMIENTA IA -->
+  <section id="herramienta" class="reveal">
+    <div class="flex items-center gap-sm mb-md text-primary">
+      <span class="material-symbols-outlined">auto_awesome</span>
+      <span class="font-label-md text-label-md tracking-wider uppercase">Herramienta IA</span>
+    </div>
+
+    <div class="relative overflow-hidden rounded-xl bg-[#1C1C1E] border border-outline-variant p-lg md:p-xl flex flex-col md:flex-row items-center gap-lg">
+      <div class="absolute inset-0 bg-gradient-to-br from-[#1C1C1E] via-[#1C1C1E] to-[#C8974A]/30 pointer-events-none"></div>
+
+      <div class="relative z-10 flex-1 space-y-md">
+        <div class="w-16 h-16 bg-[#C8974A]/20 rounded-lg flex items-center justify-center border border-[#C8974A]/40">
+          <span class="material-symbols-outlined text-[#C8974A] text-[32px]">auto_fix_high</span>
+        </div>
+        <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-white">Extractor IA de Información</h2>
+        <p class="text-white/60 font-body-md text-body-md max-w-xl">
+          Sube URLs, PDFs e imágenes del hotel. Claude analiza todo y pre-llena automáticamente el formulario de onboarding con más de 80 campos.
+        </p>
+        <div class="flex flex-wrap gap-sm">
+          <span class="px-md py-xs bg-white/10 rounded-full text-white/80 font-label-sm text-label-sm">Claude AI</span>
+          <span class="px-md py-xs bg-white/10 rounded-full text-white/80 font-label-sm text-label-sm">Auto-llenado</span>
+          <span class="px-md py-xs bg-white/10 rounded-full text-white/80 font-label-sm text-label-sm">URLs · PDFs · Imágenes</span>
+        </div>
+        <a href="extractor/" class="inline-flex items-center gap-sm px-lg py-sm bg-[#C8974A] text-white rounded-full font-bold hover:scale-105 transition-all shadow-lg golden-glow mt-sm">
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span> Abrir Extractor
+        </a>
+      </div>
+
+      <div class="relative z-10 w-full md:w-[38%]">
+        <img alt="Interfaz IA Extractor — partículas doradas sobre fondo oscuro"
+             class="rounded-lg shadow-2xl border border-white/10 w-full object-cover"
+             src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkIg9g6r8hBmGMeihMU2_bgMmoqZvt5WlOWaodKx4GxCwDxapJSVhZbLlUWZWXKiXoAUMk5dwosTc6y4BcGu_ifiuirBrrNBK4xpGDdifHB2o-JOh858UhojA6LVyJ58Bv0V3tMPrHKLfRwoNsKY29e8Oh5WzcRIzfxI5QLW__g1VeyeyYTFTZYGa1oqNlwJOfnzttM7XTH1KrMMuOz9CQmgm_wSDzWkq8BECPZApiIxTr1c1uysechvqo6CnysBVwTLvFHkYqmDUp"
+             onerror="this.parentElement.style.display='none'"/>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMULARIOS -->
+  <section id="formularios" class="reveal">
+    <div class="flex items-center gap-sm mb-md text-primary">
+      <span class="material-symbols-outlined">assignment</span>
+      <span class="font-label-md text-label-md tracking-wider uppercase">Formularios Interactivos</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+      <!-- Card A — Onboarding -->
+      <div class="bg-white rounded-xl border border-outline-variant border-t-[3px] border-t-[#C8974A] golden-glow-sm hover:translate-y-[-4px] transition-all p-lg flex flex-col">
+        <div class="flex justify-between items-start mb-md">
+          <span class="material-symbols-outlined text-[#C8974A] text-[36px]">assignment</span>
+          <span class="material-symbols-outlined text-outline text-[20px]">open_in_new</span>
+        </div>
+        <h3 class="font-headline-md text-headline-md mb-sm">Formulario de Onboarding</h3>
+        <p class="text-on-surface-variant font-body-md text-body-md mb-md flex-1">Recopila toda la información del hotel en 15 secciones y más de 100 campos. Habitaciones, servicios, directorio y políticas.</p>
+        <div class="flex flex-wrap gap-2 mb-lg">
+          <span class="px-3 py-1 bg-[#FBF5EC] text-[#8B6420] rounded-full text-xs font-semibold">15 secciones</span>
+          <span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full text-xs font-semibold">Habitaciones</span>
+          <span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full text-xs font-semibold">Servicios</span>
+          <span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full text-xs font-semibold">Directorio</span>
+        </div>
+        <a href="plantillas/FORMULARIO_ONBOARDING_HOTEL.html" class="text-[#C8974A] font-bold flex items-center gap-xs hover:gap-sm transition-all">
+          Abrir Formulario <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+        </a>
+      </div>
+
+      <!-- Card B — Convenio -->
+      <div class="bg-white rounded-xl border border-outline-variant border-t-[3px] border-t-[#0D7A6B] golden-glow-sm hover:translate-y-[-4px] transition-all p-lg flex flex-col">
+        <div class="flex justify-between items-start mb-md">
+          <span class="material-symbols-outlined text-[#0D7A6B] text-[36px]">description</span>
+          <span class="material-symbols-outlined text-outline text-[20px]">open_in_new</span>
+        </div>
+        <h3 class="font-headline-md text-headline-md mb-sm">Plantilla de Convenio</h3>
+        <p class="text-on-surface-variant font-body-md text-body-md mb-md flex-1">Convenio corporativo listo para personalizar con los colores, logo y datos de cada hotel cliente. 22 placeholders configurables.</p>
+        <div class="flex flex-wrap gap-2 mb-lg">
+          <span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full text-xs font-semibold">Corporativo</span>
+          <span class="px-3 py-1 bg-[#F0FBF9] text-[#0D7A6B] rounded-full text-xs font-semibold">White-label</span>
+          <span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full text-xs font-semibold">PDF</span>
+        </div>
+        <a href="plantillas/PLANTILLA_FORMULARIO_CONVENIO.html" class="text-[#0D7A6B] font-bold flex items-center gap-xs hover:gap-sm transition-all">
+          Abrir Plantilla <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOCUMENTACIÓN -->
+  <section id="documentacion" class="reveal">
+    <div class="flex items-center gap-sm mb-md text-primary">
+      <span class="material-symbols-outlined">menu_book</span>
+      <span class="font-label-md text-label-md tracking-wider uppercase">Documentación</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+      <!-- Ficha -->
+      <div class="group bg-white rounded-xl border border-l-0 border-outline-variant hover:border-l-[4px] hover:border-[#C8974A] p-lg transition-all flex justify-between items-center gap-md">
+        <div class="flex items-center gap-md">
+          <div class="bg-surface-container rounded-lg p-sm flex-shrink-0">
+            <span class="material-symbols-outlined text-primary">settings_applications</span>
+          </div>
+          <div>
+            <h4 class="font-headline-sm text-headline-sm">Ficha de Configuración</h4>
+            <p class="text-on-surface-variant text-body-sm">Todos los campos y placeholders de Jaime.</p>
+          </div>
+        </div>
+        <a href="https://github.com/rpenacovarrubias-alt/Jaime_Chat_Bot/blob/main/plantillas/PLANTILLA_FICHA_HOTEL.md"
+           target="_blank" rel="noopener"
+           class="flex-shrink-0 bg-[#1b1b1d] text-white px-sm py-xs rounded-lg flex items-center gap-xs hover:bg-black transition-colors text-body-sm font-semibold">
+          <i class="fab fa-github text-sm"></i> GitHub
+        </a>
+      </div>
+
+      <!-- Flujos -->
+      <div class="group bg-white rounded-xl border border-l-0 border-outline-variant hover:border-l-[4px] hover:border-[#C8974A] p-lg transition-all flex justify-between items-center gap-md">
+        <div class="flex items-center gap-md">
+          <div class="bg-surface-container rounded-lg p-sm flex-shrink-0">
+            <span class="material-symbols-outlined text-primary">account_tree</span>
+          </div>
+          <div>
+            <h4 class="font-headline-sm text-headline-sm">Flujos de Conversación</h4>
+            <p class="text-on-surface-variant text-body-sm">Lógica dialógica ManyChat y WhatsApp.</p>
+          </div>
+        </div>
+        <a href="https://github.com/rpenacovarrubias-alt/Jaime_Chat_Bot/blob/main/plantillas/PLANTILLA_FLUJOS_JAIME.md"
+           target="_blank" rel="noopener"
+           class="flex-shrink-0 bg-[#1b1b1d] text-white px-sm py-xs rounded-lg flex items-center gap-xs hover:bg-black transition-colors text-body-sm font-semibold">
+          <i class="fab fa-github text-sm"></i> GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- REDES SOCIALES -->
+  <section class="reveal">
+    <div class="flex items-center gap-sm mb-md text-primary">
+      <span class="material-symbols-outlined">share</span>
+      <span class="font-label-md text-label-md tracking-wider uppercase">Síguenos</span>
+    </div>
+    <div class="bg-surface-container-low rounded-xl p-lg text-center border border-outline-variant">
+      <p class="text-on-surface-variant font-body-md text-body-md mb-lg">Mantente al día con las novedades de Chatbot Jaime</p>
+      <div class="flex justify-center gap-md flex-wrap">
+        <a href="https://wa.me/524421314203" target="_blank" rel="noopener"
+           class="social-pill" style="background:#25D366;">
+          <i class="fab fa-whatsapp text-base"></i> WhatsApp
+        </a>
+        <a href="#" target="_blank" rel="noopener"
+           class="social-pill" style="background: linear-gradient(135deg, #833AB4, #FD1D1D 50%, #FCAF45);">
+          <i class="fab fa-instagram text-base"></i> Instagram
+        </a>
+        <a href="#" target="_blank" rel="noopener"
+           class="social-pill" style="background:#1877F2;">
+          <i class="fab fa-facebook text-base"></i> Facebook
+        </a>
+        <a href="#" target="_blank" rel="noopener"
+           class="social-pill" style="background:#0A66C2;">
+          <i class="fab fa-linkedin text-base"></i> LinkedIn
+        </a>
+        <a href="#" target="_blank" rel="noopener"
+           class="social-pill" style="background:#FF0000;">
+          <i class="fab fa-youtube text-base"></i> YouTube
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARTIR / GITHUB PAGES -->
+  <section id="compartir" class="reveal">
+    <div class="bg-white rounded-2xl p-lg md:p-xl border border-outline-variant relative overflow-hidden">
+
+      <div class="absolute top-md right-md bg-[#C8974A]/10 text-[#C8974A] px-sm py-xs rounded-lg font-bold border border-[#C8974A]/20 text-body-sm">
+        ~1 minuto
+      </div>
+
+      <div class="flex items-center gap-sm mb-sm text-primary">
+        <span class="material-symbols-outlined">share</span>
+        <span class="font-label-md text-label-md tracking-wider uppercase">¿Cómo comparto el portal?</span>
+      </div>
+      <h2 class="font-headline-lg text-headline-lg mb-sm">Activar GitHub Pages</h2>
+      <p class="text-on-surface-variant text-body-md mb-xl max-w-xl">El portal ya está listo. Solo habilítalo una vez desde la configuración del repositorio y obtendrás tu URL pública para clientes.</p>
+
+      <div class="relative grid grid-cols-1 md:grid-cols-4 gap-lg items-start">
+        <!-- Timeline line desktop -->
+        <div class="hidden md:block absolute top-10 left-[10%] right-[10%] h-[2px] bg-gradient-to-r from-[#C8974A] to-[#E5A94E]"
+             style="box-shadow: 0 0 8px rgba(200,151,74,0.4);"></div>
+        <!-- Timeline line mobile -->
+        <div class="md:hidden absolute left-10 top-10 bottom-10 w-[2px] bg-gradient-to-b from-[#C8974A] to-[#E5A94E]"></div>
+
+        <!-- Step 1 -->
+        <div class="relative flex flex-col items-center text-center space-y-sm">
+          <div class="w-20 h-20 bg-[#1C1C1E] rounded-full flex items-center justify-center text-white font-headline-sm font-bold z-10 border-2 border-[#C8974A]"
+               style="box-shadow: 0 0 16px rgba(200,151,74,0.55);">1</div>
+          <h4 class="font-bold text-body-lg">Settings</h4>
+          <p class="text-on-surface-variant text-body-sm px-md">
+            Abre <a class="text-[#C8974A] hover:underline"
+               href="https://github.com/rpenacovarrubias-alt/Jaime_Chat_Bot/settings/pages"
+               target="_blank" rel="noopener">Settings → Pages</a> en el repositorio.
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="relative flex flex-col items-center text-center space-y-sm">
+          <div class="w-20 h-20 bg-[#1C1C1E] rounded-full flex items-center justify-center text-white font-headline-sm font-bold z-10 border-2 border-[#C8974A]"
+               style="box-shadow: 0 0 16px rgba(200,151,74,0.55);">2</div>
+          <h4 class="font-bold text-body-lg">Source</h4>
+          <p class="text-on-surface-variant text-body-sm px-md">
+            Branch <code class="bg-surface-container px-1 rounded text-xs">main</code> →
+            carpeta <code class="bg-surface-container px-1 rounded text-xs">/(root)</code> → Save
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="relative flex flex-col items-center text-center space-y-sm">
+          <div class="w-20 h-20 bg-[#1C1C1E] rounded-full flex items-center justify-center text-white font-headline-sm font-bold z-10 border-2 border-[#C8974A]"
+               style="box-shadow: 0 0 16px rgba(200,151,74,0.55);">3</div>
+          <h4 class="font-bold text-body-lg">Espera</h4>
+          <p class="text-on-surface-variant text-body-sm px-md">GitHub despliega en ~1 minuto automáticamente.</p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="relative flex flex-col items-center text-center space-y-sm">
+          <div class="w-20 h-20 bg-[#1C1C1E] rounded-full flex items-center justify-center text-white font-headline-sm font-bold z-10 border-2 border-[#C8974A]"
+               style="box-shadow: 0 0 16px rgba(200,151,74,0.55);">4</div>
+          <h4 class="font-bold text-body-lg">Comparte</h4>
+          <p class="text-on-surface-variant text-body-sm px-md">
+            <code class="bg-surface-container px-1 rounded text-xs break-all">…github.io/Jaime_Chat_Bot/</code>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer class="bg-[#1C1C1E] py-xl text-white">
+  <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-lg mb-xl">
+
+      <!-- Brand -->
+      <div class="space-y-md">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-[#C8974A] rounded-full flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-white text-[20px]">smart_toy</span>
+          </div>
+          <span class="font-headline-sm font-bold text-[#C8974A]">Chatbot Jaime</span>
+        </div>
+        <p class="text-white/55 font-body-sm text-body-sm leading-relaxed">
+          Tu asistente de hotel, siempre disponible.<br/>
+          Hospitality AI para la hotelería moderna.
+        </p>
+        <!-- Social icons (small, footer) -->
+        <div class="flex gap-2 pt-1">
+          <a href="https://wa.me/524421314203" target="_blank" rel="noopener" class="footer-social wa">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+          <a href="#" target="_blank" rel="noopener" class="footer-social ig">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="#" target="_blank" rel="noopener" class="footer-social fb">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="#" target="_blank" rel="noopener" class="footer-social li">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+          <a href="#" target="_blank" rel="noopener" class="footer-social yt">
+            <i class="fab fa-youtube"></i>
+          </a>
+          <a href="https://github.com/rpenacovarrubias-alt/Jaime_Chat_Bot" target="_blank" rel="noopener" class="footer-social gh">
+            <i class="fab fa-github"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recursos -->
+      <div>
+        <h4 class="font-bold mb-md text-white/75 text-body-md tracking-wide">Recursos</h4>
+        <ul class="space-y-sm text-white/55 font-body-sm text-body-sm">
+          <li>
+            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2" href="extractor/">
+              <span class="material-symbols-outlined text-[14px] text-[#C8974A]/60">auto_fix_high</span> Extractor IA
+            </a>
+          </li>
+          <li>
+            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2" href="plantillas/FORMULARIO_ONBOARDING_HOTEL.html">
+              <span class="material-symbols-outlined text-[14px] text-[#C8974A]/60">assignment</span> Formulario de Onboarding
+            </a>
+          </li>
+          <li>
+            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2" href="plantillas/PLANTILLA_FORMULARIO_CONVENIO.html">
+              <span class="material-symbols-outlined text-[14px] text-[#C8974A]/60">description</span> Plantilla de Convenio
+            </a>
+          </li>
+          <li>
+            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2"
+               href="https://github.com/rpenacovarrubias-alt/Jaime_Chat_Bot/blob/main/plantillas/PLANTILLA_FICHA_HOTEL.md"
+               target="_blank" rel="noopener">
+              <span class="material-symbols-outlined text-[14px] text-[#C8974A]/60">settings_applications</span> Ficha de Configuración
+            </a>
+          </li>
+          <li>
+            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2"
+               href="https://github.com/rpenacovarrubias-alt/Jaime_Chat_Bot/blob/main/plantillas/PLANTILLA_FLUJOS_JAIME.md"
+               target="_blank" rel="noopener">
+              <span class="material-symbols-outlined text-[14px] text-[#C8974A]/60">account_tree</span> Flujos de Conversación
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Proyecto -->
+      <div>
+        <h4 class="font-bold mb-md text-white/75 text-body-md tracking-wide">Proyecto</h4>
+        <ul class="space-y-sm text-white/55 font-body-sm text-body-sm">
+          <li>
+            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2"
+               href="https://github.com/rpenacovarrubias-alt/Jaime_Chat_Bot" target="_blank" rel="noopener">
+              <i class="fab fa-github text-[#C8974A]/60 w-3.5 text-center"></i> Repositorio GitHub
+            </a>
+          </li>
+          <li>
+            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2"
+               href="https://github.com/rpenacovarrubias-alt/Jaime_Chat_Bot/issues/new" target="_blank" rel="noopener">
+              <span class="material-symbols-outlined text-[14px] text-[#C8974A]/60">bug_report</span> Reportar un Problema
+            </a>
+          </li>
+          <li>
+            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2"
+               href="https://wa.me/524421314203" target="_blank" rel="noopener">
+              <i class="fab fa-whatsapp text-[#C8974A]/60 w-3.5 text-center"></i> Solicitar Implementación
+            </a>
+          </li>
+          <li>
+            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2"
+               href="mailto:ventas@avantahotel.com.mx">
+              <span class="material-symbols-outlined text-[14px] text-[#C8974A]/60">mail</span> ventas@avantahotel.com.mx
+            </a>
+          </li>
+          <li>
+            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2"
+               href="tel:4421314203">
+              <span class="material-symbols-outlined text-[14px] text-[#C8974A]/60">phone</span> 442 131 4203
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="border-t border-white/10 pt-md flex flex-col md:flex-row justify-between items-center gap-sm text-white/35 font-body-sm text-body-sm">
+      <span>© 2025 Chatbot Jaime · Kit de Implementación v1.1</span>
+      <span>
+        Desarrollado por
+        <a href="mailto:rpenacovarrubias@gmail.com" class="hover:text-[#C8974A] transition-colors">RPC Consulting</a>
+        · Ricardo Peña Covarrubias
+      </span>
+    </div>
+
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  function reveal() {
+    document.querySelectorAll(".reveal").forEach(function(el) {
+      if (el.getBoundingClientRect().top < window.innerHeight - 130) {
+        el.classList.add("active");
+      }
+    });
+  }
+  window.addEventListener("scroll", reveal);
+  reveal();
+</script>
+
+</body>
+</html>

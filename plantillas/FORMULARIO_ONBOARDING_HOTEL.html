@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Jaime — Configuración del Hotel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --primary:      #1B3C6B;
+  --primary-dark: #0F2647;
+  --accent:       #2563EB;
+  --text:   #1F2933;
+  --muted:  #9CA3AF;
+  --bg:     #F5F5F5;
+  --card:   #FFFFFF;
+  --border: #E5E7EB;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: "Kodchasan", sans-serif; background: var(--bg); color: var(--text); }
+
+/* ── WRAPPER ── */
+.wrapper { display: flex; min-height: 100vh; max-width: 1300px; margin: 0 auto; background: var(--card); box-shadow: 0 4px 20px rgba(0,0,0,.08); }
+
+/* ── LEFT PANEL ── */
+.aside {
+  width: 280px; min-width: 280px;
+  background: linear-gradient(160deg, #1B3C6B 0%, #0F2647 100%);
+  color: #fff;
+  position: sticky; top: 0; height: 100vh;
+  overflow-y: auto; padding: 50px 28px;
+  display: flex; flex-direction: column; gap: 0;
+}
+.aside-brand { font-family: "Cormorant Garamond", serif; font-size: 36px; font-weight: 400; font-style: italic; margin: 0; }
+.aside-brand span { font-family: "Kodchasan", sans-serif; font-style: normal; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; opacity: .6; display: block; margin-bottom: 4px; }
+.aside-divider { width: 40px; height: 2px; background: rgba(255,255,255,.25); margin: 20px 0; }
+.aside p { font-size: 13px; line-height: 1.7; opacity: .8; margin: 0 0 28px; }
+.nav { list-style: none; padding: 0; margin: 0; }
+.nav li { margin-bottom: 2px; }
+.nav a {
+  display: flex; align-items: center; gap: 10px;
+  color: rgba(255,255,255,.6); text-decoration: none;
+  font-size: 12px; padding: 7px 10px; border-radius: 6px;
+  transition: all .2s;
+}
+.nav a:hover, .nav a.active { background: rgba(255,255,255,.12); color: #fff; }
+.nav .num {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: rgba(255,255,255,.15); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600;
+}
+
+/* ── RIGHT PANEL ── */
+.main { flex: 1; padding: 50px 60px; overflow-y: auto; }
+
+/* ── SECTION ── */
+.sb { margin-bottom: 52px; scroll-margin-top: 30px; }
+.s-num { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 500; margin: 0 0 4px; }
+.s-title { font-family: "Cormorant Garamond", serif; font-size: 24px; font-weight: 500; color: var(--primary); margin: 0 0 16px; }
+.s-line { height: 1px; background: var(--border); margin-bottom: 24px; }
+
+/* ── FIELDS ── */
+.row { display: flex; gap: 16px; }
+.fg { flex: 1; margin-bottom: 18px; }
+.fg.full { flex: 1 1 100%; }
+.lbl {
+  display: block; font-size: 11px; letter-spacing: .08em;
+  text-transform: uppercase; margin-bottom: 7px;
+  color: var(--muted); font-weight: 500;
+}
+input[type=text], input[type=email], input[type=tel],
+input[type=url], input[type=number], input[type=time],
+select, textarea {
+  width: 100%; padding: 12px 14px; font-size: 14px;
+  border-radius: 8px; border: 1px solid var(--border);
+  background: #FAFAFA; color: var(--text);
+  transition: all .2s; font-family: "Kodchasan", sans-serif;
+}
+input::placeholder, textarea::placeholder { color: #C1C7CD; }
+input:focus, select:focus, textarea:focus {
+  outline: none; border-color: var(--accent);
+  background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,.08);
+}
+textarea { resize: vertical; min-height: 72px; }
+
+/* ── RADIO TOGGLE ── */
+.tg { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+.tg input[type=radio] { display: none; }
+.tg label {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border: 1px solid var(--border);
+  border-radius: 20px; cursor: pointer; font-size: 13px;
+  text-transform: none; letter-spacing: normal; color: var(--text);
+  transition: all .2s;
+}
+.tg input[type=radio]:checked + label { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* ── CHECKBOX GRID ── */
+.cg { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr)); gap: 10px; margin-top: 10px; }
+.ci { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
+.ci input { accent-color: var(--primary); width: 15px; height: 15px; }
+
+/* ── CARD ── */
+.card {
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 18px 20px; margin-bottom: 14px; background: #FAFAFA;
+}
+.card-title { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--primary); margin: 0 0 14px; }
+
+/* ── INSTALL TABLE ── */
+.it-head, .it-row {
+  display: grid;
+  grid-template-columns: 170px 70px 1fr 1fr 1fr;
+  gap: 10px; align-items: center; padding: 9px 0;
+  border-bottom: 1px solid #F3F4F6;
+}
+.it-head { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 600; border-bottom: 2px solid var(--border); }
+.it-row input { font-size: 13px; }
+.it-row span { font-size: 13px; font-weight: 500; }
+
+/* ── ESC TABLE ── */
+.et-head, .et-row {
+  display: grid;
+  grid-template-columns: 2fr 90px 1fr;
+  gap: 10px; align-items: center; padding: 8px 0;
+  border-bottom: 1px solid #F3F4F6;
+}
+.et-head { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 600; border-bottom: 2px solid var(--border); }
+.et-row span { font-size: 13px; }
+.badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px; text-align: center; }
+.b-baja  { color: #059669; background: #D1FAE5; }
+.b-media { color: #D97706; background: #FEF3C7; }
+.b-alta  { color: #DC2626; background: #FEE2E2; }
+.b-crit  { color: #7C3AED; background: #EDE9FE; }
+
+/* ── HIGHLIGHT BOX ── */
+.highlight { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 10px; padding: 16px; margin-bottom: 18px; }
+.highlight .lbl { color: #1D4ED8; }
+.hint { font-size: 12px; color: var(--muted); margin-top: 5px; }
+
+/* ── SUBMIT ── */
+.btn {
+  width: 100%; padding: 16px; font-size: 15px; font-weight: 600;
+  background: var(--primary); color: #fff; border: none; border-radius: 8px;
+  cursor: pointer; transition: all .2s; font-family: "Kodchasan", sans-serif;
+  letter-spacing: .02em; margin-top: 10px;
+}
+.btn:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(27,60,107,.25); }
+.btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+/* ── LOADING / SUCCESS ── */
+.spin { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-left: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pop  { 0%{transform:scale(0);opacity:0} 50%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+#success { display: none; text-align: center; padding: 80px 20px; }
+.success-icon { width: 80px; height: 80px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px; animation: pop .6s ease; }
+.success-icon svg { width: 40px; height: 40px; stroke: #fff; stroke-width: 3; fill: none; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .wrapper { flex-direction: column; }
+  .aside { width: 100%; height: auto; position: relative; padding: 36px 28px; }
+  .nav { display: none; }
+  .main { padding: 36px 28px; }
+  .it-head, .it-row { grid-template-columns: 130px 50px 1fr; }
+  .it-head span:nth-child(4), .it-head span:nth-child(5),
+  .it-row input:nth-child(4), .it-row input:nth-child(5) { display: none; }
+}
+@media (max-width: 600px) {
+  .row { flex-direction: column; gap: 0; }
+  .main { padding: 28px 18px; }
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<!-- ════════════════ LEFT PANEL ════════════════ -->
+<aside class="aside">
+  <div>
+    <p class="aside-brand"><span>Chatbot</span>Jaime</p>
+    <div class="aside-divider"></div>
+    <p>Completa esta ficha para configurar a Jaime en el WhatsApp de tu hotel. Una vez llenada, la implementación toma menos de una sesión.</p>
+  </div>
+  <ul class="nav" id="sideNav">
+    <li><a href="#s1"><span class="num">1</span>Identidad del hotel</a></li>
+    <li><a href="#s2"><span class="num">2</span>Contacto y ubicación</a></li>
+    <li><a href="#s3"><span class="num">3</span>Check-in y Check-out</a></li>
+    <li><a href="#s4"><span class="num">4</span>Habitaciones</a></li>
+    <li><a href="#s5"><span class="num">5</span>WiFi</a></li>
+    <li><a href="#s6"><span class="num">6</span>Desayuno</a></li>
+    <li><a href="#s7"><span class="num">7</span>Restaurante / A&amp;B</a></li>
+    <li><a href="#s8"><span class="num">8</span>Estacionamiento</a></li>
+    <li><a href="#s9"><span class="num">9</span>Instalaciones</a></li>
+    <li><a href="#s10"><span class="num">10</span>Salones y eventos</a></li>
+    <li><a href="#s11"><span class="num">11</span>Políticas</a></li>
+    <li><a href="#s12"><span class="num">12</span>Métodos de pago</a></li>
+    <li><a href="#s13"><span class="num">13</span>Integración operativa</a></li>
+    <li><a href="#s14"><span class="num">14</span>Preguntas frecuentes</a></li>
+    <li><a href="#s15"><span class="num">15</span>Directorio interno</a></li>
+  </ul>
+</aside>
+
+<!-- ════════════════ RIGHT PANEL ════════════════ -->
+<div class="main">
+  <div style="margin-bottom:40px;">
+    <h1 style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:500;margin:0 0 8px;color:#1F2933;">Ficha de Configuración</h1>
+    <p style="color:var(--muted);font-size:14px;margin:0;">Completa todos los campos para activar a Jaime en el WhatsApp de tu hotel.</p>
+  </div>
+
+  <form id="fichaForm">
+
+  <!-- ══ S1 IDENTIDAD ══ -->
+  <div class="sb" id="s1">
+    <p class="s-num">Sección 01</p><h2 class="s-title">Identidad del Hotel</h2><div class="s-line"></div>
+    <div class="fg full"><label class="lbl">Nombre completo del hotel</label><input type="text" name="hotel_nombre" placeholder="Ej. Hotel Urbano BeWow© Querétaro" required></div>
+    <div class="fg full"><label class="lbl">Marca / Concepto (tagline o filosofía)</label><input type="text" name="hotel_concepto" placeholder="Ej. Donde la ciudad te sorprende"></div>
+    <div class="row">
+      <div class="fg"><label class="lbl">Categoría</label>
+        <select name="hotel_estrellas">
+          <option value="">Selecciona...</option>
+          <option>1 estrella</option><option>2 estrellas</option><option>3 estrellas</option>
+          <option>4 estrellas</option><option>5 estrellas</option><option>Boutique / Sin categoría</option>
+        </select>
+      </div>
+      <div class="fg"><label class="lbl">Total de habitaciones</label><input type="number" name="hotel_habitaciones" placeholder="Ej. 86" min="1"></div>
+      <div class="fg"><label class="lbl">Año apertura / remodelación</label><input type="text" name="hotel_apertura" placeholder="Ej. 2018 / 2023"></div>
+    </div>
+  </div>
+
+  <!-- ══ S2 CONTACTO ══ -->
+  <div class="sb" id="s2">
+    <p class="s-num">Sección 02</p><h2 class="s-title">Contacto y Ubicación</h2><div class="s-line"></div>
+    <div class="fg full"><label class="lbl">Dirección completa</label><input type="text" name="hotel_direccion" placeholder="Ej. Av. Constituyentes 76, Col. Centro, Querétaro, Qro."></div>
+    <div class="row">
+      <div class="fg"><label class="lbl">Ciudad / Estado</label><input type="text" name="hotel_ciudad" placeholder="Ej. Querétaro, Qro."></div>
+      <div class="fg"><label class="lbl">Teléfono principal</label><input type="tel" name="hotel_telefono" placeholder="+52 442 000 0000"></div>
+    </div>
+    <div class="highlight">
+      <label class="lbl">📱 WhatsApp donde vivirá Jaime</label>
+      <input type="tel" name="jaime_whatsapp" placeholder="+52 1 442 000 0000" required>
+      <p class="hint">Este es el número al que conectarás ManyChat.</p>
+    </div>
+    <div class="row">
+      <div class="fg"><label class="lbl">Email de reservaciones</label><input type="email" name="email_reservas" placeholder="reservas@mihotel.com"></div>
+      <div class="fg"><label class="lbl">Email de administración</label><input type="email" name="email_admin" placeholder="admin@mihotel.com"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label class="lbl">Sitio web</label><input type="url" name="hotel_web" placeholder="https://www.mihotel.com"></div>
+      <div class="fg"><label class="lbl">Motor de reservas (URL)</label><input type="url" name="hotel_motor" placeholder="https://reservas.mihotel.com"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label class="lbl">Facebook</label><input type="url" name="hotel_facebook" placeholder="https://facebook.com/mihotel"></div>
+      <div class="fg"><label class="lbl">Instagram (@usuario)</label><input type="text" name="hotel_instagram" placeholder="@mihotel"></div>
+    </div>
+    <div class="fg full"><label class="lbl">Google Maps (link)</label><input type="url" name="hotel_maps" placeholder="https://maps.google.com/..."></div>
+    <div class="row">
+      <div class="fg"><label class="lbl">Distancia al aeropuerto</label><input type="text" name="dist_aeropuerto" placeholder="Ej. 15 km / 20 min en auto"></div>
+      <div class="fg"><label class="lbl">Costo taxi al aeropuerto</label><input type="text" name="costo_taxi" placeholder="Ej. $350 MXN"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label class="lbl">Distancia al centro</label><input type="text" name="dist_centro" placeholder="Ej. 2 km / 5 min caminando"></div>
+      <div class="fg"><label class="lbl">Referencias de ubicación</label><input type="text" name="referencias" placeholder="Ej. A 200m del Teatro de la República"></div>
+    </div>
+  </div>
+
+  <!-- ══ S3 CHECK-IN / OUT ══ -->
+  <div class="sb" id="s3">
+    <p class="s-num">Sección 03</p><h2 class="s-title">Check-in y Check-out</h2><div class="s-line"></div>
+    <div class="row">
+      <div class="fg"><label class="lbl">Hora de check-in</label><input type="time" name="checkin_hora" value="14:00"></div>
+      <div class="fg"><label class="lbl">Hora de check-out</label><input type="time" name="checkout_hora" value="12:00"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label class="lbl">¿Ofrecen early check-in?</label><div class="tg"><input type="radio" name="early_ci" id="eci_s" value="si"><label for="eci_s">Sí</label><input type="radio" name="early_ci" id="eci_n" value="no" checked><label for="eci_n">No</label></div></div>
+      <div class="fg"><label class="lbl">Costo early check-in</label><input type="text" name="early_ci_costo" placeholder="Ej. $300 MXN o Gratuito"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label class="lbl">¿Ofrecen late check-out?</label><div class="tg"><input type="radio" name="late_co" id="lco_s" value="si"><label for="lco_s">Sí</label><input type="radio" name="late_co" id="lco_n" value="no" checked><label for="lco_n">No</label></div></div>
+      <div class="fg"><label class="lbl">Costo late check-out</label><input type="text" name="late_co_costo" placeholder="Ej. $400 MXN o 50% tarifa"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label class="lbl">¿Ofrecen cama extra?</label><div class="tg"><input type="radio" name="cama_extra" id="ce_s" value="si"><label for="ce_s">Sí</label><input type="radio" name="cama_extra" id="ce_n" value="no" checked><label for="ce_n">No</label></div></div>
+      <div class="fg"><label class="lbl">Costo cama extra / noche</label><input type="text" name="cama_extra_costo" placeholder="Ej. $350 MXN por noche"></div>
+    </div>
+    <div class="fg full"><label class="lbl">Documentos requeridos al check-in</label><input type="text" name="ci_docs" placeholder="Ej. Identificación oficial + tarjeta de crédito"></div>
+    <div class="row">
+      <div class="fg"><label class="lbl">¿Se requiere depósito?</label><div class="tg"><input type="radio" name="deposito" id="dep_s" value="si"><label for="dep_s">Sí</label><input type="radio" name="deposito" id="dep_n" value="no" checked><label for="dep_n">No</label></div></div>
+      <div class="fg"><label class="lbl">Monto del depósito</label><input type="text" name="deposito_monto" placeholder="Ej. $500 MXN por noche"></div>
+    </div>
+  </div>
+
+  <!-- ══ S4 HABITACIONES ══ -->
+  <div class="sb" id="s4">
+    <p class="s-num">Sección 04</p><h2 class="s-title">Habitaciones</h2><div class="s-line"></div>
+
+    <div class="card"><p class="card-title">Tipo de habitación 1</p>
+      <div class="row">
+        <div class="fg"><label class="lbl">Nombre</label><input type="text" name="h1_tipo" placeholder="Ej. Estándar King"></div>
+        <div class="fg"><label class="lbl">Capacidad</label><input type="number" name="h1_cap" placeholder="2" min="1"></div>
+        <div class="fg"><label class="lbl">m²</label><input type="number" name="h1_m2" placeholder="28"></div>
+        <div class="fg"><label class="lbl">Tarifa base/noche</label><input type="text" name="h1_tarifa" placeholder="$1,200 MXN"></div>
+      </div>
+      <div class="row">
+        <div class="fg"><label class="lbl">Descripción breve</label><input type="text" name="h1_desc" placeholder="Ej. Cama king, vista al jardín"></div>
+        <div class="fg"><label class="lbl">Amenidades especiales</label><input type="text" name="h1_extras" placeholder="Ej. Bañera, balcón"></div>
+      </div>
+    </div>
+
+    <div class="card"><p class="card-title">Tipo de habitación 2</p>
+      <div class="row">
+        <div class="fg"><label class="lbl">Nombre</label><input type="text" name="h2_tipo" placeholder="Ej. Doble Queen"></div>
+        <div class="fg"><label class="lbl">Capacidad</label><input type="number" name="h2_cap" placeholder="2" min="1"></div>
+        <div class="fg"><label class="lbl">m²</label><input type="number" name="h2_m2" placeholder="32"></div>
+        <div class="fg"><label class="lbl">Tarifa base/noche</label><input type="text" name="h2_tarifa" placeholder="$1,400 MXN"></div>
+      </div>
+      <div class="row">
+        <div class="fg"><label class="lbl">Descripción breve</label><input type="text" name="h2_desc" placeholder="Ej. Dos camas queen, escritorio ejecutivo"></div>
+        <div class="fg"><label class="lbl">Amenidades especiales</label><input type="text" name="h2_extras" placeholder="Ej. Minibar, cocineta"></div>
+      </div>
+    </div>
+
+    <div class="card"><p class="card-title">Tipo de habitación 3</p>
+      <div class="row">
+        <div class="fg"><label class="lbl">Nombre</label><input type="text" name="h3_tipo" placeholder="Ej. Suite Junior"></div>
+        <div class="fg"><label class="lbl">Capacidad</label><input type="number" name="h3_cap" placeholder="2" min="1"></div>
+        <div class="fg"><label class="lbl">m²</label><input type="number" name="h3_m2" placeholder="45"></div>
+        <div class="fg"><label class="lbl">Tarifa base/noche</label><input type="text" name="h3_tarifa" placeholder="$1,900 MXN"></div>
+      </div>
+      <div class="row">
+        <div class="fg"><label class="lbl">Descripción breve</label><input type="text" name="h3_desc" placeholder="Ej. Sala integrada, vista panorámica"></div>
+        <div class="fg"><label class="lbl">Amenidades especiales</label><input type="text" name="h3_extras" placeholder="Ej. Jacuzzi, terraza"></div>
+      </div>
+    </div>
+
+    <div class="card"><p class="card-title">Tipo de habitación 4 <span style="opacity:.5;font-weight:400">(opcional)</span></p>
+      <div class="row">
+        <div class="fg"><label class="lbl">Nombre</label><input type="text" name="h4_tipo" placeholder=""></div>
+        <div class="fg"><label class="lbl">Capacidad</label><input type="number" name="h4_cap" placeholder=""></div>
+        <div class="fg"><label class="lbl">m²</label><input type="number" name="h4_m2" placeholder=""></div>
+        <div class="fg"><label class="lbl">Tarifa</label><input type="text" name="h4_tarifa" placeholder=""></div>
+      </div>
+      <div class="row">
+        <div class="fg"><label class="lbl">Descripción</label><input type="text" name="h4_desc" placeholder=""></div>
+        <div class="fg"><label class="lbl">Extras</label><input type="text" name="h4_extras" placeholder=""></div>
+      </div>
+    </div>
+
+    <div class="card"><p class="card-title">Tipo de habitación 5 <span style="opacity:.5;font-weight:400">(opcional)</span></p>
+      <div class="row">
+        <div class="fg"><label class="lbl">Nombre</label><input type="text" name="h5_tipo" placeholder=""></div>
+        <div class="fg"><label class="lbl">Capacidad</label><input type="number" name="h5_cap" placeholder=""></div>
+        <div class="fg"><label class="lbl">m²</label><input type="number" name="h5_m2" placeholder=""></div>
+        <div class="fg"><label class="lbl">Tarifa</label><input type="text" name="h5_tarifa" placeholder=""></div>
+      </div>
+      <div class="row">
+        <div class="fg"><label class="lbl">Descripción</label><input type="text" name="h5_desc" placeholder=""></div>
+        <div class="fg"><label class="lbl">Extras</label><input type="text" name="h5_extras" placeholder=""></div>
+      </div>
+    </div>
+
+    <div class="fg full"><label class="lbl">Nota sobre tarifas</label><input type="text" name="hab_nota" placeholder="Ej. Precio base 2 personas · Desayuno incluido · IVA incluido"></div>
+
+    <label class="lbl" style="margin-top:8px;">Amenidades estándar en TODAS las habitaciones</label>
+    <div class="cg">
+      <label class="ci"><input type="checkbox" name="am_wifi" checked> WiFi</label>
+      <label class="ci"><input type="checkbox" name="am_caja"> Caja fuerte</label>
+      <label class="ci"><input type="checkbox" name="am_ac"> Aire acondicionado</label>
+      <label class="ci"><input type="checkbox" name="am_tv"> TV con cable</label>
+      <label class="ci"><input type="checkbox" name="am_bano"> Baño privado</label>
+      <label class="ci"><input type="checkbox" name="am_closet"> Closet con plancha</label>
+      <label class="ci"><input type="checkbox" name="am_escritorio"> Escritorio de trabajo</label>
+      <label class="ci"><input type="checkbox" name="am_cerradura"> Cerradura electrónica</label>
+      <label class="ci"><input type="checkbox" name="am_telefono"> Teléfono</label>
+      <label class="ci"><input type="checkbox" name="am_minibar"> Minibar / Frigobar</label>
+      <label class="ci"><input type="checkbox" name="am_cocineta"> Cocineta</label>
+      <label class="ci"><input type="checkbox" name="am_secadora"> Secador de pelo</label>
+    </div>
+  </div>
+
+  <!-- ══ S5 WIFI ══ -->
+  <div class="sb" id="s5">
+    <p class="s-num">Sección 05</p><h2 class="s-title">WiFi</h2><div class="s-line"></div>
+    <div class="row">
+      <div class="fg"><label class="lbl">Nombre de la red (SSID)</label><input type="text" name="wifi_ssid" placeholder="Ej. MiHotel_Guests"></div>
+      <div class="fg"><label class="lbl">Contraseña</label><input type="text" name="wifi_pass" placeholder="Ej. bienvenido2024"></div>
+    </div>
+    <div class="fg"><label class="lbl">¿Hay red separada para huéspedes?</label><div class="tg"><input type="radio" name="wifi_sep" id="ws_s" value="si"><label for="ws_s">Sí</label><input type="radio" name="wifi_sep" id="ws_n" value="no" checked><label for="ws_n">No</label></div></div>
+    <div class="row">
+      <div class="fg"><label class="lbl">SSID red de huéspedes</label><input type="text" name="wifi_h_ssid" placeholder="Ej. MiHotel_WiFi"></div>
+      <div class="fg"><label class="lbl">Contraseña huéspedes</label><input type="text" name="wifi_h_pass" placeholder=""></div>
+    </div>
+    <div class="fg"><label class="lbl">Velocidad / observaciones</label><input type="text" name="wifi_vel" placeholder="Ej. 100 Mbps · Disponible en todas las áreas"></div>
+  </div>
+
+  <!-- ══ S6 DESAYUNO ══ -->
+  <div class="sb" id="s6">
+    <p class="s-num">Sección 06</p><h2 class="s-title">Desayuno</h2><div class="s-line"></div>
+    <div class="row">
+      <div class="fg"><label class="lbl">¿Incluye desayuno?</label>
+        <select name="desayuno_inc"><option value="">Selecciona...</option><option value="si">Sí, incluido en tarifa</option><option value="no">No incluido</option><option value="segun">Según tarifa seleccionada</option></select>
+      </div>
+      <div class="fg"><label class="lbl">Tipo de desayuno</label>
+        <select name="desayuno_tipo"><option value="">Selecciona...</option><option>Buffet</option><option>Americano</option><option>Continental</option><option>A la carta</option><option>Otro</option></select>
+      </div>
+    </div>
+    <div class="fg"><label class="lbl">Horario de desayuno</label><input type="text" name="desayuno_horario" placeholder="Ej. 7:00 a.m. – 11:00 a.m."></div>
+    <div class="fg full"><label class="lbl">¿Qué incluye?</label><textarea name="desayuno_incluye" placeholder="Ej. Frutas, jugos, huevo al gusto, pan, café, agua. Buffet con estación de hot cakes."></textarea></div>
+    <div class="row">
+      <div class="fg"><label class="lbl">Costo si no está incluido</label><input type="text" name="desayuno_costo" placeholder="Ej. $180 MXN por persona"></div>
+      <div class="fg"><label class="lbl">Ubicación del restaurante</label><input type="text" name="desayuno_ubic" placeholder="Ej. Planta baja, junto a la recepción"></div>
+    </div>
+  </div>
+
+  <!-- ══ S7 RESTAURANTE ══ -->
+  <div class="sb" id="s7">
+    <p class="s-num">Sección 07</p><h2 class="s-title">Restaurante / Alimentos y Bebidas</h2><div class="s-line"></div>
+    <div class="row">
+      <div class="fg"><label class="lbl">Nombre del restaurante</label><input type="text" name="rest_nombre" placeholder="Ej. Restaurante La Terraza"></div>
+      <div class="fg"><label class="lbl">URL del menú en línea</label><input type="url" name="rest_menu" placeholder="https://mihotel.com/menu"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label class="lbl">Horario desayuno</label><input type="text" name="rest_des" placeholder="Ej. 7:00 – 11:00 a.m."></div>
+      <div class="fg"><label class="lbl">Horario comida</label><input type="text" name="rest_com" placeholder="Ej. 1:00 – 5:00 p.m."></div>
+      <div class="fg"><label class="lbl">Horario cena</label><input type="text" name="rest_cen" placeholder="Ej. 7:00 – 11:00 p.m."></div>
+    </div>
+    <div class="fg"><label class="lbl">¿Requiere reservación?</label><input type="text" name="rest_reserv" placeholder="Ej. No necesaria / Recomendada en fines de semana"></div>
+    <div class="row">
+      <div class="fg"><label class="lbl">¿Ofrece room service?</label><div class="tg"><input type="radio" name="rs_disp" id="rs_s" value="si"><label for="rs_s">Sí</label><input type="radio" name="rs_disp" id="rs_n" value="no" checked><label for="rs_n">No</label></div></div>
+      <div class="fg"><label class="lbl">Horario room service</label><input type="text" name="rs_horario" placeholder="Ej. 7:00 a.m. – 10:00 p.m."></div>
+      <div class="fg"><label class="lbl">Tiempo de entrega</label><input type="text" name="rs_tiempo" placeholder="Ej. 30–45 minutos"></div>
+    </div>
+    <p class="lbl" style="margin:12px 0 10px;">Menú de Room Service (hasta 5 platillos)</p>
+    <div class="row"><div class="fg"><label class="lbl">Platillo 1</label><input type="text" name="rs1_nom" placeholder="Ej. Club Sándwich"></div><div class="fg"><label class="lbl">Descripción</label><input type="text" name="rs1_desc" placeholder="Ej. Pavo, jamón, papas"></div><div class="fg" style="max-width:120px"><label class="lbl">Precio</label><input type="text" name="rs1_precio" placeholder="$185"></div></div>
+    <div class="row"><div class="fg"><label class="lbl">Platillo 2</label><input type="text" name="rs2_nom" placeholder=""></div><div class="fg"><label class="lbl">Descripción</label><input type="text" name="rs2_desc" placeholder=""></div><div class="fg" style="max-width:120px"><label class="lbl">Precio</label><input type="text" name="rs2_precio" placeholder=""></div></div>
+    <div class="row"><div class="fg"><label class="lbl">Platillo 3</label><input type="text" name="rs3_nom" placeholder=""></div><div class="fg"><label class="lbl">Descripción</label><input type="text" name="rs3_desc" placeholder=""></div><div class="fg" style="max-width:120px"><label class="lbl">Precio</label><input type="text" name="rs3_precio" placeholder=""></div></div>
+    <div class="row"><div class="fg"><label class="lbl">Platillo 4</label><input type="text" name="rs4_nom" placeholder=""></div><div class="fg"><label class="lbl">Descripción</label><input type="text" name="rs4_desc" placeholder=""></div><div class="fg" style="max-width:120px"><label class="lbl">Precio</label><input type="text" name="rs4_precio" placeholder=""></div></div>
+    <div class="row"><div class="fg"><label class="lbl">Platillo 5</label><input type="text" name="rs5_nom" placeholder=""></div><div class="fg"><label class="lbl">Descripción</label><input type="text" name="rs5_desc" placeholder=""></div><div class="fg" style="max-width:120px"><label class="lbl">Precio</label><input type="text" name="rs5_precio" placeholder=""></div></div>
+  </div>
+
+  <!-- ══ S8 ESTACIONAMIENTO ══ -->
+  <div class="sb" id="s8">
+    <p class="s-num">Sección 08</p><h2 class="s-title">Estacionamiento</h2><div class="s-line"></div>
+    <div class="row">
+      <div class="fg"><label class="lbl">¿Tiene estacionamiento?</label><div class="tg"><input type="radio" name="estac" id="es_s" value="si"><label for="es_s">Sí</label><input type="radio" name="estac" id="es_n" value="no" checked><label for="es_n">No</label></div></div>
+      <div class="fg"><label class="lbl">¿Gratuito o de pago?</label><div class="tg"><input type="radio" name="estac_tipo" id="et_g" value="gratuito"><label for="et_g">Gratuito</label><input type="radio" name="estac_tipo" id="et_p" value="pago"><label for="et_p">De pago</label></div></div>
+      <div class="fg"><label class="lbl">Costo (si aplica)</label><input type="text" name="estac_costo" placeholder="Ej. $80 / noche"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label class="lbl">¿Es techado?</label><div class="tg"><input type="radio" name="estac_tech" id="ett_s" value="si"><label for="ett_s">Sí</label><input type="radio" name="estac_tech" id="ett_n" value="no" checked><label for="ett_n">No</label></div></div>
+      <div class="fg"><label class="lbl">¿Es vigilado?</label><div class="tg"><input type="radio" name="estac_vig" id="etv_s" value="si"><label for="etv_s">Sí</label><input type="radio" name="estac_vig" id="etv_n" value="no" checked><label for="etv_n">No</label></div></div>
+      <div class="fg"><label class="lbl">Capacidad</label><input type="number" name="estac_cap" placeholder="Ej. 40 autos"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label class="lbl">¿Ofrece valet parking?</label><div class="tg"><input type="radio" name="valet" id="vl_s" value="si"><label for="vl_s">Sí</label><input type="radio" name="valet" id="vl_n" value="no" checked><label for="vl_n">No</label></div></div>
+      <div class="fg"><label class="lbl">Costo valet parking</label><input type="text" name="valet_costo" placeholder="Ej. $120 MXN / servicio"></div>
+    </div>
+  </div>
+
+  <!-- ══ S9 INSTALACIONES ══ -->
+  <div class="sb" id="s9">
+    <p class="s-num">Sección 09</p><h2 class="s-title">Instalaciones y Servicios</h2><div class="s-line"></div>
+    <div style="overflow-x:auto;">
+      <div class="it-head"><span>Servicio</span><span style="text-align:center">Disponible</span><span>Horario</span><span>Costo extra</span><span>Notas</span></div>
+      <div class="it-row"><span>Alberca / Piscina</span><span style="text-align:center"><input type="checkbox" name="al_d"></span><input type="text" name="al_h" placeholder="7am–10pm"><input type="text" name="al_c" placeholder="Gratuito"><input type="text" name="al_n" placeholder=""></div>
+      <div class="it-row"><span>Gym / Gimnasio</span><span style="text-align:center"><input type="checkbox" name="gy_d"></span><input type="text" name="gy_h" placeholder="6am–10pm"><input type="text" name="gy_c" placeholder="Gratuito"><input type="text" name="gy_n" placeholder=""></div>
+      <div class="it-row"><span>Spa</span><span style="text-align:center"><input type="checkbox" name="sp_d"></span><input type="text" name="sp_h" placeholder="9am–8pm"><input type="text" name="sp_c" placeholder="Por servicio"><input type="text" name="sp_n" placeholder=""></div>
+      <div class="it-row"><span>Sauna</span><span style="text-align:center"><input type="checkbox" name="sa_d"></span><input type="text" name="sa_h" placeholder=""><input type="text" name="sa_c" placeholder=""><input type="text" name="sa_n" placeholder=""></div>
+      <div class="it-row"><span>Business Center</span><span style="text-align:center"><input type="checkbox" name="bc_d"></span><input type="text" name="bc_h" placeholder="24 hrs"><input type="text" name="bc_c" placeholder="Gratuito"><input type="text" name="bc_n" placeholder=""></div>
+      <div class="it-row"><span>Lavandería</span><span style="text-align:center"><input type="checkbox" name="lv_d"></span><input type="text" name="lv_h" placeholder="8am–6pm"><input type="text" name="lv_c" placeholder="$50/prenda"><input type="text" name="lv_n" placeholder=""></div>
+      <div class="it-row"><span>Servicio médico</span><span style="text-align:center"><input type="checkbox" name="md_d"></span><input type="text" name="md_h" placeholder="Bajo demanda"><input type="text" name="md_c" placeholder=""><input type="text" name="md_n" placeholder=""></div>
+      <div class="it-row"><span>Tours / Excursiones</span><span style="text-align:center"><input type="checkbox" name="tu_d"></span><input type="text" name="tu_h" placeholder="Bajo demanda"><input type="text" name="tu_c" placeholder="Variable"><input type="text" name="tu_n" placeholder=""></div>
+      <div class="it-row"><span>Transporte aeropuerto</span><span style="text-align:center"><input type="checkbox" name="tr_d"></span><input type="text" name="tr_h" placeholder="Bajo demanda"><input type="text" name="tr_c" placeholder="$350 MXN"><input type="text" name="tr_n" placeholder=""></div>
+      <div class="it-row"><span>Renta de autos</span><span style="text-align:center"><input type="checkbox" name="ra_d"></span><input type="text" name="ra_h" placeholder=""><input type="text" name="ra_c" placeholder=""><input type="text" name="ra_n" placeholder=""></div>
+      <div class="it-row"><span>Terraza / Roof Garden</span><span style="text-align:center"><input type="checkbox" name="te_d"></span><input type="text" name="te_h" placeholder=""><input type="text" name="te_c" placeholder=""><input type="text" name="te_n" placeholder=""></div>
+      <div class="it-row"><span>Bar</span><span style="text-align:center"><input type="checkbox" name="ba_d"></span><input type="text" name="ba_h" placeholder=""><input type="text" name="ba_c" placeholder=""><input type="text" name="ba_n" placeholder=""></div>
+      <div class="it-row"><span>Kids Club</span><span style="text-align:center"><input type="checkbox" name="kc_d"></span><input type="text" name="kc_h" placeholder=""><input type="text" name="kc_c" placeholder=""><input type="text" name="kc_n" placeholder=""></div>
+      <div class="it-row"><span>Canchas deportivas</span><span style="text-align:center"><input type="checkbox" name="ca_d"></span><input type="text" name="ca_h" placeholder=""><input type="text" name="ca_c" placeholder=""><input type="text" name="ca_n" placeholder=""></div>
+    </div>
+  </div>
+
+  <!-- ══ S10 SALONES ══ -->
+  <div class="sb" id="s10">
+    <p class="s-num">Sección 10</p><h2 class="s-title">Salones y Eventos</h2><div class="s-line"></div>
+
+    <div class="card"><p class="card-title">Salón 1</p>
+      <div class="row"><div class="fg"><label class="lbl">Nombre del salón</label><input type="text" name="s1_nom" placeholder="Ej. Salón Armonía"></div><div class="fg"><label class="lbl">Capacidad máxima</label><input type="text" name="s1_cap" placeholder="Ej. 120 personas teatro"></div></div>
+      <div class="row"><div class="fg"><label class="lbl">Tipos de montaje</label><input type="text" name="s1_mont" placeholder="Teatro, Escuela, Banquete, Cocktail"></div><div class="fg"><label class="lbl">Equipamiento</label><input type="text" name="s1_equip" placeholder="Proyector, pantalla, micrófono, WiFi"></div><div class="fg"><label class="lbl">Costo aprox.</label><input type="text" name="s1_costo" placeholder="Desde $8,000 / día"></div></div>
+    </div>
+
+    <div class="card"><p class="card-title">Salón 2 <span style="opacity:.5;font-weight:400">(opcional)</span></p>
+      <div class="row"><div class="fg"><label class="lbl">Nombre</label><input type="text" name="s2_nom" placeholder=""></div><div class="fg"><label class="lbl">Capacidad</label><input type="text" name="s2_cap" placeholder=""></div></div>
+      <div class="row"><div class="fg"><label class="lbl">Montajes</label><input type="text" name="s2_mont" placeholder=""></div><div class="fg"><label class="lbl">Equipamiento</label><input type="text" name="s2_equip" placeholder=""></div><div class="fg"><label class="lbl">Costo</label><input type="text" name="s2_costo" placeholder=""></div></div>
+    </div>
+
+    <div class="card"><p class="card-title">Salón 3 <span style="opacity:.5;font-weight:400">(opcional)</span></p>
+      <div class="row"><div class="fg"><label class="lbl">Nombre</label><input type="text" name="s3_nom" placeholder=""></div><div class="fg"><label class="lbl">Capacidad</label><input type="text" name="s3_cap" placeholder=""></div></div>
+      <div class="row"><div class="fg"><label class="lbl">Montajes</label><input type="text" name="s3_mont" placeholder=""></div><div class="fg"><label class="lbl">Equipamiento</label><input type="text" name="s3_equip" placeholder=""></div><div class="fg"><label class="lbl">Costo</label><input type="text" name="s3_costo" placeholder=""></div></div>
+    </div>
+
+    <div class="row">
+      <div class="fg"><label class="lbl">URL cotización de eventos</label><input type="url" name="eventos_url" placeholder="https://mihotel.com/eventos"></div>
+      <div class="fg"><label class="lbl">Depósito para reservar salón</label><input type="text" name="salon_dep" placeholder="Ej. 30% del costo total"></div>
+    </div>
+  </div>
+
+  <!-- ══ S11 POLÍTICAS ══ -->
+  <div class="sb" id="s11">
+    <p class="s-num">Sección 11</p><h2 class="s-title">Políticas del Hotel</h2><div class="s-line"></div>
+    <div class="row"><div class="fg"><label class="lbl">Política de cancelación</label><input type="text" name="pol_cancel" placeholder="Ej. Gratis hasta 48 hrs antes del check-in"></div><div class="fg"><label class="lbl">Cargo por no-show</label><input type="text" name="pol_noshow" placeholder="Ej. 1 noche completa"></div></div>
+    <div class="fg full"><label class="lbl">Tarifas no reembolsables</label><input type="text" name="pol_noreemb" placeholder="Ej. Las tarifas promocionales no son reembolsables"></div>
+    <div class="row">
+      <div class="fg"><label class="lbl">¿Se aceptan mascotas?</label><div class="tg"><input type="radio" name="mascotas" id="ms_s" value="si"><label for="ms_s">Sí</label><input type="radio" name="mascotas" id="ms_n" value="no" checked><label for="ms_n">No</label></div></div>
+      <div class="fg"><label class="lbl">Peso máximo (mascotas)</label><input type="text" name="mascota_peso" placeholder="Ej. Hasta 10 kg"></div>
+      <div class="fg"><label class="lbl">Costo extra por mascota</label><input type="text" name="mascota_costo" placeholder="Ej. $200 MXN / noche"></div>
+    </div>
+    <div class="row"><div class="fg"><label class="lbl">Política de fumadores</label><input type="text" name="pol_fum" placeholder="Ej. Hotel libre de humo. Solo en área exterior."></div><div class="fg"><label class="lbl">Sanción por fumar donde no aplica</label><input type="text" name="pol_fum_sancion" placeholder="Ej. $2,000 MXN de cargo"></div></div>
+    <div class="row"><div class="fg"><label class="lbl">Política de menores (edad sin cargo)</label><input type="text" name="pol_menores" placeholder="Ej. Menores de 12 años gratis usando cama existente"></div><div class="fg"><label class="lbl">Horario de silencio</label><input type="text" name="pol_silencio" placeholder="Ej. 11:00 p.m. – 7:00 a.m."></div></div>
+    <div class="row"><div class="fg"><label class="lbl">Política de visitas externas</label><input type="text" name="pol_visitas" placeholder="Ej. Solo en lobby, no en habitaciones"></div><div class="fg"><label class="lbl">Política de objetos olvidados</label><input type="text" name="pol_objetos" placeholder="Ej. Guardamos 30 días, envío con costo al huésped"></div></div>
+  </div>
+
+  <!-- ══ S12 MÉTODOS DE PAGO ══ -->
+  <div class="sb" id="s12">
+    <p class="s-num">Sección 12</p><h2 class="s-title">Métodos de Pago</h2><div class="s-line"></div>
+    <label class="lbl">Métodos aceptados en el hotel</label>
+    <div class="cg" style="margin-bottom:24px;">
+      <label class="ci"><input type="checkbox" name="p_efectivo"> Efectivo MXN</label>
+      <label class="ci"><input type="checkbox" name="p_visa"> Tarjeta Visa</label>
+      <label class="ci"><input type="checkbox" name="p_mc"> Mastercard</label>
+      <label class="ci"><input type="checkbox" name="p_amex"> American Express</label>
+      <label class="ci"><input type="checkbox" name="p_debito"> Tarjeta de débito</label>
+      <label class="ci"><input type="checkbox" name="p_transfer"> Transferencia bancaria</label>
+      <label class="ci"><input type="checkbox" name="p_vales"> Vales electrónicos</label>
+      <label class="ci"><input type="checkbox" name="p_oxxo"> OXXO Pay</label>
+      <label class="ci"><input type="checkbox" name="p_crypto"> Criptomonedas</label>
+    </div>
+    <div class="row">
+      <div class="fg"><label class="lbl">¿Emiten facturas (CFDI)?</label><div class="tg"><input type="radio" name="factura" id="fc_s" value="si"><label for="fc_s">Sí</label><input type="radio" name="factura" id="fc_n" value="no" checked><label for="fc_n">No</label></div></div>
+      <div class="fg"><label class="lbl">URL facturación en línea</label><input type="url" name="factura_url" placeholder="https://mihotel.com/facturacion"></div>
+    </div>
+  </div>
+
+  <!-- ══ S13 INTEGRACIÓN ══ -->
+  <div class="sb" id="s13">
+    <p class="s-num">Sección 13</p><h2 class="s-title">Integración Operativa de Jaime</h2><div class="s-line"></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">¿A dónde deben llegar los tickets internos que Jaime genera?</p>
+    <div class="row"><div class="fg"><label class="lbl">Tickets de Mantenimiento</label><input type="text" name="tk_mant" placeholder="Ej. WhatsApp Supervisor +52 442 000 0000"></div><div class="fg"><label class="lbl">Tickets de Ama de Llaves</label><input type="text" name="tk_ama" placeholder="Ej. Google Sheets / WhatsApp"></div></div>
+    <div class="row"><div class="fg"><label class="lbl">Tickets de Room Service / A&B</label><input type="text" name="tk_rs" placeholder="Ej. Tablet en cocina / WhatsApp cocina"></div><div class="fg"><label class="lbl">Tickets de Recepción</label><input type="text" name="tk_rec" placeholder="Ej. PMS / WhatsApp recepción"></div></div>
+    <div class="row">
+      <div class="fg"><label class="lbl" style="color:#D97706;">⚠️ Escalamiento URGENTE</label><input type="text" name="esc_urgente" placeholder="Nombre + WhatsApp Supervisor de turno"></div>
+      <div class="fg"><label class="lbl" style="color:#DC2626;">🚨 Escalamiento CRÍTICO</label><input type="text" name="esc_critico" placeholder="Nombre + WhatsApp Gerente General"></div>
+    </div>
+    <div class="row"><div class="fg"><label class="lbl">PMS utilizado</label><input type="text" name="pms" placeholder="Ej. Opera Cloud, E.pHyR, Cloudbeds..."></div><div class="fg"><label class="lbl">Channel Manager</label><input type="text" name="channel_mgr" placeholder="Ej. SiteMinder, MyAllocator..."></div></div>
+    <div class="row">
+      <div class="fg"><label class="lbl">¿Se integra con n8n?</label><div class="tg"><input type="radio" name="n8n" id="n8_s" value="si"><label for="n8_s">Sí</label><input type="radio" name="n8n" id="n8_n" value="no" checked><label for="n8_n">No</label></div></div>
+      <div class="fg"><label class="lbl">¿Google Sheets para tickets?</label><div class="tg"><input type="radio" name="gsheets" id="gs_s" value="si"><label for="gs_s">Sí</label><input type="radio" name="gsheets" id="gs_n" value="no" checked><label for="gs_n">No</label></div></div>
+    </div>
+  </div>
+
+  <!-- ══ S14 FAQs ══ -->
+  <div class="sb" id="s14">
+    <p class="s-num">Sección 14</p><h2 class="s-title">Preguntas Frecuentes del Hotel</h2><div class="s-line"></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Preguntas específicas de tu hotel que no cubre la plantilla general.</p>
+    <div class="card"><div class="fg full"><label class="lbl">Pregunta 1</label><input type="text" name="faq1_p" placeholder="Ej. ¿Tienen estación de carga para autos eléctricos?"></div><div class="fg full"><label class="lbl">Respuesta 1</label><textarea name="faq1_r" placeholder="Ej. Sí, contamos con 2 cargadores Level 2. Sin costo."></textarea></div></div>
+    <div class="card"><div class="fg full"><label class="lbl">Pregunta 2</label><input type="text" name="faq2_p" placeholder=""></div><div class="fg full"><label class="lbl">Respuesta 2</label><textarea name="faq2_r" placeholder=""></textarea></div></div>
+    <div class="card"><div class="fg full"><label class="lbl">Pregunta 3</label><input type="text" name="faq3_p" placeholder=""></div><div class="fg full"><label class="lbl">Respuesta 3</label><textarea name="faq3_r" placeholder=""></textarea></div></div>
+    <div class="card"><div class="fg full"><label class="lbl">Pregunta 4</label><input type="text" name="faq4_p" placeholder=""></div><div class="fg full"><label class="lbl">Respuesta 4</label><textarea name="faq4_r" placeholder=""></textarea></div></div>
+    <div class="card"><div class="fg full"><label class="lbl">Pregunta 5</label><input type="text" name="faq5_p" placeholder=""></div><div class="fg full"><label class="lbl">Respuesta 5</label><textarea name="faq5_r" placeholder=""></textarea></div></div>
+  </div>
+
+  <!-- ══ S15 DIRECTORIO ══ -->
+  <div class="sb" id="s15">
+    <p class="s-num">Sección 15</p><h2 class="s-title">Directorio Interno</h2><div class="s-line"></div>
+
+    <div class="row"><div class="fg"><label class="lbl">Nombre</label><input type="text" name="d1_nom" placeholder="Ej. Miguel Ángel López"></div><div class="fg"><label class="lbl">Puesto</label><input type="text" name="d1_puesto" placeholder="Ej. Supervisor Recepción"></div><div class="fg"><label class="lbl">Departamento(s)</label><input type="text" name="d1_dept" placeholder="Recepción, Reservas"></div><div class="fg"><label class="lbl">WhatsApp</label><input type="tel" name="d1_wa" placeholder="+52 442 000 0000"></div></div>
+    <div class="row"><div class="fg"><label class="lbl">Nombre</label><input type="text" name="d2_nom" placeholder=""></div><div class="fg"><label class="lbl">Puesto</label><input type="text" name="d2_puesto" placeholder=""></div><div class="fg"><label class="lbl">Departamento(s)</label><input type="text" name="d2_dept" placeholder=""></div><div class="fg"><label class="lbl">WhatsApp</label><input type="tel" name="d2_wa" placeholder=""></div></div>
+    <div class="row"><div class="fg"><label class="lbl">Nombre</label><input type="text" name="d3_nom" placeholder=""></div><div class="fg"><label class="lbl">Puesto</label><input type="text" name="d3_puesto" placeholder=""></div><div class="fg"><label class="lbl">Departamento(s)</label><input type="text" name="d3_dept" placeholder=""></div><div class="fg"><label class="lbl">WhatsApp</label><input type="tel" name="d3_wa" placeholder=""></div></div>
+    <div class="row"><div class="fg"><label class="lbl">Nombre</label><input type="text" name="d4_nom" placeholder=""></div><div class="fg"><label class="lbl">Puesto</label><input type="text" name="d4_puesto" placeholder=""></div><div class="fg"><label class="lbl">Departamento(s)</label><input type="text" name="d4_dept" placeholder=""></div><div class="fg"><label class="lbl">WhatsApp</label><input type="tel" name="d4_wa" placeholder=""></div></div>
+    <div class="row"><div class="fg"><label class="lbl">Nombre</label><input type="text" name="d5_nom" placeholder=""></div><div class="fg"><label class="lbl">Puesto</label><input type="text" name="d5_puesto" placeholder=""></div><div class="fg"><label class="lbl">Departamento(s)</label><input type="text" name="d5_dept" placeholder=""></div><div class="fg"><label class="lbl">WhatsApp</label><input type="tel" name="d5_wa" placeholder=""></div></div>
+
+    <p class="lbl" style="margin-top:24px;margin-bottom:12px;">Lógica de escalamiento para Jaime</p>
+    <div class="et-head"><span>Tipo de solicitud</span><span>Prioridad</span><span>Notificar a (nombre + WhatsApp)</span></div>
+    <div class="et-row"><span>Amenidades (toallas, papel, cobijas…)</span><span class="badge b-media">MEDIA</span><input type="text" name="esc_amenidades" placeholder="Nombre + WA"></div>
+    <div class="et-row"><span>Limpieza de habitación</span><span class="badge b-media">MEDIA</span><input type="text" name="esc_limpieza" placeholder="Nombre + WA"></div>
+    <div class="et-row"><span>Falla técnica (agua, A/C, luz, TV…)</span><span class="badge b-alta">ALTA</span><input type="text" name="esc_falla" placeholder="Nombre + WA"></div>
+    <div class="et-row"><span>Room service</span><span class="badge b-media">MEDIA</span><input type="text" name="esc_rs" placeholder="Nombre + WA"></div>
+    <div class="et-row"><span>Check-in / Check-out / Factura</span><span class="badge b-media">MEDIA</span><input type="text" name="esc_ci" placeholder="Nombre + WA"></div>
+    <div class="et-row"><span>Queja de servicio</span><span class="badge b-alta">ALTA</span><input type="text" name="esc_queja" placeholder="Nombre + WA"></div>
+    <div class="et-row"><span>Consulta de salones / eventos</span><span class="badge b-baja">BAJA</span><input type="text" name="esc_eventos" placeholder="Nombre + WA"></div>
+    <div class="et-row"><span style="font-weight:600;">Emergencia / Incidente seguridad</span><span class="badge b-crit">CRÍTICA</span><input type="text" name="esc_emergencia" placeholder="Nombre + WA (GM)"></div>
+    <div class="et-row"><span>No-show / Compensación / Reembolso</span><span class="badge b-alta">ALTA</span><input type="text" name="esc_reembolso" placeholder="Nombre + WA"></div>
+  </div>
+
+  <!-- ══ SUBMIT ══ -->
+  <div style="padding-top:24px;border-top:2px solid var(--border);">
+    <p style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:16px;">Al enviar esta ficha, Jaime quedará listo para ser configurado en ManyChat.</p>
+    <button type="submit" class="btn" id="submitBtn"><i class="fas fa-check-circle" style="margin-right:8px;"></i>Enviar Ficha de Configuración</button>
+  </div>
+
+  </form>
+
+  <div id="success">
+    <div class="success-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--primary);font-weight:500;margin-bottom:16px;">¡Ficha recibida!</h2>
+    <p style="font-size:16px;color:var(--muted);max-width:400px;margin:0 auto;line-height:1.7;">Gracias. Procederemos a configurar a Jaime en el WhatsApp de tu hotel. Te contactaremos en las próximas 24 horas.</p>
+  </div>
+</div>
+</div>
+
+<script>
+// Active nav on scroll
+const sections = document.querySelectorAll('.sb');
+const links    = document.querySelectorAll('.nav a');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 140) cur = s.id; });
+  links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+}, { passive: true });
+
+// Submit
+document.getElementById('fichaForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = 'Enviando<span class="spin"></span>';
+
+  const data = Object.fromEntries(new FormData(this));
+  // Configurar webhook cuando esté listo:
+  const WEBHOOK = ''; // "https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-onboarding"
+
+  try {
+    if (WEBHOOK) {
+      await fetch(WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    }
+    this.style.display = 'none';
+    document.getElementById('success').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (err) {
+    console.error(err);
+    btn.disabled = false;
+    btn.innerHTML = orig;
+    alert('Error al enviar. Intente nuevamente.');
+  }
+});
+</script>
+</body>
+</html>

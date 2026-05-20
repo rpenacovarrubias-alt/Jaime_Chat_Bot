@@ -1,5 +1,5 @@
 # FICHA DE CONFIGURACIÓN — CHATBOT JAIME
-**Versión:** 1.0 | **Fecha de llenado:** _______________ | **Estado:** 🔴 Pendiente completar
+**Versión:** 1.1 | **Fecha de llenado:** _______________ | **Estado:** 🔴 Pendiente completar
 
 > **Instrucciones:** Copia este archivo a `hoteles/NOMBRE_HOTEL/NOMBRE_HOTEL_configuracion.md`
 > y reemplaza cada `{{PLACEHOLDER}}` con la información real del hotel.
@@ -51,6 +51,8 @@
 | Costo de early check-in | `{{EARLY_CHECKIN_COSTO}}` |
 | ¿Ofrece late check-out? (sí/no) | `{{LATE_CHECKOUT_DISPONIBLE}}` |
 | Costo de late check-out | `{{LATE_CHECKOUT_COSTO}}` |
+| **¿Ofrecen cama extra? (sí/no)** | `{{CAMA_EXTRA_DISPONIBLE}}` |
+| **Costo de cama extra por noche** | `{{CAMA_EXTRA_COSTO}}` |
 | Documentos requeridos al check-in | `{{CHECKIN_DOCUMENTOS}}` |
 | ¿Se requiere depósito de garantía? | `{{DEPOSITO_REQUERIDO}}` |
 | Monto del depósito de garantía | `{{DEPOSITO_MONTO}}` |
