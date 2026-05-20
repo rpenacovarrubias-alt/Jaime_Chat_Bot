@@ -58,7 +58,7 @@
 
   /* ── Markdown content styles ── */
   .md-body h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 26px; font-weight: 700; color: #1C1C1E; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #C8974A; }
-  .md-body h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; color: #1C1C1E; margin: 1.75rem 0 0.75rem; padding-left: 12px; border-left: 4px solid #C8974A; }
+  .md-body h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; color: #1C1C1E; margin: 1.75rem 0 0.75rem; padding-left: 12px; border-left: 4px solid #C8974A; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
   .md-body h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 600; color: #4f4538; margin: 1.25rem 0 0.5rem; }
   .md-body p  { color: #4f4538; line-height: 1.7; margin-bottom: 0.75rem; }
   .md-body ul, .md-body ol { padding-left: 1.4rem; margin-bottom: 0.75rem; color: #4f4538; }
@@ -74,21 +74,64 @@
   .md-body tr:hover td { background: #FBF5EC; }
   .md-body hr { border: none; border-top: 1px solid #d3c4b3; margin: 1.5rem 0; }
 
-  /* Tab active */
+  /* ── Tab active ── */
   .tab-btn.active {
     color: #7e570c;
     border-bottom: 3px solid #C8974A;
     font-weight: 700;
   }
 
-  /* Loading pulse */
+  /* ── Loading pulse ── */
   @keyframes pulse-gold {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
   }
   .pulse-gold { animation: pulse-gold 1.5s ease-in-out infinite; }
 
-  /* Print */
+  /* ── Edit button (inside h2) ── */
+  .edit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 10px 2px 8px;
+    background: #F5E8D0;
+    color: #8B6420;
+    border: 1px solid rgba(200,151,74,0.4);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    line-height: 1;
+    white-space: nowrap;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+  .edit-btn:hover { background: #C8974A; color: white; border-color: #C8974A; }
+  .edit-btn .ms { font-family: 'Material Symbols Outlined'; font-size: 13px; font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+
+  /* ── Search highlight ── */
+  .search-hl {
+    background: #FFF5D0 !important;
+    outline: 2px solid #C8974A;
+    border-radius: 3px;
+  }
+  .search-hl-first {
+    background: #FFE97A !important;
+    outline: 2px solid #8B6420;
+    border-radius: 3px;
+  }
+
+  /* ── Toast animation ── */
+  @keyframes slideUp {
+    from { transform: translateX(-50%) translateY(16px); opacity: 0; }
+    to   { transform: translateX(-50%) translateY(0); opacity: 1; }
+  }
+  .toast-visible { animation: slideUp 0.25s ease; }
+
+  /* ── Print ── */
   @media print {
     nav, .no-print { display: none !important; }
     .md-body { font-size: 12px; }
@@ -101,13 +144,11 @@
 <nav class="fixed top-0 w-full z-50 bg-background/90 backdrop-blur-md border-b border-outline-variant shadow-sm no-print">
   <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex items-center justify-between h-16 gap-md">
 
-    <!-- Back -->
     <a href="../../" class="flex items-center gap-xs text-on-surface-variant hover:text-primary transition-colors font-body-sm text-body-sm">
       <span class="material-symbols-outlined text-[18px]">arrow_back</span>
       Portal Jaime
     </a>
 
-    <!-- Hotel name -->
     <div class="flex items-center gap-sm overflow-hidden">
       <div class="w-7 h-7 rounded-lg bg-[#1C1C1E] flex items-center justify-center flex-shrink-0">
         <span class="text-[#C8974A] font-bold text-label-sm leading-none">BW</span>
@@ -118,7 +159,6 @@
       </span>
     </div>
 
-    <!-- Actions -->
     <div class="flex items-center gap-sm flex-shrink-0">
       <button onclick="window.print()" class="hidden sm:flex items-center gap-xs px-sm py-xs border border-outline-variant rounded-lg text-body-sm text-on-surface-variant hover:bg-surface-container transition-colors">
         <span class="material-symbols-outlined text-[16px]">print</span> Imprimir
@@ -133,12 +173,10 @@
   <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-lg">
     <div class="flex flex-col md:flex-row md:items-center gap-lg">
 
-      <!-- Avatar grande -->
       <div class="w-20 h-20 rounded-2xl bg-[#C8974A]/15 border-2 border-[#C8974A]/40 flex items-center justify-center flex-shrink-0">
         <span class="text-[#C8974A] font-bold text-headline-lg leading-none">BW</span>
       </div>
 
-      <!-- Info -->
       <div class="flex-1">
         <div class="flex flex-wrap items-center gap-sm mb-xs">
           <span class="px-sm py-[3px] bg-white/10 text-white/70 rounded-full text-label-sm font-semibold">ManyChat · JAIME_HMV2</span>
@@ -149,7 +187,6 @@
         </h1>
         <p class="text-white/55 text-body-md mt-xs">Santiago de Querétaro, Qro. · 70 habitaciones · Personalidad: Amistoso</p>
 
-        <!-- Stats rápidos -->
         <div class="flex flex-wrap gap-md mt-md">
           <div class="text-center">
             <div class="text-[#C8974A] font-bold text-headline-sm">12</div>
@@ -173,7 +210,6 @@
         </div>
       </div>
 
-      <!-- Contacto rápido -->
       <div class="flex flex-col gap-sm flex-shrink-0">
         <a href="https://wa.me/5214422160100" target="_blank" rel="noopener"
            class="flex items-center gap-sm px-md py-sm bg-[#25D366] text-white rounded-xl font-bold text-body-sm hover:bg-[#1EB85A] transition-colors">
@@ -210,6 +246,51 @@
   </div>
 </header>
 
+<!-- ── TOOLBAR: Logo + Búsqueda ── -->
+<div id="toolbar" class="sticky top-16 z-40 bg-white border-b border-outline-variant shadow-sm no-print">
+  <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-sm flex items-center gap-md">
+
+    <!-- Logo del hotel (izquierda) -->
+    <div class="flex items-center gap-sm flex-shrink-0">
+      <div id="logo-container"
+           onclick="document.getElementById('logo-input').click()"
+           title="Toca para subir el logotipo del hotel"
+           class="relative w-14 h-14 rounded-xl bg-[#1C1C1E] border-2 border-outline-variant overflow-hidden cursor-pointer group flex items-center justify-center hover:border-[#C8974A] transition-colors">
+        <img id="hotel-logo" src="" alt="Logo BeWow" class="hidden w-full h-full object-contain p-1"/>
+        <span id="logo-initials" class="text-[#C8974A] font-bold text-headline-sm leading-none select-none">BW</span>
+        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+          <span class="material-symbols-outlined text-white text-[18px] opacity-0 group-hover:opacity-100 transition-opacity drop-shadow">photo_camera</span>
+        </div>
+      </div>
+      <input type="file" id="logo-input" accept=".jpg,.jpeg,.png,.webp" class="hidden" onchange="handleLogoUpload(this)"/>
+      <div class="hidden sm:block leading-tight">
+        <div class="font-bold text-on-surface text-body-sm">BeWow© Querétaro</div>
+        <div class="text-[11px] text-on-surface-variant">Toca el logo para actualizar</div>
+      </div>
+    </div>
+
+    <!-- Spacer -->
+    <div class="flex-1"></div>
+
+    <!-- Resultados de búsqueda -->
+    <span id="search-count" class="hidden text-label-sm text-on-surface-variant whitespace-nowrap flex-shrink-0"></span>
+
+    <!-- Campo de búsqueda (derecha) -->
+    <div class="flex items-center gap-xs bg-surface-container rounded-xl px-sm py-xs border border-outline-variant focus-within:border-[#C8974A] focus-within:shadow-sm transition-all w-56 md:w-72">
+      <span class="material-symbols-outlined text-on-surface-variant text-[18px] flex-shrink-0">search</span>
+      <input type="text" id="search-input"
+             placeholder="Buscar sección o campo..."
+             class="bg-transparent outline-none text-body-sm flex-1 text-on-surface placeholder:text-on-surface-variant/50 min-w-0"
+             oninput="debounceSearch(this.value)"
+             onkeydown="handleSearchKey(event)"/>
+      <button id="search-clear" class="hidden text-on-surface-variant hover:text-on-surface flex-shrink-0 transition-colors" onclick="clearSearch()">
+        <span class="material-symbols-outlined text-[16px]">close</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
 <!-- ── CONTENIDO ── -->
 <main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-lg">
 
@@ -245,7 +326,6 @@
   <div id="panel-estado" class="hidden">
     <div class="bg-white rounded-2xl border border-outline-variant overflow-hidden">
 
-      <!-- Header estado -->
       <div class="px-lg py-md border-b border-outline-variant bg-surface-container-low flex items-center justify-between">
         <div>
           <h2 class="font-headline-md text-headline-md">Estado de Implementación</h2>
@@ -257,7 +337,6 @@
         </div>
       </div>
 
-      <!-- Barra de progreso -->
       <div class="px-lg py-md border-b border-outline-variant">
         <div class="w-full bg-surface-container-high rounded-full h-2.5">
           <div class="bg-[#C8974A] h-2.5 rounded-full transition-all" style="width: 80%"></div>
@@ -268,106 +347,44 @@
         </div>
       </div>
 
-      <!-- Lista de ítems -->
       <div class="divide-y divide-outline-variant">
-
-        <!-- Completos -->
         <div class="px-lg py-md">
           <h3 class="font-bold text-on-surface text-body-md mb-md flex items-center gap-sm">
             <span class="material-symbols-outlined text-[#34C759] text-[18px]">check_circle</span>
             Completos
           </h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-sm">
-            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
-              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
-              <span class="text-body-sm text-on-surface">Ficha de configuración del hotel</span>
-            </div>
-            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
-              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
-              <span class="text-body-sm text-on-surface">Directorio interno y escalamiento</span>
-            </div>
-            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
-              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
-              <span class="text-body-sm text-on-surface">Menú principal (8 opciones)</span>
-            </div>
-            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
-              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
-              <span class="text-body-sm text-on-surface">Submenús confirmados</span>
-            </div>
-            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
-              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
-              <span class="text-body-sm text-on-surface">Flujo 1 — Pre-Registro</span>
-            </div>
-            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
-              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
-              <span class="text-body-sm text-on-surface">Flujo 2 — Check Out Express</span>
-            </div>
-            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
-              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
-              <span class="text-body-sm text-on-surface">Flujo 3 — Facturación</span>
-            </div>
-            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
-              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
-              <span class="text-body-sm text-on-surface">Flujo 4 — Amenidades</span>
-            </div>
-            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
-              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
-              <span class="text-body-sm text-on-surface">Flujo 5 — Reportar Falla</span>
-            </div>
-            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
-              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
-              <span class="text-body-sm text-on-surface">Flujo 6 — Limpieza</span>
-            </div>
-            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
-              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
-              <span class="text-body-sm text-on-surface">Flujo 7 — Room Service</span>
-            </div>
-            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
-              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
-              <span class="text-body-sm text-on-surface">Flujo 8 — Ubicación</span>
-            </div>
-            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
-              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
-              <span class="text-body-sm text-on-surface">Flujo 9 — Instalaciones</span>
-            </div>
-            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
-              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
-              <span class="text-body-sm text-on-surface">Flujo 10 — Políticas</span>
-            </div>
-            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
-              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
-              <span class="text-body-sm text-on-surface">Flujo 11 — Habitaciones y tarifas</span>
-            </div>
-            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
-              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
-              <span class="text-body-sm text-on-surface">Flujo 12 — Eventos y salones</span>
-            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20"><span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span><span class="text-body-sm text-on-surface">Ficha de configuración del hotel</span></div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20"><span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span><span class="text-body-sm text-on-surface">Directorio interno y escalamiento</span></div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20"><span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span><span class="text-body-sm text-on-surface">Menú principal (8 opciones)</span></div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20"><span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span><span class="text-body-sm text-on-surface">Submenús confirmados</span></div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20"><span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span><span class="text-body-sm text-on-surface">Flujo 1 — Pre-Registro</span></div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20"><span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span><span class="text-body-sm text-on-surface">Flujo 2 — Check Out Express</span></div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20"><span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span><span class="text-body-sm text-on-surface">Flujo 3 — Facturación</span></div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20"><span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span><span class="text-body-sm text-on-surface">Flujo 4 — Amenidades</span></div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20"><span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span><span class="text-body-sm text-on-surface">Flujo 5 — Reportar Falla</span></div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20"><span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span><span class="text-body-sm text-on-surface">Flujo 6 — Limpieza</span></div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20"><span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span><span class="text-body-sm text-on-surface">Flujo 7 — Room Service</span></div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20"><span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span><span class="text-body-sm text-on-surface">Flujo 8 — Ubicación</span></div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20"><span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span><span class="text-body-sm text-on-surface">Flujo 9 — Instalaciones</span></div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20"><span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span><span class="text-body-sm text-on-surface">Flujo 10 — Políticas</span></div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20"><span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span><span class="text-body-sm text-on-surface">Flujo 11 — Habitaciones y tarifas</span></div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20"><span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span><span class="text-body-sm text-on-surface">Flujo 12 — Eventos y salones</span></div>
           </div>
         </div>
 
-        <!-- Pendientes -->
         <div class="px-lg py-md">
           <h3 class="font-bold text-on-surface text-body-md mb-md flex items-center gap-sm">
             <span class="material-symbols-outlined text-[#FF9500] text-[18px]">schedule</span>
             Pendientes
           </h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-sm">
-            <div class="flex items-center gap-sm p-sm bg-[#FFF8EC] rounded-lg border border-[#FF9500]/20">
-              <span class="material-symbols-outlined text-[#FF9500] text-[16px]">radio_button_unchecked</span>
-              <span class="text-body-sm text-on-surface">Configuración en ManyChat</span>
-            </div>
-            <div class="flex items-center gap-sm p-sm bg-[#FFF8EC] rounded-lg border border-[#FF9500]/20">
-              <span class="material-symbols-outlined text-[#FF9500] text-[16px]">radio_button_unchecked</span>
-              <span class="text-body-sm text-on-surface">Pruebas con WhatsApp real</span>
-            </div>
-            <div class="flex items-center gap-sm p-sm bg-[#FFF8EC] rounded-lg border border-[#FF9500]/20">
-              <span class="material-symbols-outlined text-[#FF9500] text-[16px]">radio_button_unchecked</span>
-              <span class="text-body-sm text-on-surface">Capacitación al equipo de Recepción</span>
-            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#FFF8EC] rounded-lg border border-[#FF9500]/20"><span class="material-symbols-outlined text-[#FF9500] text-[16px]">radio_button_unchecked</span><span class="text-body-sm text-on-surface">Configuración en ManyChat</span></div>
+            <div class="flex items-center gap-sm p-sm bg-[#FFF8EC] rounded-lg border border-[#FF9500]/20"><span class="material-symbols-outlined text-[#FF9500] text-[16px]">radio_button_unchecked</span><span class="text-body-sm text-on-surface">Pruebas con WhatsApp real</span></div>
+            <div class="flex items-center gap-sm p-sm bg-[#FFF8EC] rounded-lg border border-[#FF9500]/20"><span class="material-symbols-outlined text-[#FF9500] text-[16px]">radio_button_unchecked</span><span class="text-body-sm text-on-surface">Capacitación al equipo de Recepción</span></div>
           </div>
         </div>
 
-        <!-- Siguiente paso -->
         <div class="px-lg py-md bg-surface-container-low">
           <div class="flex items-start gap-md">
             <span class="material-symbols-outlined text-[#C8974A] text-[22px] mt-1 flex-shrink-0">arrow_circle_right</span>
@@ -377,7 +394,6 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -394,53 +410,465 @@
   </div>
 </footer>
 
+<!-- ── MODAL DE EDICIÓN ── -->
+<div id="edit-modal"
+     class="hidden fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-md no-print"
+     onclick="handleModalBackdrop(event)">
+  <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
+
+    <!-- Header modal -->
+    <div class="px-lg py-md bg-[#1C1C1E] flex items-center justify-between gap-md">
+      <div class="flex items-center gap-sm overflow-hidden">
+        <span class="material-symbols-outlined text-[#C8974A] text-[20px] flex-shrink-0">edit</span>
+        <h3 id="modal-title" class="text-white font-bold text-body-md truncate">Actualizar sección</h3>
+      </div>
+      <button onclick="closeModal()" class="text-white/50 hover:text-white transition-colors flex-shrink-0">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+
+    <!-- Paso 1: PIN -->
+    <div id="pin-step" class="px-lg py-md">
+      <p class="text-on-surface-variant text-body-sm mb-md">Ingresa el código de acceso para habilitar la edición de esta sección.</p>
+      <div class="flex gap-sm">
+        <input type="text" id="pin-input" maxlength="10"
+               placeholder="Código (ej. HBW)"
+               autocomplete="off"
+               class="flex-1 border border-outline-variant rounded-xl px-md py-sm text-body-md font-mono uppercase tracking-widest focus:outline-none focus:border-[#C8974A] transition-colors"
+               onkeydown="if(event.key==='Enter') validatePin()"/>
+        <button onclick="validatePin()"
+                class="px-md py-sm bg-[#C8974A] text-white rounded-xl font-bold text-body-sm hover:bg-[#8B6420] transition-colors whitespace-nowrap">
+          Verificar
+        </button>
+      </div>
+      <p id="pin-error" class="hidden text-red-500 text-label-sm mt-sm flex items-center gap-xs">
+        <span class="material-symbols-outlined text-[14px]">error</span>
+        Código incorrecto. Intenta de nuevo.
+      </p>
+    </div>
+
+    <!-- Paso 2: Campos editables -->
+    <div id="edit-step" class="hidden">
+      <div id="edit-fields" class="px-lg py-sm max-h-[400px] overflow-y-auto divide-y divide-outline-variant/40"></div>
+      <div class="px-lg py-md bg-surface-container-low flex items-center justify-between border-t border-outline-variant">
+        <span class="text-label-sm text-on-surface-variant">Los cambios se guardan localmente en este navegador.</span>
+        <div class="flex gap-sm">
+          <button onclick="closeModal()"
+                  class="px-md py-xs border border-outline-variant rounded-lg text-body-sm text-on-surface-variant hover:bg-surface-container transition-colors">
+            Cancelar
+          </button>
+          <button onclick="saveEdits()"
+                  class="px-md py-xs bg-[#C8974A] text-white rounded-lg font-bold text-body-sm hover:bg-[#8B6420] transition-colors flex items-center gap-xs">
+            <span class="material-symbols-outlined text-[15px]">save</span> Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div id="toast"
+     class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] bg-[#1C1C1E] text-white px-lg py-sm rounded-xl shadow-2xl flex items-center gap-sm text-body-sm font-semibold no-print pointer-events-none">
+  <span class="material-symbols-outlined text-[#34C759] text-[18px]">check_circle</span>
+  <span id="toast-msg">Guardado correctamente</span>
+</div>
+
 <script>
-  // ── Tabs ──────────────────────────────────────────────────────────────────
-  var tabs = ['config', 'flujos', 'estado'];
+// ─────────────────────────────────────────────────────────────────────────────
+// UTILIDADES
+// ─────────────────────────────────────────────────────────────────────────────
+function slugify(text) {
+  return text.trim().toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+}
 
-  function showTab(name) {
-    tabs.forEach(function(t) {
-      var panel = document.getElementById('panel-' + t);
-      var btn   = document.getElementById('tab-' + t);
-      if (panel) panel.classList.toggle('hidden', t !== name);
-      if (btn)   btn.classList.toggle('active', t === name);
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function getTablesInSection(h2El) {
+  var tables = [];
+  var s = h2El.nextElementSibling;
+  while (s && s.tagName !== 'H2') {
+    if (s.tagName === 'TABLE') tables.push(s);
+    s = s.nextElementSibling;
+  }
+  return tables;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOGO
+// ─────────────────────────────────────────────────────────────────────────────
+var LOGO_KEY = 'jaime_hotel_bewow_logo';
+
+function initLogo() {
+  var stored = localStorage.getItem(LOGO_KEY);
+  if (stored) {
+    document.getElementById('hotel-logo').src = stored;
+    document.getElementById('hotel-logo').classList.remove('hidden');
+    document.getElementById('logo-initials').classList.add('hidden');
+  }
+}
+
+function handleLogoUpload(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var b64 = e.target.result;
+    try {
+      localStorage.setItem(LOGO_KEY, b64);
+    } catch(ex) {
+      showToast('Imagen demasiado grande para guardar localmente');
+      return;
+    }
+    document.getElementById('hotel-logo').src = b64;
+    document.getElementById('hotel-logo').classList.remove('hidden');
+    document.getElementById('logo-initials').classList.add('hidden');
+    showToast('Logo actualizado');
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────────────────────────────────────────
+var _tabs = ['config', 'flujos', 'estado'];
+var _activeTab = 'config';
+
+function showTab(name) {
+  _activeTab = name;
+  _tabs.forEach(function(t) {
+    var panel = document.getElementById('panel-' + t);
+    var btn   = document.getElementById('tab-' + t);
+    if (panel) panel.classList.toggle('hidden', t !== name);
+    if (btn)   btn.classList.toggle('active', t === name);
+  });
+  // re-apply search on tab switch
+  var q = document.getElementById('search-input').value;
+  if (q.trim()) {
+    setTimeout(function() { searchContent(q); }, 80);
+  } else {
+    document.querySelectorAll('.search-hl, .search-hl-first').forEach(function(el) {
+      el.classList.remove('search-hl', 'search-hl-first');
     });
-    if (name === 'flujos' && !window._flujosCargados) loadFlujos();
+    document.getElementById('search-count').classList.add('hidden');
   }
+  // lazy load flujos
+  if (name === 'flujos' && !window._flujosCargados) loadFlujos();
+}
 
-  // ── Loader helper ─────────────────────────────────────────────────────────
-  function loadMd(file, loadingId, contentId, errorId) {
-    fetch(file)
-      .then(function(r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.text();
-      })
-      .then(function(md) {
-        document.getElementById(loadingId).classList.add('hidden');
-        var el = document.getElementById(contentId);
-        el.innerHTML = marked.parse(md);
-        el.classList.remove('hidden');
-      })
-      .catch(function() {
-        document.getElementById(loadingId).classList.add('hidden');
-        document.getElementById(errorId).classList.remove('hidden');
+// ─────────────────────────────────────────────────────────────────────────────
+// CARGA DE MARKDOWN
+// ─────────────────────────────────────────────────────────────────────────────
+function loadMd(file, loadingId, contentId, errorId, cb) {
+  fetch(file)
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    })
+    .then(function(md) {
+      document.getElementById(loadingId).classList.add('hidden');
+      var el = document.getElementById(contentId);
+      el.innerHTML = marked.parse(md);
+      el.classList.remove('hidden');
+      if (cb) cb(contentId);
+    })
+    .catch(function() {
+      document.getElementById(loadingId).classList.add('hidden');
+      document.getElementById(errorId).classList.remove('hidden');
+    });
+}
+
+function afterRender(contentId) {
+  injectEditButtons(contentId);
+  applyStoredEdits(contentId);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BOTONES ACTUALIZAR (inyectados en h2 tras render)
+// ─────────────────────────────────────────────────────────────────────────────
+function injectEditButtons(contentId) {
+  var el = document.getElementById(contentId);
+  if (!el) return;
+  el.querySelectorAll('h2').forEach(function(h2) {
+    if (h2.getAttribute('data-slug')) return;
+    // Compute slug from text content BEFORE injecting button
+    var rawText = h2.textContent.trim();
+    var slug = slugify(rawText);
+    h2.setAttribute('data-slug', slug);
+
+    var btn = document.createElement('button');
+    btn.className = 'edit-btn no-print';
+    btn.innerHTML = '<span class="ms">edit</span> Actualizar';
+    btn.title = 'Actualizar esta sección';
+    (function(capturedH2, capturedSlug) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        openModal(capturedH2, capturedSlug, rawText);
       });
+    })(h2, slug);
+    h2.appendChild(btn);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// APLICAR EDICIONES GUARDADAS
+// ─────────────────────────────────────────────────────────────────────────────
+function applyStoredEdits(contentId) {
+  var stored;
+  try { stored = JSON.parse(localStorage.getItem('bewow_edits') || '{}'); } catch(e) { stored = {}; }
+  if (!Object.keys(stored).length) return;
+  var el = document.getElementById(contentId);
+  if (!el) return;
+  el.querySelectorAll('h2[data-slug]').forEach(function(h2) {
+    var slug = h2.getAttribute('data-slug');
+    var edits = stored[slug];
+    if (!edits) return;
+    getTablesInSection(h2).forEach(function(table) {
+      table.querySelectorAll('tbody tr').forEach(function(tr) {
+        var tds = tr.querySelectorAll('td');
+        if (tds.length >= 2) {
+          var label = tds[0].textContent.trim();
+          if (edits[label] !== undefined) tds[1].textContent = edits[label];
+        }
+      });
+    });
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MODAL
+// ─────────────────────────────────────────────────────────────────────────────
+var _modalH2    = null;
+var _modalSlug  = null;
+var _toastTimer = null;
+
+function openModal(h2El, slug, rawTitle) {
+  _modalH2   = h2El;
+  _modalSlug = slug;
+
+  // Clean title (remove button text if any)
+  var title = rawTitle || h2El.getAttribute('data-slug') || 'Sección';
+  document.getElementById('modal-title').textContent = 'Actualizar: ' + title;
+
+  // Reset modal state
+  document.getElementById('pin-input').value = '';
+  document.getElementById('pin-error').classList.add('hidden');
+  document.getElementById('pin-step').classList.remove('hidden');
+  document.getElementById('edit-step').classList.add('hidden');
+  document.getElementById('edit-modal').classList.remove('hidden');
+  setTimeout(function() { document.getElementById('pin-input').focus(); }, 120);
+}
+
+function closeModal() {
+  document.getElementById('edit-modal').classList.add('hidden');
+  _modalH2   = null;
+  _modalSlug = null;
+}
+
+function handleModalBackdrop(e) {
+  if (e.target === document.getElementById('edit-modal')) closeModal();
+}
+
+function validatePin() {
+  var pin = document.getElementById('pin-input').value.trim().toUpperCase();
+  if (pin !== 'HBW') {
+    document.getElementById('pin-error').classList.remove('hidden');
+    document.getElementById('pin-input').select();
+    return;
+  }
+  document.getElementById('pin-error').classList.add('hidden');
+  document.getElementById('pin-step').classList.add('hidden');
+  buildEditFields();
+  document.getElementById('edit-step').classList.remove('hidden');
+}
+
+function buildEditFields() {
+  var stored;
+  try { stored = JSON.parse(localStorage.getItem('bewow_edits') || '{}'); } catch(e) { stored = {}; }
+  var edits = stored[_modalSlug] || {};
+  var tables = getTablesInSection(_modalH2);
+  var container = document.getElementById('edit-fields');
+  container.innerHTML = '';
+
+  if (tables.length === 0) {
+    container.innerHTML =
+      '<p class="py-md text-center text-on-surface-variant text-body-sm">' +
+      'Esta sección no tiene campos de tabla para editar.</p>';
+    return;
   }
 
-  // ── Carga inicial: configuración ──────────────────────────────────────────
+  tables.forEach(function(table) {
+    table.querySelectorAll('tbody tr').forEach(function(tr) {
+      var tds = tr.querySelectorAll('td');
+      if (tds.length < 2) return;
+      var label = tds[0].textContent.trim();
+      if (!label) return;
+      var value = edits[label] !== undefined ? edits[label] : tds[1].textContent.trim();
+
+      var row = document.createElement('div');
+      row.className = 'py-sm flex flex-col sm:flex-row sm:items-center gap-xs sm:gap-sm';
+      row.innerHTML =
+        '<label class="text-label-md text-on-surface-variant sm:w-1/3 sm:text-right sm:flex-shrink-0 leading-tight">' +
+        escHtml(label) + '</label>' +
+        '<input type="text" data-label="' + escHtml(label) + '" value="' + escHtml(value) + '" ' +
+        'class="flex-1 border border-outline-variant rounded-lg px-sm py-xs text-body-sm ' +
+        'focus:outline-none focus:border-[#C8974A] focus:ring-1 focus:ring-[#C8974A]/20 transition-colors"/>';
+      container.appendChild(row);
+    });
+  });
+}
+
+function saveEdits() {
+  var stored;
+  try { stored = JSON.parse(localStorage.getItem('bewow_edits') || '{}'); } catch(e) { stored = {}; }
+  stored[_modalSlug] = stored[_modalSlug] || {};
+  var tables = getTablesInSection(_modalH2);
+
+  document.getElementById('edit-fields').querySelectorAll('input[data-label]').forEach(function(input) {
+    var label = input.getAttribute('data-label');
+    var value = input.value;
+    stored[_modalSlug][label] = value;
+    // Update DOM live
+    tables.forEach(function(table) {
+      table.querySelectorAll('tbody tr').forEach(function(tr) {
+        var tds = tr.querySelectorAll('td');
+        if (tds.length >= 2 && tds[0].textContent.trim() === label) {
+          tds[1].textContent = value;
+        }
+      });
+    });
+  });
+
+  localStorage.setItem('bewow_edits', JSON.stringify(stored));
+  closeModal();
+  showToast('Sección actualizada correctamente');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BÚSQUEDA
+// ─────────────────────────────────────────────────────────────────────────────
+var _searchMatches = [];
+var _searchIdx     = 0;
+var _searchTimer   = null;
+
+function debounceSearch(q) {
+  clearTimeout(_searchTimer);
+  document.getElementById('search-clear').classList.toggle('hidden', !q);
+  _searchTimer = setTimeout(function() { searchContent(q); }, 280);
+}
+
+function searchContent(q) {
+  // Clear previous highlights
+  document.querySelectorAll('.search-hl, .search-hl-first').forEach(function(el) {
+    el.classList.remove('search-hl', 'search-hl-first');
+  });
+  _searchMatches = [];
+  _searchIdx = 0;
+
+  var countEl = document.getElementById('search-count');
+
+  if (!q.trim()) {
+    countEl.classList.add('hidden');
+    return;
+  }
+
+  // Get active panel
+  var panel = null;
+  _tabs.forEach(function(t) {
+    var p = document.getElementById('panel-' + t);
+    if (p && !p.classList.contains('hidden')) panel = p;
+  });
+  if (!panel) { countEl.classList.add('hidden'); return; }
+
+  var ql = q.toLowerCase();
+  panel.querySelectorAll('h2, h3, td, p, li').forEach(function(el) {
+    if (el.closest('.edit-btn')) return;
+    if (el.textContent.toLowerCase().indexOf(ql) !== -1) {
+      el.classList.add('search-hl');
+      _searchMatches.push(el);
+    }
+  });
+
+  if (_searchMatches.length > 0) {
+    _searchMatches[0].classList.remove('search-hl');
+    _searchMatches[0].classList.add('search-hl-first');
+    _searchMatches[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    countEl.textContent = '1 / ' + _searchMatches.length + ' resultado' + (_searchMatches.length !== 1 ? 's' : '');
+    countEl.classList.remove('hidden');
+  } else {
+    countEl.textContent = 'Sin resultados';
+    countEl.classList.remove('hidden');
+  }
+}
+
+function handleSearchKey(e) {
+  if (e.key === 'Enter' && _searchMatches.length > 0) {
+    // Un-highlight current first
+    _searchMatches[_searchIdx].classList.remove('search-hl-first');
+    _searchMatches[_searchIdx].classList.add('search-hl');
+    _searchIdx = (_searchIdx + 1) % _searchMatches.length;
+    _searchMatches[_searchIdx].classList.remove('search-hl');
+    _searchMatches[_searchIdx].classList.add('search-hl-first');
+    _searchMatches[_searchIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.getElementById('search-count').textContent =
+      (_searchIdx + 1) + ' / ' + _searchMatches.length + ' resultado' + (_searchMatches.length !== 1 ? 's' : '');
+  }
+}
+
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-clear').classList.add('hidden');
+  searchContent('');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TOAST
+// ─────────────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  var toast = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  toast.classList.remove('hidden');
+  toast.classList.add('toast-visible');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function() {
+    toast.classList.add('hidden');
+    toast.classList.remove('toast-visible');
+  }, 3000);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ESC para cerrar modal
+// ─────────────────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INICIALIZACIÓN
+// ─────────────────────────────────────────────────────────────────────────────
+initLogo();
+
+loadMd(
+  'BEWOW_QUERETARO_configuracion.md',
+  'config-loading', 'config-content', 'config-error',
+  afterRender
+);
+
+function loadFlujos() {
+  window._flujosCargados = true;
   loadMd(
-    'BEWOW_QUERETARO_configuracion.md',
-    'config-loading', 'config-content', 'config-error'
+    'BEWOW_QUERETARO_flujos.md',
+    'flujos-loading', 'flujos-content', 'flujos-error',
+    afterRender
   );
-
-  // ── Carga lazy: flujos ────────────────────────────────────────────────────
-  function loadFlujos() {
-    window._flujosCargados = true;
-    loadMd(
-      'BEWOW_QUERETARO_flujos.md',
-      'flujos-loading', 'flujos-content', 'flujos-error'
-    );
-  }
+}
 </script>
 
 </body>
