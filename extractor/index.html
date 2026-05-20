@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jaime — Extractor IA de Información Hotelera</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Kodchasan:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:      #1B3C6B;
+      --navy-dark: #0F2647;
+      --navy-light:#2A5299;
+      --gold:      #C9A84C;
+      --gold-lt:   #E8C96A;
+      --green:     #16A34A;
+      --green-lt:  #DCFCE7;
+      --red:       #DC2626;
+      --red-lt:    #FEE2E2;
+      --amber:     #D97706;
+      --amber-lt:  #FEF3C7;
+      --white:     #FFFFFF;
+      --gray-50:   #F8FAFC;
+      --gray-100:  #F1F5F9;
+      --gray-200:  #E2E8F0;
+      --gray-300:  #CBD5E1;
+      --gray-400:  #94A3B8;
+      --gray-500:  #64748B;
+      --gray-700:  #334155;
+      --radius:    12px;
+      --shadow:    0 4px 24px rgba(27,60,107,.1);
+      --shadow-lg: 0 12px 48px rgba(27,60,107,.16);
+    }
+    body { font-family:'Kodchasan',sans-serif; background:var(--gray-50); color:var(--gray-700); min-height:100vh; }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+      color:white; padding:48px 32px 56px; text-align:center; position:relative; overflow:hidden;
+    }
+    header::before {
+      content:''; position:absolute; inset:0;
+      background: radial-gradient(ellipse 80% 60% at 50% 110%, rgba(201,168,76,.15) 0%, transparent 70%);
+    }
+    .hbadge {
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
+      border-radius:50px; padding:5px 16px; font-size:.72rem; font-weight:500;
+      letter-spacing:.08em; text-transform:uppercase; margin-bottom:20px;
+    }
+    .hbadge i { color:var(--gold-lt); }
+    header h1 { font-family:'Cormorant Garamond',serif; font-size:clamp(2rem,4vw,3rem); font-weight:300; margin-bottom:6px; }
+    header h1 span { font-weight:600; color:var(--gold-lt); }
+    header p { font-size:.9rem; opacity:.7; font-weight:300; max-width:520px; margin:0 auto; line-height:1.7; }
+    .wave { display:block; width:100%; height:48px; background:var(--gray-50); clip-path:ellipse(60% 100% at 50% 100%); margin-top:-2px; }
+
+    /* LAYOUT */
+    .container { max-width:960px; margin:0 auto; padding:0 24px 80px; }
+    .step-label {
+      display:flex; align-items:center; gap:12px; margin:40px 0 16px;
+    }
+    .step-label .num {
+      width:28px; height:28px; flex-shrink:0;
+      background:var(--navy); color:white; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:.75rem; font-weight:700;
+    }
+    .step-label span { font-size:.72rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--navy); }
+    .step-label::after { content:''; flex:1; height:1px; background:var(--gray-200); }
+
+    /* CARDS */
+    .card { background:white; border-radius:var(--radius); box-shadow:var(--shadow); padding:24px; margin-bottom:16px; }
+    .card-title { font-size:.88rem; font-weight:600; color:var(--navy-dark); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+    .card-title i { color:var(--navy); opacity:.7; }
+
+    /* URL INPUTS */
+    .url-list { display:flex; flex-direction:column; gap:8px; }
+    .url-row { display:flex; gap:8px; }
+    .url-row input {
+      flex:1; padding:10px 14px; border:1.5px solid var(--gray-200); border-radius:8px;
+      font-family:'Kodchasan',sans-serif; font-size:.83rem; color:var(--gray-700);
+      transition:border-color .15s;
+    }
+    .url-row input:focus { outline:none; border-color:var(--navy); }
+    .url-row input::placeholder { color:var(--gray-400); }
+    .btn-icon {
+      width:38px; height:38px; border:1.5px solid var(--gray-200); background:white;
+      border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+      color:var(--gray-400); font-size:.85rem; transition:all .15s; flex-shrink:0;
+    }
+    .btn-icon:hover { border-color:var(--navy); color:var(--navy); }
+    .btn-icon.del:hover { border-color:var(--red); color:var(--red); }
+    .btn-add-url {
+      display:inline-flex; align-items:center; gap:6px; margin-top:8px;
+      padding:7px 14px; border:1.5px dashed var(--gray-300); border-radius:8px;
+      background:transparent; color:var(--gray-500); font-family:'Kodchasan',sans-serif;
+      font-size:.78rem; font-weight:500; cursor:pointer; transition:all .15s;
+    }
+    .btn-add-url:hover { border-color:var(--navy); color:var(--navy); background:var(--gray-50); }
+
+    /* DROPZONE */
+    .dropzone {
+      border:2px dashed var(--gray-300); border-radius:10px; padding:32px 24px;
+      text-align:center; cursor:pointer; transition:all .2s; position:relative;
+    }
+    .dropzone:hover, .dropzone.drag-over {
+      border-color:var(--navy); background:rgba(27,60,107,.04);
+    }
+    .dropzone input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; }
+    .dropzone-icon { font-size:2rem; color:var(--gray-400); margin-bottom:8px; }
+    .dropzone p { font-size:.82rem; color:var(--gray-500); line-height:1.6; }
+    .dropzone p strong { color:var(--navy); }
+    .dropzone small { font-size:.72rem; color:var(--gray-400); margin-top:4px; display:block; }
+
+    /* FILE LIST */
+    .file-list { display:flex; flex-direction:column; gap:6px; margin-top:12px; }
+    .file-item {
+      display:flex; align-items:center; gap:10px; padding:8px 12px;
+      background:var(--gray-50); border-radius:8px; border:1px solid var(--gray-200);
+    }
+    .file-item i { font-size:1rem; color:var(--navy); opacity:.7; }
+    .file-item span { flex:1; font-size:.78rem; color:var(--gray-700); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .file-item small { font-size:.7rem; color:var(--gray-400); white-space:nowrap; }
+    .file-item button { background:none; border:none; cursor:pointer; color:var(--gray-400); padding:2px 6px; border-radius:4px; }
+    .file-item button:hover { color:var(--red); background:var(--red-lt); }
+
+    /* TEXT AREA */
+    .paste-area {
+      width:100%; min-height:120px; padding:12px 14px;
+      border:1.5px solid var(--gray-200); border-radius:8px;
+      font-family:'Kodchasan',sans-serif; font-size:.83rem; color:var(--gray-700);
+      resize:vertical; transition:border-color .15s; line-height:1.6;
+    }
+    .paste-area:focus { outline:none; border-color:var(--navy); }
+    .paste-area::placeholder { color:var(--gray-400); }
+
+    /* ANALYZE BUTTON */
+    .analyze-wrap { text-align:center; margin:32px 0; }
+    .btn-analyze {
+      display:inline-flex; align-items:center; gap:10px;
+      padding:14px 40px; background:linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+      color:white; border:none; border-radius:10px;
+      font-family:'Kodchasan',sans-serif; font-size:1rem; font-weight:600;
+      cursor:pointer; transition:all .2s; box-shadow:0 4px 16px rgba(27,60,107,.3);
+    }
+    .btn-analyze:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(27,60,107,.4); }
+    .btn-analyze:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+
+    /* PROGRESS */
+    #progress-section { display:none; }
+    .progress-card { background:white; border-radius:var(--radius); box-shadow:var(--shadow); padding:28px 24px; }
+    .progress-title { font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:600; color:var(--navy-dark); margin-bottom:16px; }
+    .progress-bar-wrap { height:8px; background:var(--gray-100); border-radius:50px; overflow:hidden; margin-bottom:12px; }
+    .progress-bar { height:100%; background:linear-gradient(90deg, var(--navy) 0%, var(--gold) 100%); border-radius:50px; width:0; transition:width .4s ease; }
+    .progress-steps { display:flex; flex-direction:column; gap:6px; }
+    .progress-step { display:flex; align-items:center; gap:10px; font-size:.82rem; color:var(--gray-500); }
+    .progress-step.done { color:var(--green); }
+    .progress-step.active { color:var(--navy); font-weight:500; }
+    .progress-step i { width:16px; text-align:center; }
+
+    /* RESULTS */
+    #results-section { display:none; }
+    .results-summary {
+      background:linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+      color:white; border-radius:var(--radius); padding:20px 24px;
+      display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap:16px; margin-bottom:20px;
+    }
+    .results-summary h3 { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:600; }
+    .results-summary p { font-size:.83rem; opacity:.75; margin-top:2px; }
+    .stats { display:flex; gap:24px; }
+    .stat { text-align:center; }
+    .stat .num { font-size:1.6rem; font-weight:700; }
+    .stat .lbl { font-size:.7rem; opacity:.7; text-transform:uppercase; letter-spacing:.06em; }
+    .stat.found .num { color:var(--gold-lt); }
+    .stat.missing .num { color:rgba(255,255,255,.5); }
+
+    /* SECTION RESULTS */
+    .result-section { background:white; border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:14px; overflow:hidden; }
+    .result-section-head {
+      padding:14px 20px; display:flex; align-items:center; gap:12px; cursor:pointer;
+      border-bottom:1px solid var(--gray-100); user-select:none;
+    }
+    .result-section-head:hover { background:var(--gray-50); }
+    .rs-icon { width:34px; height:34px; border-radius:8px; background:rgba(27,60,107,.08); color:var(--navy); display:flex; align-items:center; justify-content:center; font-size:.9rem; flex-shrink:0; }
+    .rs-title { flex:1; font-size:.88rem; font-weight:600; color:var(--navy-dark); }
+    .rs-badge {
+      font-size:.7rem; font-weight:600; padding:3px 10px; border-radius:50px;
+    }
+    .rs-badge.all  { background:var(--green-lt);  color:var(--green); }
+    .rs-badge.some { background:var(--amber-lt);  color:var(--amber); }
+    .rs-badge.none { background:var(--gray-100);  color:var(--gray-400); }
+    .rs-chevron { color:var(--gray-400); font-size:.75rem; transition:transform .2s; }
+    .rs-chevron.open { transform:rotate(180deg); }
+    .result-section-body { display:none; padding:16px 20px; }
+    .result-section-body.open { display:block; }
+    .field-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:10px; }
+    .field-item {
+      padding:10px 12px; border-radius:8px; border:1px solid var(--gray-200);
+      display:flex; flex-direction:column; gap:4px;
+    }
+    .field-item.found   { border-color:#BBF7D0; background:#F0FDF4; }
+    .field-item.missing { border-color:var(--gray-200); background:var(--gray-50); }
+    .field-label { font-size:.7rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--gray-400); }
+    .field-value { font-size:.82rem; color:var(--gray-700); line-height:1.4; word-break:break-word; }
+    .field-item.found .field-label { color:var(--green); }
+    .field-item.found .field-value { color:#15803D; font-weight:500; }
+    .field-item.missing .field-value { color:var(--gray-400); font-style:italic; }
+
+    /* DOWNLOAD */
+    .download-wrap { text-align:center; margin-top:28px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .btn-download {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:12px 28px; border-radius:10px; font-family:'Kodchasan',sans-serif;
+      font-size:.88rem; font-weight:600; cursor:pointer; text-decoration:none;
+      transition:all .2s; border:none;
+    }
+    .btn-download.primary { background:var(--green); color:white; }
+    .btn-download.primary:hover { background:#15803D; }
+    .btn-download.secondary { background:white; color:var(--navy); border:1.5px solid var(--gray-300); }
+    .btn-download.secondary:hover { background:var(--gray-50); }
+
+    /* ERROR */
+    .error-banner {
+      background:var(--red-lt); border:1px solid #FECACA; color:var(--red);
+      border-radius:8px; padding:12px 16px; font-size:.82rem; margin-top:12px;
+      display:none; align-items:center; gap:8px;
+    }
+    .error-banner.show { display:flex; }
+
+    /* BACK LINK */
+    .back-link { display:inline-flex; align-items:center; gap:6px; color:rgba(255,255,255,.6); font-size:.78rem; text-decoration:none; margin-bottom:20px; transition:color .15s; }
+    .back-link:hover { color:white; }
+
+    @media(max-width:600px) {
+      header { padding:36px 16px 48px; }
+      .container { padding:0 14px 60px; }
+      .stats { gap:16px; }
+      .field-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="../" class="back-link"><i class="fa-solid fa-arrow-left"></i> Portal Jaime</a>
+  <div class="hbadge"><i class="fa-solid fa-wand-magic-sparkles"></i> Powered by Claude AI</div>
+  <h1>Extractor <span>IA</span> de Hotel</h1>
+  <p>Sube URLs, documentos e imágenes del hotel. La IA extrae automáticamente toda la información para llenar el formulario de onboarding.</p>
+</header>
+<div class="wave"></div>
+
+<div class="container">
+
+  <!-- STEP 1: SOURCES -->
+  <div class="step-label"><div class="num">1</div><span>Fuentes de información</span></div>
+
+  <!-- URLs -->
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-link"></i> URLs del hotel</div>
+    <div class="url-list" id="urlList">
+      <div class="url-row">
+        <input type="url" placeholder="https://www.nombrehotel.com" class="url-input">
+        <button class="btn-icon del" onclick="removeUrl(this)" title="Eliminar"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </div>
+    <button class="btn-add-url" onclick="addUrl()">
+      <i class="fa-solid fa-plus"></i> Agregar otra URL (Google Maps, TripAdvisor, Facebook…)
+    </button>
+  </div>
+
+  <!-- FILES -->
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-file-arrow-up"></i> Archivos (PDF, imágenes, documentos)</div>
+    <div class="dropzone" id="dropzone">
+      <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,.txt,.doc,.docx" onchange="handleFiles(this.files)">
+      <div class="dropzone-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+      <p><strong>Arrastra archivos aquí</strong> o haz clic para seleccionar</p>
+      <small>PDF, JPG, PNG, WebP, TXT — hasta 10 archivos, 20MB c/u</small>
+    </div>
+    <div class="file-list" id="fileList"></div>
+  </div>
+
+  <!-- TEXT PASTE -->
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-align-left"></i> Texto adicional (opcional)</div>
+    <textarea class="paste-area" id="pasteText"
+      placeholder="Pega aquí cualquier texto relevante: descripciones, tarifas, horarios, políticas, menús, etc."></textarea>
+  </div>
+
+  <!-- ERROR -->
+  <div class="error-banner" id="errorBanner">
+    <i class="fa-solid fa-circle-exclamation"></i>
+    <span id="errorMsg">Error al procesar las fuentes.</span>
+  </div>
+
+  <!-- ANALYZE BUTTON -->
+  <div class="analyze-wrap">
+    <button class="btn-analyze" id="btnAnalyze" onclick="analyze()">
+      <i class="fa-solid fa-wand-magic-sparkles"></i> Analizar con IA
+    </button>
+  </div>
+
+  <!-- STEP 2: PROGRESS -->
+  <div id="progress-section">
+    <div class="step-label"><div class="num">2</div><span>Procesando</span></div>
+    <div class="progress-card">
+      <div class="progress-title">Extrayendo información del hotel…</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="progress-steps" id="progressSteps">
+        <div class="progress-step" id="ps1"><i class="fa-solid fa-circle-notch fa-spin"></i> Leyendo fuentes…</div>
+        <div class="progress-step" id="ps2"><i class="fa-regular fa-circle"></i> Enviando a Claude AI…</div>
+        <div class="progress-step" id="ps3"><i class="fa-regular fa-circle"></i> Extrayendo campos del hotel…</div>
+        <div class="progress-step" id="ps4"><i class="fa-regular fa-circle"></i> Preparando resultados…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: RESULTS -->
+  <div id="results-section">
+    <div class="step-label"><div class="num">3</div><span>Información encontrada</span></div>
+
+    <div class="results-summary">
+      <div>
+        <h3>Análisis completado</h3>
+        <p id="resultsSubtitle">Revisa los campos extraídos y descarga el formulario pre-llenado.</p>
+      </div>
+      <div class="stats">
+        <div class="stat found"><div class="num" id="statFound">0</div><div class="lbl">Encontrados</div></div>
+        <div class="stat missing"><div class="num" id="statMissing">0</div><div class="lbl">No encontrados</div></div>
+      </div>
+    </div>
+
+    <div id="resultSections"></div>
+
+    <div class="download-wrap">
+      <button class="btn-download primary" onclick="downloadFilledForm()">
+        <i class="fa-solid fa-file-arrow-down"></i> Descargar formulario pre-llenado
+      </button>
+      <button class="btn-download secondary" onclick="copyJson()">
+        <i class="fa-solid fa-copy"></i> Copiar JSON
+      </button>
+      <button class="btn-download secondary" onclick="resetAll()">
+        <i class="fa-solid fa-rotate-left"></i> Nuevo análisis
+      </button>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ─── PDF.js setup ────────────────────────────────────────────────────────────
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// ─── State ───────────────────────────────────────────────────────────────────
+let uploadedFiles = []; // { name, type, content } — content is base64 or text
+let extractedData = null;
+
+// ─── FIELD SCHEMA ────────────────────────────────────────────────────────────
+const SECTIONS = [
+  {
+    id:'s1', icon:'fa-hotel', label:'Identidad del hotel',
+    fields:[
+      { key:'nombre_hotel',        label:'Nombre completo' },
+      { key:'marca_concepto',      label:'Marca / Concepto' },
+      { key:'categoria_estrellas', label:'Categoría (estrellas)' },
+      { key:'total_habitaciones',  label:'Total de habitaciones' },
+      { key:'anio_apertura',       label:'Año apertura / remodelación' },
+    ]
+  },
+  {
+    id:'s2', icon:'fa-location-dot', label:'Contacto y ubicación',
+    fields:[
+      { key:'direccion',              label:'Dirección' },
+      { key:'ciudad_estado',          label:'Ciudad / Estado' },
+      { key:'telefono_principal',     label:'Teléfono principal' },
+      { key:'email_reservaciones',    label:'Email reservaciones' },
+      { key:'email_admin',            label:'Email administración' },
+      { key:'sitio_web',              label:'Sitio web' },
+      { key:'motor_reservas_url',     label:'Motor de reservas URL' },
+      { key:'facebook_url',           label:'Facebook' },
+      { key:'instagram_url',          label:'Instagram' },
+      { key:'googlemaps_url',         label:'Google Maps link' },
+      { key:'distancia_aeropuerto',   label:'Distancia aeropuerto' },
+      { key:'distancia_centro',       label:'Distancia centro ciudad' },
+      { key:'referencias_ubicacion',  label:'Referencias de ubicación' },
+    ]
+  },
+  {
+    id:'s3', icon:'fa-clock', label:'Check-in y Check-out',
+    fields:[
+      { key:'checkin_hora',         label:'Hora de check-in' },
+      { key:'checkout_hora',        label:'Hora de check-out' },
+      { key:'early_checkin',        label:'¿Early check-in?' },
+      { key:'early_checkin_costo',  label:'Costo early check-in' },
+      { key:'late_checkout',        label:'¿Late check-out?' },
+      { key:'late_checkout_costo',  label:'Costo late check-out' },
+      { key:'cama_extra',           label:'¿Cama extra disponible?' },
+      { key:'cama_extra_costo',     label:'Costo cama extra/noche' },
+      { key:'documentos_checkin',   label:'Documentos requeridos' },
+      { key:'deposito_garantia',    label:'¿Depósito de garantía?' },
+      { key:'deposito_monto',       label:'Monto del depósito' },
+    ]
+  },
+  {
+    id:'s4', icon:'fa-bed', label:'Habitaciones',
+    fields:[
+      { key:'tipos_habitacion',    label:'Tipos de habitación (JSON array)' },
+      { key:'amenidades_wifi',     label:'WiFi en habitaciones' },
+      { key:'amenidades_ac',       label:'Aire acondicionado' },
+      { key:'amenidades_tv',       label:'TV con cable' },
+      { key:'amenidades_caja',     label:'Caja fuerte' },
+      { key:'amenidades_minibar',  label:'Minibar / frigobar' },
+      { key:'amenidades_cocineta', label:'Cocineta' },
+    ]
+  },
+  {
+    id:'s5', icon:'fa-wifi', label:'WiFi',
+    fields:[
+      { key:'wifi_ssid',              label:'Nombre de red (SSID)' },
+      { key:'wifi_password',          label:'Contraseña WiFi' },
+      { key:'wifi_red_separada',      label:'¿Red separada huéspedes?' },
+      { key:'wifi_huespedes_ssid',    label:'SSID red huéspedes' },
+      { key:'wifi_huespedes_pass',    label:'Contraseña red huéspedes' },
+      { key:'wifi_velocidad',         label:'Velocidad / calidad' },
+    ]
+  },
+  {
+    id:'s6', icon:'fa-mug-hot', label:'Desayuno',
+    fields:[
+      { key:'desayuno_incluido',     label:'¿Incluye desayuno?' },
+      { key:'desayuno_tipo',         label:'Tipo de desayuno' },
+      { key:'desayuno_horario',      label:'Horario de desayuno' },
+      { key:'desayuno_incluye',      label:'¿Qué incluye?' },
+      { key:'desayuno_costo_extra',  label:'Costo si no incluido' },
+      { key:'desayuno_ubicacion',    label:'Ubicación en el hotel' },
+    ]
+  },
+  {
+    id:'s7', icon:'fa-utensils', label:'Restaurante / A&B',
+    fields:[
+      { key:'restaurante_nombre',      label:'Nombre del restaurante' },
+      { key:'restaurante_menu_url',    label:'Menú en línea URL' },
+      { key:'restaurante_h_desayuno',  label:'Horario desayuno' },
+      { key:'restaurante_h_comida',    label:'Horario comida' },
+      { key:'restaurante_h_cena',      label:'Horario cena' },
+      { key:'room_service',            label:'¿Room service?' },
+      { key:'room_service_horario',    label:'Horario room service' },
+    ]
+  },
+  {
+    id:'s8', icon:'fa-square-parking', label:'Estacionamiento',
+    fields:[
+      { key:'estac_disponible',  label:'¿Tiene estacionamiento?' },
+      { key:'estac_costo_tipo',  label:'¿Gratuito o de pago?' },
+      { key:'estac_costo',       label:'Costo (si aplica)' },
+      { key:'estac_techado',     label:'¿Es techado?' },
+      { key:'estac_vigilado',    label:'¿Es vigilado?' },
+      { key:'estac_capacidad',   label:'Capacidad' },
+      { key:'valet_parking',     label:'¿Valet parking?' },
+      { key:'valet_costo',       label:'Costo valet' },
+    ]
+  },
+  {
+    id:'s9', icon:'fa-dumbbell', label:'Instalaciones y servicios',
+    fields:[
+      { key:'instalaciones_alberca',  label:'Alberca / Piscina' },
+      { key:'instalaciones_gym',      label:'Gimnasio' },
+      { key:'instalaciones_spa',      label:'Spa' },
+      { key:'instalaciones_sauna',    label:'Sauna' },
+      { key:'instalaciones_bizctr',   label:'Business Center' },
+      { key:'instalaciones_lavand',   label:'Lavandería' },
+      { key:'instalaciones_tours',    label:'Tours / Excursiones' },
+      { key:'instalaciones_transp',   label:'Transporte aeropuerto' },
+      { key:'instalaciones_bar',      label:'Bar' },
+      { key:'instalaciones_terraza',  label:'Terraza / Roof Garden' },
+    ]
+  },
+  {
+    id:'s10', icon:'fa-chalkboard', label:'Salones y eventos',
+    fields:[
+      { key:'salones_lista',      label:'Salones (JSON array)' },
+      { key:'eventos_url',        label:'Info eventos URL' },
+      { key:'eventos_deposito',   label:'Depósito para eventos' },
+    ]
+  },
+  {
+    id:'s11', icon:'fa-file-contract', label:'Políticas',
+    fields:[
+      { key:'politica_cancelacion', label:'Cancelación (plazo sin cargo)' },
+      { key:'politica_noshow',      label:'Cargo por no-show' },
+      { key:'politica_mascotas',    label:'Mascotas (sí/no/condicional)' },
+      { key:'mascotas_peso_max',    label:'Peso máximo mascotas' },
+      { key:'mascotas_costo',       label:'Costo adicional mascota' },
+      { key:'politica_fumadores',   label:'Política fumadores' },
+      { key:'fumadores_sancion',    label:'Sanción por fumar' },
+      { key:'politica_menores',     label:'Menores (edad gratis)' },
+      { key:'horario_silencio',     label:'Horario de silencio' },
+      { key:'politica_visitas',     label:'Visitas externas' },
+      { key:'politica_objetos',     label:'Objetos olvidados' },
+    ]
+  },
+  {
+    id:'s12', icon:'fa-credit-card', label:'Métodos de pago',
+    fields:[
+      { key:'pago_efectivo',     label:'Efectivo MXN' },
+      { key:'pago_visa',         label:'Visa' },
+      { key:'pago_mastercard',   label:'Mastercard' },
+      { key:'pago_amex',         label:'American Express' },
+      { key:'pago_debito',       label:'Tarjeta de débito' },
+      { key:'pago_transferencia',label:'Transferencia bancaria' },
+      { key:'pago_digital',      label:'Pago digital (OXXO Pay, etc.)' },
+      { key:'pago_facturacion',  label:'Facturación (RFC/CFDI)' },
+      { key:'factura_url',       label:'Portal de facturación URL' },
+    ]
+  },
+  {
+    id:'s13', icon:'fa-gears', label:'Integración operativa',
+    fields:[
+      { key:'tickets_mantenimiento', label:'Destino tickets mantenimiento' },
+      { key:'tickets_ama_llaves',    label:'Destino tickets ama de llaves' },
+      { key:'tickets_ayb',           label:'Destino tickets A&B' },
+      { key:'tickets_recepcion',     label:'Destino tickets recepción' },
+      { key:'pms_nombre',            label:'PMS utilizado' },
+      { key:'channel_manager',       label:'Channel Manager' },
+    ]
+  },
+  {
+    id:'s14', icon:'fa-circle-question', label:'Preguntas frecuentes',
+    fields:[
+      { key:'faqs',  label:'FAQs del hotel (JSON array pregunta/respuesta)' },
+    ]
+  },
+  {
+    id:'s15', icon:'fa-address-book', label:'Directorio de personal',
+    fields:[
+      { key:'directorio', label:'Directorio (JSON array nombre/puesto/dept/whatsapp)' },
+    ]
+  },
+];
+
+// ─── URL MANAGEMENT ──────────────────────────────────────────────────────────
+function addUrl() {
+  const row = document.createElement('div');
+  row.className = 'url-row';
+  row.innerHTML = `
+    <input type="url" placeholder="https://…" class="url-input">
+    <button class="btn-icon del" onclick="removeUrl(this)" title="Eliminar"><i class="fa-solid fa-xmark"></i></button>`;
+  document.getElementById('urlList').appendChild(row);
+}
+function removeUrl(btn) {
+  const rows = document.querySelectorAll('.url-row');
+  if (rows.length > 1) btn.closest('.url-row').remove();
+  else btn.closest('.url-row').querySelector('input').value = '';
+}
+
+// ─── FILE MANAGEMENT ─────────────────────────────────────────────────────────
+const dropzone = document.getElementById('dropzone');
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault(); dropzone.classList.remove('drag-over');
+  handleFiles(e.dataTransfer.files);
+});
+
+async function handleFiles(files) {
+  for (const file of files) {
+    if (uploadedFiles.length >= 10) { showError('Máximo 10 archivos.'); break; }
+    if (file.size > 20 * 1024 * 1024) { showError(`${file.name} supera 20MB.`); continue; }
+    const entry = await readFile(file);
+    if (entry) {
+      uploadedFiles.push(entry);
+      renderFileList();
+    }
+  }
+}
+
+function readFile(file) {
+  return new Promise(resolve => {
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (['jpg','jpeg','png','webp','gif'].includes(ext)) {
+      const reader = new FileReader();
+      reader.onload = e => resolve({ name:file.name, type:file.type, kind:'image', content: e.target.result.split(',')[1] });
+      reader.readAsDataURL(file);
+    } else if (ext === 'pdf') {
+      const reader = new FileReader();
+      reader.onload = async e => {
+        try {
+          const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(e.target.result) }).promise;
+          let text = '';
+          for (let i = 1; i <= Math.min(pdf.numPages, 20); i++) {
+            const page = await pdf.getPage(i);
+            const tc = await page.getTextContent();
+            text += tc.items.map(s => s.str).join(' ') + '\n';
+          }
+          resolve({ name:file.name, type:'text/plain', kind:'text', content: text.trim() });
+        } catch(err) { resolve({ name:file.name, type:'text/plain', kind:'text', content:`[PDF: ${file.name} — error al leer]` }); }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      const reader = new FileReader();
+      reader.onload = e => resolve({ name:file.name, type:'text/plain', kind:'text', content: e.target.result });
+      reader.readAsText(file);
+    }
+  });
+}
+
+function renderFileList() {
+  const list = document.getElementById('fileList');
+  list.innerHTML = uploadedFiles.map((f, i) => `
+    <div class="file-item">
+      <i class="fa-solid ${f.kind==='image' ? 'fa-image' : 'fa-file-lines'}"></i>
+      <span>${f.name}</span>
+      <small>${f.kind}</small>
+      <button onclick="removeFile(${i})" title="Eliminar"><i class="fa-solid fa-xmark"></i></button>
+    </div>`).join('');
+}
+
+function removeFile(idx) {
+  uploadedFiles.splice(idx, 1);
+  renderFileList();
+}
+
+// ─── PROGRESS HELPERS ────────────────────────────────────────────────────────
+function setProgress(pct) {
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+function setStep(active) {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('ps' + i);
+    if (i < active) {
+      el.className = 'progress-step done';
+      el.querySelector('i').className = 'fa-solid fa-circle-check';
+    } else if (i === active) {
+      el.className = 'progress-step active';
+      el.querySelector('i').className = 'fa-solid fa-circle-notch fa-spin';
+    } else {
+      el.className = 'progress-step';
+      el.querySelector('i').className = 'fa-regular fa-circle';
+    }
+  }
+}
+
+// ─── ERROR ───────────────────────────────────────────────────────────────────
+function showError(msg) {
+  const banner = document.getElementById('errorBanner');
+  document.getElementById('errorMsg').textContent = msg;
+  banner.classList.add('show');
+  setTimeout(() => banner.classList.remove('show'), 6000);
+}
+
+// ─── MAIN ANALYZE ────────────────────────────────────────────────────────────
+async function analyze() {
+  const urls   = [...document.querySelectorAll('.url-input')].map(i => i.value.trim()).filter(Boolean);
+  const text   = document.getElementById('pasteText').value.trim();
+  const files  = uploadedFiles;
+
+  if (!urls.length && !text && !files.length) {
+    showError('Agrega al menos una URL, archivo o texto antes de analizar.');
+    return;
+  }
+
+  // Show progress
+  document.getElementById('errorBanner').classList.remove('show');
+  document.getElementById('progress-section').style.display = 'block';
+  document.getElementById('results-section').style.display  = 'none';
+  document.getElementById('btnAnalyze').disabled = true;
+  document.getElementById('progress-section').scrollIntoView({ behavior:'smooth', block:'start' });
+
+  setProgress(10); setStep(1);
+
+  try {
+    // Build payload
+    const payload = { urls, text, files: files.map(f => ({ name:f.name, kind:f.kind, type:f.type, content:f.content })) };
+
+    setProgress(35); setStep(2);
+    await sleep(300);
+
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `Error ${res.status}`);
+    }
+
+    setProgress(70); setStep(3);
+    await sleep(200);
+
+    const data = await res.json();
+    extractedData = data.fields;
+
+    setProgress(95); setStep(4);
+    await sleep(300);
+
+    setProgress(100);
+    await sleep(400);
+
+    renderResults(extractedData);
+
+    document.getElementById('progress-section').style.display = 'none';
+    document.getElementById('results-section').style.display  = 'block';
+    document.getElementById('results-section').scrollIntoView({ behavior:'smooth', block:'start' });
+
+  } catch(err) {
+    document.getElementById('progress-section').style.display = 'none';
+    showError('Error: ' + err.message);
+  } finally {
+    document.getElementById('btnAnalyze').disabled = false;
+  }
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ─── RENDER RESULTS ──────────────────────────────────────────────────────────
+function renderResults(fields) {
+  let totalFound = 0, totalAll = 0;
+
+  const container = document.getElementById('resultSections');
+  container.innerHTML = '';
+
+  SECTIONS.forEach(sec => {
+    let secFound = 0, secTotal = sec.fields.length;
+    totalAll += secTotal;
+
+    const fieldsHtml = sec.fields.map(f => {
+      const val = fields[f.key];
+      const has = val !== null && val !== undefined && val !== '';
+      if (has) { secFound++; totalFound++; }
+      const displayVal = has
+        ? (typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val))
+        : '—  No encontrado';
+      return `
+        <div class="field-item ${has ? 'found' : 'missing'}">
+          <div class="field-label">${f.label}</div>
+          <div class="field-value">${escHtml(displayVal)}</div>
+        </div>`;
+    }).join('');
+
+    const badgeClass = secFound === secTotal ? 'all' : (secFound > 0 ? 'some' : 'none');
+    const badgeText  = `${secFound}/${secTotal}`;
+
+    const secEl = document.createElement('div');
+    secEl.className = 'result-section';
+    secEl.innerHTML = `
+      <div class="result-section-head" onclick="toggleSection(this)">
+        <div class="rs-icon"><i class="fa-solid ${sec.icon}"></i></div>
+        <div class="rs-title">${sec.label}</div>
+        <span class="rs-badge ${badgeClass}">${badgeText} campos</span>
+        <i class="fa-solid fa-chevron-down rs-chevron"></i>
+      </div>
+      <div class="result-section-body ${secFound > 0 ? 'open' : ''}">
+        <div class="field-grid">${fieldsHtml}</div>
+      </div>`;
+    container.appendChild(secEl);
+    if (secFound > 0) {
+      secEl.querySelector('.rs-chevron').classList.add('open');
+    }
+  });
+
+  document.getElementById('statFound').textContent   = totalFound;
+  document.getElementById('statMissing').textContent = totalAll - totalFound;
+  document.getElementById('resultsSubtitle').textContent =
+    `Se encontró el ${Math.round(totalFound/totalAll*100)}% de la información (${totalFound}/${totalAll} campos).`;
+}
+
+function toggleSection(head) {
+  const body    = head.nextElementSibling;
+  const chevron = head.querySelector('.rs-chevron');
+  body.classList.toggle('open');
+  chevron.classList.toggle('open');
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+// ─── DOWNLOAD FILLED FORM ────────────────────────────────────────────────────
+async function downloadFilledForm() {
+  if (!extractedData) return;
+
+  // Fetch base form template
+  let html;
+  try {
+    const res = await fetch('../plantillas/FORMULARIO_ONBOARDING_HOTEL.html');
+    html = await res.text();
+  } catch(e) {
+    showError('No se pudo cargar el formulario base.'); return;
+  }
+
+  // Inject values into form fields via a comment-block data attribute pattern.
+  // We embed the extracted JSON at the top of the form for autofill on load.
+  const jsonBlock = `<!-- EXTRACTED_DATA:${JSON.stringify(extractedData)} -->`;
+  const autofillScript = `
+<script>
+(function(){
+  const m = document.documentElement.innerHTML.match(/EXTRACTED_DATA:(\{.*?\})\s*-->/);
+  if(!m) return;
+  try {
+    const d = JSON.parse(m[1]);
+    Object.entries(d).forEach(([k,v]) => {
+      if(!v) return;
+      const el = document.querySelector('[data-field="'+k+'"]') || document.getElementById(k);
+      if(!el) return;
+      if(el.tagName==='INPUT'||el.tagName==='TEXTAREA') el.value = typeof v==='object'?JSON.stringify(v,null,2):v;
+      else if(el.tagName==='SELECT'){
+        const lower=String(v).toLowerCase();
+        [...el.options].forEach(o=>{if(o.value.toLowerCase()===lower||o.text.toLowerCase()===lower)o.selected=true;});
+      }
+    });
+  } catch(e){}
+})();
+<\/script>`;
+
+  // Insert autofill script + data just before </body>
+  html = html.replace('</body>', jsonBlock + autofillScript + '</body>');
+
+  // Add data-field attributes so the autofill script can find inputs
+  // (Best-effort: we patch common field names)
+  SECTIONS.forEach(sec => {
+    sec.fields.forEach(f => {
+      // Try to inject data-field attr via id match
+      html = html.replace(
+        new RegExp(`id="${f.key}"`, 'g'),
+        `id="${f.key}" data-field="${f.key}"`
+      );
+      html = html.replace(
+        new RegExp(`name="${f.key}"`, 'g'),
+        `name="${f.key}" data-field="${f.key}"`
+      );
+    });
+  });
+
+  // Add filled-by banner at top of form
+  const hotelName = extractedData.nombre_hotel || 'Hotel';
+  const banner = `<div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#16A34A;color:white;text-align:center;padding:8px 16px;font-family:Kodchasan,sans-serif;font-size:.82rem;font-weight:600;">
+    ✅ Formulario pre-llenado con IA para: <strong>${escHtml(hotelName)}</strong> — Revisa y ajusta los campos antes de enviar
+  </div>`;
+  html = html.replace('<body', `<body style="padding-top:40px"`) .replace(/(<body[^>]*>)/, `$1${banner}`);
+
+  const blob = new Blob([html], { type:'text/html' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `onboarding_${(extractedData.nombre_hotel||'hotel').replace(/\s+/g,'_').toLowerCase()}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─── COPY JSON ───────────────────────────────────────────────────────────────
+function copyJson() {
+  if (!extractedData) return;
+  navigator.clipboard.writeText(JSON.stringify(extractedData, null, 2))
+    .then(() => alert('JSON copiado al portapapeles.'))
+    .catch(() => alert('No se pudo copiar. Usa el botón de descarga.'));
+}
+
+// ─── RESET ───────────────────────────────────────────────────────────────────
+function resetAll() {
+  uploadedFiles = [];
+  extractedData = null;
+  renderFileList();
+  document.getElementById('pasteText').value = '';
+  document.querySelectorAll('.url-input').forEach((el,i) => { if(i>0) el.closest('.url-row').remove(); else el.value=''; });
+  document.getElementById('results-section').style.display  = 'none';
+  document.getElementById('progress-section').style.display = 'none';
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+</script>
+</body>
+</html>
