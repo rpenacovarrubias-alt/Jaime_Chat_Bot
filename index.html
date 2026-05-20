@@ -1,580 +1,447 @@
 <!DOCTYPE html>
-<html class="scroll-smooth" lang="es">
+<html lang="es" class="scroll-smooth">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Chatbot Jaime — Kit de Implementación</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Chatbot Jaime — Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-<style>
-  .material-symbols-outlined {
-    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    vertical-align: middle;
-  }
-  .golden-glow {
-    box-shadow: 0 4px 14px 0 rgba(200, 151, 74, 0.18);
-  }
-  .golden-glow-sm {
-    box-shadow: 0 4px 14px 0 rgba(200, 151, 74, 0.08);
-  }
-  .reveal {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.6s ease-out;
-  }
-  .reveal.active {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .wave-path { fill: #fcf8fb; }
-
-  /* Social buttons */
-  .social-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    border-radius: 9999px;
-    font-weight: 700;
-    font-size: 14px;
-    color: white;
-    text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  }
-  .social-pill:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.22); }
-
-  /* Footer icon buttons */
-  .footer-social {
-    width: 34px; height: 34px;
-    border-radius: 9999px;
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(255,255,255,0.08);
-    color: rgba(255,255,255,0.7);
-    text-decoration: none;
-    transition: background 0.2s, color 0.2s, transform 0.2s;
-    font-size: 14px;
-  }
-  .footer-social:hover { transform: translateY(-2px); color: white; }
-  .footer-social.wa:hover  { background: #25D366; }
-  .footer-social.ig:hover  { background: linear-gradient(135deg, #833AB4, #FD1D1D, #FCAF45); }
-  .footer-social.fb:hover  { background: #1877F2; }
-  .footer-social.li:hover  { background: #0A66C2; }
-  .footer-social.yt:hover  { background: #FF0000; }
-  .footer-social.gh:hover  { background: #333; }
-</style>
-<script id="tailwind-config">
+<script>
   tailwind.config = {
-    darkMode: "class",
     theme: {
       extend: {
         colors: {
-          "on-error": "#ffffff",
-          "on-tertiary-fixed": "#291800",
-          "tertiary-container": "#ce953c",
-          "on-background": "#1b1b1d",
-          "inverse-surface": "#303032",
-          "on-surface": "#1b1b1d",
-          "on-primary": "#ffffff",
-          "surface": "#fcf8fb",
-          "surface-container": "#f0edef",
-          "on-tertiary": "#ffffff",
-          "surface-container-highest": "#e4e2e4",
-          "tertiary": "#815500",
-          "secondary-fixed": "#ffddaf",
-          "surface-container-lowest": "#ffffff",
-          "secondary": "#7d5713",
-          "primary-container": "#c8974a",
-          "on-tertiary-fixed-variant": "#624000",
-          "secondary-fixed-dim": "#f0be71",
-          "on-secondary": "#ffffff",
-          "error-container": "#ffdad6",
-          "surface-dim": "#dcd9dc",
-          "on-secondary-container": "#795510",
-          "background": "#fcf8fb",
-          "inverse-on-surface": "#f3f0f2",
-          "surface-container-high": "#eae7ea",
-          "surface-bright": "#fcf8fb",
-          "primary-fixed-dim": "#f3bd6c",
-          "on-error-container": "#93000a",
-          "primary": "#7e570c",
-          "on-secondary-fixed-variant": "#614000",
-          "inverse-primary": "#f3bd6c",
-          "surface-container-low": "#f6f3f5",
-          "tertiary-fixed-dim": "#fabb5e",
-          "on-primary-fixed": "#281800",
-          "tertiary-fixed": "#ffddb2",
-          "on-primary-container": "#4c3100",
-          "on-tertiary-container": "#4d3100",
-          "on-primary-fixed-variant": "#614000",
-          "surface-tint": "#7e570c",
-          "primary-fixed": "#ffddb0",
-          "outline-variant": "#d3c4b3",
-          "on-secondary-fixed": "#281800",
-          "on-surface-variant": "#4f4538",
-          "outline": "#817566",
-          "secondary-container": "#ffcc7e",
-          "error": "#ba1a1a",
-          "surface-variant": "#e4e2e4"
-        },
-        borderRadius: {
-          "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"
-        },
-        spacing: {
-          "sm": "12px", "container-max": "1280px", "md": "24px",
-          "margin-desktop": "32px", "lg": "40px", "xs": "4px",
-          "xl": "64px", "base": "8px", "margin-mobile": "16px", "gutter": "24px"
+          gold:  '#D97706',
+          amber: '#F59E0B',
+          navy:  '#1E3A5F',
+          slate: '#0F172A',
+          surface: '#F8FAFC',
         },
         fontFamily: {
-          "body-md": ["Inter"], "headline-lg": ["Plus Jakarta Sans"],
-          "display-lg": ["Plus Jakarta Sans"], "body-lg": ["Inter"],
-          "label-sm": ["Inter"], "display-lg-mobile": ["Plus Jakarta Sans"],
-          "body-sm": ["Inter"], "headline-md": ["Plus Jakarta Sans"],
-          "label-md": ["Inter"], "headline-sm": ["Plus Jakarta Sans"],
-          "headline-lg-mobile": ["Plus Jakarta Sans"]
-        },
-        fontSize: {
-          "body-md":  ["16px", { lineHeight:"24px", fontWeight:"400" }],
-          "headline-lg": ["32px", { lineHeight:"40px", fontWeight:"700" }],
-          "display-lg": ["48px", { lineHeight:"56px", letterSpacing:"-0.02em", fontWeight:"700" }],
-          "body-lg":  ["18px", { lineHeight:"28px", fontWeight:"400" }],
-          "label-sm": ["12px", { lineHeight:"16px", fontWeight:"600" }],
-          "display-lg-mobile": ["32px", { lineHeight:"40px", letterSpacing:"-0.01em", fontWeight:"700" }],
-          "body-sm":  ["14px", { lineHeight:"20px", fontWeight:"400" }],
-          "headline-md": ["24px", { lineHeight:"32px", fontWeight:"600" }],
-          "label-md": ["14px", { lineHeight:"20px", letterSpacing:"0.01em", fontWeight:"500" }],
-          "headline-sm": ["20px", { lineHeight:"28px", fontWeight:"600" }],
-          "headline-lg-mobile": ["24px", { lineHeight:"32px", fontWeight:"700" }]
+          sans:    ['Inter', 'sans-serif'],
+          display: ['"Plus Jakarta Sans"', 'sans-serif'],
         }
       }
     }
   }
 </script>
+<style>
+  body { font-family: 'Inter', sans-serif; background: #F8FAFC; color: #1C1C1E; }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24;
+    vertical-align: middle;
+  }
+  /* Card hover lift */
+  .card-hover { transition: transform .18s, box-shadow .18s; }
+  .card-hover:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.09); }
+  /* Toast */
+  #j-toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: #0F172A; color: white; padding: 12px 20px; border-radius: 12px;
+    font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.25); z-index: 9999;
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1); pointer-events: none;
+  }
+  #j-toast.show { transform: translateX(-50%) translateY(0); }
+  /* Social pill */
+  .social-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 18px; border-radius: 9999px;
+    font-size: 13px; font-weight: 700; color: white; text-decoration: none;
+    transition: transform .15s, box-shadow .15s;
+    box-shadow: 0 2px 8px rgba(0,0,0,.14);
+  }
+  .social-pill:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.2); }
+  /* Footer social icons */
+  .footer-social {
+    width: 32px; height: 32px; border-radius: 9999px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.08); color: rgba(255,255,255,.6);
+    text-decoration: none; font-size: 13px;
+    transition: background .15s, color .15s, transform .15s;
+  }
+  .footer-social:hover { transform: translateY(-2px); color: white; }
+  .footer-social.wa:hover  { background: #25D366; }
+  .footer-social.ig:hover  { background: linear-gradient(135deg,#833AB4,#FD1D1D,#FCAF45); }
+  .footer-social.fb:hover  { background: #1877F2; }
+  .footer-social.li:hover  { background: #0A66C2; }
+  .footer-social.yt:hover  { background: #FF0000; }
+  .footer-social.gh:hover  { background: #333; }
+  /* Section label */
+  .section-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .08em; color: rgba(30,58,95,.5);
+    display: flex; align-items: center; gap: 6px; margin-bottom: 16px;
+  }
+  .section-label .material-symbols-outlined { font-size: 15px; }
+</style>
 </head>
-<body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<body>
 
-<!-- ── NAV ── -->
-<nav class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-outline-variant shadow-sm">
-  <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex justify-between items-center h-20">
-    <div class="flex items-center gap-2">
-      <span class="material-symbols-outlined text-[#C8974A] text-[22px]">smart_toy</span>
-      <span class="text-headline-sm font-headline-sm font-bold text-primary">Chatbot Jaime</span>
+<!-- Toast -->
+<div id="j-toast">
+  <span class="material-symbols-outlined" style="font-size:18px;color:#F59E0B;">check_circle</span>
+  <span id="j-toast-msg">Hotel guardado correctamente</span>
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────── -->
+<!--  PAGE CONTENT  (shared.js wraps this in #j-content + sidebar)    -->
+<!-- ────────────────────────────────────────────────────────────────── -->
+
+<!-- PAGE HEADER -->
+<div style="background:#0F172A; padding:32px 32px 28px; border-bottom:1px solid rgba(255,255,255,.07);">
+  <div style="max-width:900px;">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:6px;">
+      JAIME_HMV2 · Kit de Implementación
     </div>
-    <div class="hidden md:flex gap-md">
-      <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#herramienta">Herramienta</a>
-      <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#formularios">Formularios</a>
-      <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#documentacion">Documentación</a>
-      <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#hoteles">Hoteles</a>
-      <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#compartir">Compartir</a>
-    </div>
-    <a href="extractor/" class="bg-primary text-on-primary px-md py-sm rounded-lg font-bold hover:translate-y-[-2px] transition-transform text-body-sm">
-      Comenzar →
-    </a>
+    <h1 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:700;color:white;margin:0 0 6px;">
+      Dashboard <span style="color:#D97706;">Principal</span>
+    </h1>
+    <p style="font-size:14px;color:rgba(255,255,255,.45);margin:0;">
+      Panel de control · Herramientas · Hoteles implementados
+    </p>
   </div>
-</nav>
+</div>
 
-<!-- ── HERO ── -->
-<header class="pt-32 pb-0 bg-[#1C1C1E] relative overflow-hidden">
-  <!-- subtle grid overlay -->
-  <div class="absolute inset-0 opacity-[0.04]"
-       style="background-image: linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px); background-size: 48px 48px;"></div>
+<!-- MAIN CONTENT -->
+<div style="max-width:960px; margin:0 auto; padding:32px 24px 64px; display:flex; flex-direction:column; gap:40px;">
 
-  <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop relative z-10">
-    <div class="flex flex-col items-center text-center space-y-md reveal">
-
-      <div class="inline-flex items-center gap-xs px-sm py-xs bg-white/5 border border-white/15 rounded-full text-primary-fixed-dim font-label-sm text-label-sm">
-        <span class="material-symbols-outlined text-[16px] text-[#C8974A]">smart_toy</span>
-        Chatbot para Hoteles
-      </div>
-
-      <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-white">
-        Chatbot <span class="text-[#C8974A]">Jaime</span>
-      </h1>
-
-      <p class="max-w-2xl font-body-lg text-body-lg text-white/65">
-        Kit completo de implementación: plantillas, formularios y flujos de conversación para la hotelería moderna.
-      </p>
-
-      <a href="extractor/" class="mt-md px-xl py-md bg-[#C8974A] text-white rounded-full font-bold inline-flex items-center gap-sm hover:scale-105 transition-all shadow-lg golden-glow">
-        <span class="material-symbols-outlined text-[20px]">magic_button</span>
-        Abrir Extractor IA →
-      </a>
-
-      <!-- Stats bar -->
-      <div class="mt-lg w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-0 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden">
-        <div class="text-center py-md px-sm border-r border-white/10">
-          <div class="text-headline-md font-headline-md text-[#C8974A]">5 min</div>
-          <div class="text-label-sm text-white/45 mt-1">Setup Rápido</div>
-        </div>
-        <div class="text-center py-md px-sm border-r border-white/10">
-          <div class="text-headline-md font-headline-md text-[#C8974A]">80+</div>
-          <div class="text-label-sm text-white/45 mt-1">Campos IA</div>
-        </div>
-        <div class="text-center py-md px-sm border-r border-white/10">
-          <div class="text-headline-md font-headline-md text-[#C8974A]">15</div>
-          <div class="text-label-sm text-white/45 mt-1">Secciones</div>
-        </div>
-        <div class="text-center py-md px-sm">
-          <div class="text-headline-md font-headline-md text-[#C8974A]">3</div>
-          <div class="text-label-sm text-white/45 mt-1">Canales</div>
-        </div>
-      </div>
-
+  <!-- ── STATS BAR ── -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);border-radius:12px;overflow:hidden;border:1px solid #E5E7EB;background:white;">
+    <div style="padding:18px 16px;text-align:center;border-right:1px solid #E5E7EB;">
+      <div style="font-size:22px;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;color:#D97706;">5 min</div>
+      <div style="font-size:11px;color:#6B7280;margin-top:3px;font-weight:500;">Setup rápido</div>
+    </div>
+    <div style="padding:18px 16px;text-align:center;border-right:1px solid #E5E7EB;">
+      <div style="font-size:22px;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;color:#D97706;">80+</div>
+      <div style="font-size:11px;color:#6B7280;margin-top:3px;font-weight:500;">Campos IA</div>
+    </div>
+    <div style="padding:18px 16px;text-align:center;border-right:1px solid #E5E7EB;">
+      <div style="font-size:22px;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;color:#D97706;">15</div>
+      <div style="font-size:11px;color:#6B7280;margin-top:3px;font-weight:500;">Secciones</div>
+    </div>
+    <div style="padding:18px 16px;text-align:center;">
+      <div style="font-size:22px;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;color:#D97706;">3</div>
+      <div style="font-size:11px;color:#6B7280;margin-top:3px;font-weight:500;">Canales</div>
     </div>
   </div>
 
-  <!-- Wave -->
-  <div class="relative w-full leading-[0] mt-xl">
-    <svg class="w-full h-auto" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-      <path class="wave-path" d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"/>
-    </svg>
-  </div>
-</header>
-
-<!-- ── MAIN ── -->
-<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-xl space-y-xl">
-
-  <!-- HERRAMIENTA IA -->
-  <section id="herramienta" class="reveal">
-    <div class="flex items-center gap-sm mb-md text-primary">
-      <span class="material-symbols-outlined">auto_awesome</span>
-      <span class="font-label-md text-label-md tracking-wider uppercase">Herramienta IA</span>
+  <!-- ── HERRAMIENTA IA ── -->
+  <section>
+    <div class="section-label">
+      <span class="material-symbols-outlined">auto_awesome</span> Herramienta IA
     </div>
-
-    <div class="relative overflow-hidden rounded-xl bg-[#1C1C1E] border border-outline-variant p-lg md:p-xl flex flex-col md:flex-row items-center gap-lg">
-      <div class="absolute inset-0 bg-gradient-to-br from-[#1C1C1E] via-[#1C1C1E] to-[#C8974A]/30 pointer-events-none"></div>
-
-      <div class="relative z-10 flex-1 space-y-md">
-        <div class="w-16 h-16 bg-[#C8974A]/20 rounded-lg flex items-center justify-center border border-[#C8974A]/40">
-          <span class="material-symbols-outlined text-[#C8974A] text-[32px]">auto_fix_high</span>
+    <div style="background:#0F172A;border-radius:14px;padding:32px;display:flex;gap:28px;align-items:center;overflow:hidden;position:relative;">
+      <!-- Background gradient accent -->
+      <div style="position:absolute;right:0;top:0;bottom:0;width:40%;background:linear-gradient(135deg,transparent,rgba(217,119,6,.18));pointer-events:none;"></div>
+      <div style="flex:1;position:relative;z-index:1;">
+        <div style="width:48px;height:48px;background:rgba(217,119,6,.18);border-radius:10px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(217,119,6,.3);margin-bottom:16px;">
+          <span class="material-symbols-outlined" style="color:#F59E0B;font-size:24px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">auto_fix_high</span>
         </div>
-        <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-white">Extractor IA de Información</h2>
-        <p class="text-white/60 font-body-md text-body-md max-w-xl">
+        <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;color:white;margin:0 0 10px;">Extractor IA de Información</h2>
+        <p style="font-size:14px;color:rgba(255,255,255,.55);line-height:1.6;margin:0 0 18px;">
           Sube URLs, PDFs e imágenes del hotel. Claude analiza todo y pre-llena automáticamente el formulario de onboarding con más de 80 campos.
         </p>
-        <div class="flex flex-wrap gap-sm">
-          <span class="px-md py-xs bg-white/10 rounded-full text-white/80 font-label-sm text-label-sm">Claude AI</span>
-          <span class="px-md py-xs bg-white/10 rounded-full text-white/80 font-label-sm text-label-sm">Auto-llenado</span>
-          <span class="px-md py-xs bg-white/10 rounded-full text-white/80 font-label-sm text-label-sm">URLs · PDFs · Imágenes</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+          <span style="padding:4px 12px;background:rgba(255,255,255,.08);border-radius:20px;font-size:11px;font-weight:600;color:rgba(255,255,255,.7);">Claude AI</span>
+          <span style="padding:4px 12px;background:rgba(255,255,255,.08);border-radius:20px;font-size:11px;font-weight:600;color:rgba(255,255,255,.7);">Auto-llenado</span>
+          <span style="padding:4px 12px;background:rgba(255,255,255,.08);border-radius:20px;font-size:11px;font-weight:600;color:rgba(255,255,255,.7);">URLs · PDFs · Imágenes</span>
         </div>
-        <a href="extractor/" class="inline-flex items-center gap-sm px-lg py-sm bg-[#C8974A] text-white rounded-full font-bold hover:scale-105 transition-all shadow-lg golden-glow mt-sm">
-          <span class="material-symbols-outlined text-[18px]">arrow_forward</span> Abrir Extractor
-        </a>
-      </div>
-
-      <div class="relative z-10 w-full md:w-[38%]">
-        <img alt="Interfaz IA Extractor — partículas doradas sobre fondo oscuro"
-             class="rounded-lg shadow-2xl border border-white/10 w-full object-cover"
-             src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkIg9g6r8hBmGMeihMU2_bgMmoqZvt5WlOWaodKx4GxCwDxapJSVhZbLlUWZWXKiXoAUMk5dwosTc6y4BcGu_ifiuirBrrNBK4xpGDdifHB2o-JOh858UhojA6LVyJ58Bv0V3tMPrHKLfRwoNsKY29e8Oh5WzcRIzfxI5QLW__g1VeyeyYTFTZYGa1oqNlwJOfnzttM7XTH1KrMMuOz9CQmgm_wSDzWkq8BECPZApiIxTr1c1uysechvqo6CnysBVwTLvFHkYqmDUp"
-             onerror="this.parentElement.style.display='none'"/>
-      </div>
-    </div>
-  </section>
-
-  <!-- FORMULARIOS -->
-  <section id="formularios" class="reveal">
-    <div class="flex items-center gap-sm mb-md text-primary">
-      <span class="material-symbols-outlined">assignment</span>
-      <span class="font-label-md text-label-md tracking-wider uppercase">Formularios Interactivos</span>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
-      <!-- Card A — Onboarding -->
-      <div class="bg-white rounded-xl border border-outline-variant border-t-[3px] border-t-[#C8974A] golden-glow-sm hover:translate-y-[-4px] transition-all p-lg flex flex-col">
-        <div class="flex justify-between items-start mb-md">
-          <span class="material-symbols-outlined text-[#C8974A] text-[36px]">assignment</span>
-          <span class="material-symbols-outlined text-outline text-[20px]">open_in_new</span>
-        </div>
-        <h3 class="font-headline-md text-headline-md mb-sm">Formulario de Onboarding</h3>
-        <p class="text-on-surface-variant font-body-md text-body-md mb-md flex-1">Recopila toda la información del hotel en 15 secciones y más de 100 campos. Habitaciones, servicios, directorio y políticas.</p>
-        <div class="flex flex-wrap gap-2 mb-lg">
-          <span class="px-3 py-1 bg-[#FBF5EC] text-[#8B6420] rounded-full text-xs font-semibold">15 secciones</span>
-          <span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full text-xs font-semibold">Habitaciones</span>
-          <span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full text-xs font-semibold">Servicios</span>
-          <span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full text-xs font-semibold">Directorio</span>
-        </div>
-        <a href="plantillas/FORMULARIO_ONBOARDING_HOTEL.html" class="text-[#C8974A] font-bold flex items-center gap-xs hover:gap-sm transition-all">
-          Abrir Formulario <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-        </a>
-      </div>
-
-      <!-- Card B — Convenio -->
-      <div class="bg-white rounded-xl border border-outline-variant border-t-[3px] border-t-[#0D7A6B] golden-glow-sm hover:translate-y-[-4px] transition-all p-lg flex flex-col">
-        <div class="flex justify-between items-start mb-md">
-          <span class="material-symbols-outlined text-[#0D7A6B] text-[36px]">description</span>
-          <span class="material-symbols-outlined text-outline text-[20px]">open_in_new</span>
-        </div>
-        <h3 class="font-headline-md text-headline-md mb-sm">Plantilla de Convenio</h3>
-        <p class="text-on-surface-variant font-body-md text-body-md mb-md flex-1">Convenio corporativo listo para personalizar con los colores, logo y datos de cada hotel cliente. 22 placeholders configurables.</p>
-        <div class="flex flex-wrap gap-2 mb-lg">
-          <span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full text-xs font-semibold">Corporativo</span>
-          <span class="px-3 py-1 bg-[#F0FBF9] text-[#0D7A6B] rounded-full text-xs font-semibold">White-label</span>
-          <span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full text-xs font-semibold">PDF</span>
-        </div>
-        <a href="plantillas/PLANTILLA_FORMULARIO_CONVENIO.html" class="text-[#0D7A6B] font-bold flex items-center gap-xs hover:gap-sm transition-all">
-          Abrir Plantilla <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+        <a href="/extractor/" style="display:inline-flex;align-items:center;gap:8px;padding:10px 22px;background:#D97706;color:white;border-radius:9999px;font-weight:700;font-size:14px;text-decoration:none;transition:opacity .15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span> Abrir Extractor
         </a>
       </div>
     </div>
   </section>
 
-  <!-- DOCUMENTACIÓN -->
-  <section id="documentacion" class="reveal">
-    <div class="flex items-center gap-sm mb-md text-primary">
-      <span class="material-symbols-outlined">menu_book</span>
-      <span class="font-label-md text-label-md tracking-wider uppercase">Documentación</span>
+  <!-- ── FORMULARIOS ── -->
+  <section>
+    <div class="section-label">
+      <span class="material-symbols-outlined">assignment</span> Formularios Interactivos
     </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
-      <!-- Ficha -->
-      <div class="group bg-white rounded-xl border border-l-0 border-outline-variant hover:border-l-[4px] hover:border-[#C8974A] p-lg transition-all flex justify-between items-center gap-md">
-        <div class="flex items-center gap-md">
-          <div class="bg-surface-container rounded-lg p-sm flex-shrink-0">
-            <span class="material-symbols-outlined text-primary">settings_applications</span>
+      <!-- Onboarding -->
+      <div class="card-hover" style="background:white;border-radius:12px;border:1px solid #E5E7EB;border-top:3px solid #D97706;padding:24px;display:flex;flex-direction:column;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+          <span class="material-symbols-outlined" style="font-size:32px;color:#D97706;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 40;">assignment</span>
+          <span class="material-symbols-outlined" style="font-size:18px;color:#9CA3AF;">open_in_new</span>
+        </div>
+        <h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:700;margin:0 0 8px;">Formulario de Onboarding</h3>
+        <p style="font-size:13px;color:#6B7280;line-height:1.55;flex:1;margin:0 0 16px;">Recopila toda la información del hotel en 15 secciones y más de 100 campos.</p>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;">
+          <span style="padding:3px 10px;background:#FEF3C7;color:#92400E;border-radius:20px;font-size:11px;font-weight:600;">15 secciones</span>
+          <span style="padding:3px 10px;background:#F3F4F6;color:#6B7280;border-radius:20px;font-size:11px;font-weight:600;">Habitaciones</span>
+          <span style="padding:3px 10px;background:#F3F4F6;color:#6B7280;border-radius:20px;font-size:11px;font-weight:600;">Directorio</span>
+        </div>
+        <a href="/plantillas/FORMULARIO_ONBOARDING_HOTEL.html" style="color:#D97706;font-weight:700;font-size:13px;text-decoration:none;display:flex;align-items:center;gap:4px;" onmouseover="this.style.gap='8px'" onmouseout="this.style.gap='4px'">
+          Abrir Formulario <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
+        </a>
+      </div>
+
+      <!-- Convenio -->
+      <div class="card-hover" style="background:white;border-radius:12px;border:1px solid #E5E7EB;border-top:3px solid #0D7A6B;padding:24px;display:flex;flex-direction:column;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+          <span class="material-symbols-outlined" style="font-size:32px;color:#0D7A6B;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 40;">handshake</span>
+          <span class="material-symbols-outlined" style="font-size:18px;color:#9CA3AF;">open_in_new</span>
+        </div>
+        <h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:700;margin:0 0 8px;">Plantilla de Convenio</h3>
+        <p style="font-size:13px;color:#6B7280;line-height:1.55;flex:1;margin:0 0 16px;">Convenio corporativo listo para personalizar con los colores, logo y datos de cada hotel. 22 placeholders.</p>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;">
+          <span style="padding:3px 10px;background:#F0FDF9;color:#065F46;border-radius:20px;font-size:11px;font-weight:600;">White-label</span>
+          <span style="padding:3px 10px;background:#F3F4F6;color:#6B7280;border-radius:20px;font-size:11px;font-weight:600;">PDF</span>
+          <span style="padding:3px 10px;background:#F3F4F6;color:#6B7280;border-radius:20px;font-size:11px;font-weight:600;">Corporativo</span>
+        </div>
+        <a href="/plantillas/PLANTILLA_FORMULARIO_CONVENIO.html" style="color:#0D7A6B;font-weight:700;font-size:13px;text-decoration:none;display:flex;align-items:center;gap:4px;" onmouseover="this.style.gap='8px'" onmouseout="this.style.gap='4px'">
+          Abrir Plantilla <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── DOCUMENTACIÓN ── -->
+  <section>
+    <div class="section-label">
+      <span class="material-symbols-outlined">menu_book</span> Documentación
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+
+      <a href="/plantillas/PLANTILLA_FICHA_HOTEL.html" class="card-hover" style="background:white;border-radius:10px;border:1px solid #E5E7EB;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;text-decoration:none;color:inherit;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:38px;height:38px;background:#F3F4F6;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="material-symbols-outlined" style="color:#1E3A5F;font-size:18px;">settings_applications</span>
           </div>
           <div>
-            <h4 class="font-headline-sm text-headline-sm">Ficha de Configuración</h4>
-            <p class="text-on-surface-variant text-body-sm">Todos los campos y placeholders de Jaime.</p>
+            <div style="font-weight:600;font-size:14px;margin-bottom:2px;">Ficha de Configuración</div>
+            <div style="font-size:12px;color:#9CA3AF;">Todos los campos y placeholders de Jaime</div>
           </div>
         </div>
-        <a href="https://jaime-chatbot.vercel.app/plantillas/PLANTILLA_FICHA_HOTEL.html"
-           target="_blank" rel="noopener"
-           class="flex-shrink-0 bg-[#C8974A] text-white px-sm py-xs rounded-lg flex items-center gap-xs hover:bg-[#B8842A] transition-colors text-body-sm font-semibold">
-          <span class="material-symbols-outlined" style="font-size:15px;line-height:1">description</span> Ver ficha
-        </a>
-      </div>
-
-      <!-- Flujos -->
-      <div class="group bg-white rounded-xl border border-l-0 border-outline-variant hover:border-l-[4px] hover:border-[#C8974A] p-lg transition-all flex justify-between items-center gap-md">
-        <div class="flex items-center gap-md">
-          <div class="bg-surface-container rounded-lg p-sm flex-shrink-0">
-            <span class="material-symbols-outlined text-primary">account_tree</span>
-          </div>
-          <div>
-            <h4 class="font-headline-sm text-headline-sm">Flujos de Conversación</h4>
-            <p class="text-on-surface-variant text-body-sm">Lógica dialógica ManyChat y WhatsApp.</p>
-          </div>
-        </div>
-        <a href="https://jaime-chatbot.vercel.app/plantillas/PLANTILLA_FLUJOS_JAIME.html"
-           target="_blank" rel="noopener"
-           class="flex-shrink-0 bg-[#C8974A] text-white px-sm py-xs rounded-lg flex items-center gap-xs hover:bg-[#B8842A] transition-colors text-body-sm font-semibold">
-          <span class="material-symbols-outlined" style="font-size:15px;line-height:1">account_tree</span> Ver flujos
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- HOTELES IMPLEMENTADOS -->
-  <section id="hoteles" class="reveal">
-    <div class="flex items-center gap-sm mb-md text-primary">
-      <span class="material-symbols-outlined">hotel</span>
-      <span class="font-label-md text-label-md tracking-wider uppercase">Hoteles Implementados</span>
-    </div>
-
-    <div class="bg-white rounded-2xl border border-outline-variant overflow-hidden">
-
-      <!-- Header de la sección -->
-      <div class="px-lg py-md border-b border-outline-variant flex flex-col sm:flex-row sm:items-center justify-between gap-sm">
-        <div>
-          <h2 class="font-headline-md text-headline-md">Hoteles activos</h2>
-          <p class="text-on-surface-variant text-body-sm mt-1">Selecciona un hotel para ver su configuración y flujos.</p>
-        </div>
-        <span class="inline-flex items-center gap-xs px-sm py-xs bg-[#FBF5EC] text-[#8B6420] rounded-full font-bold text-body-sm border border-[#C8974A]/25 self-start sm:self-auto">
-          <span class="material-symbols-outlined text-[14px]">check_circle</span>
-          1 hotel configurado
+        <span style="padding:6px 14px;background:#D97706;color:white;border-radius:7px;font-size:12px;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:5px;">
+          <span class="material-symbols-outlined" style="font-size:13px;">description</span> Ver ficha
         </span>
+      </a>
+
+      <a href="/plantillas/PLANTILLA_FLUJOS_JAIME.html" class="card-hover" style="background:white;border-radius:10px;border:1px solid #E5E7EB;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;text-decoration:none;color:inherit;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:38px;height:38px;background:#F3F4F6;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="material-symbols-outlined" style="color:#1E3A5F;font-size:18px;">account_tree</span>
+          </div>
+          <div>
+            <div style="font-weight:600;font-size:14px;margin-bottom:2px;">Flujos de Conversación</div>
+            <div style="font-size:12px;color:#9CA3AF;">Lógica dialógica ManyChat y WhatsApp</div>
+          </div>
+        </div>
+        <span style="padding:6px 14px;background:#D97706;color:white;border-radius:7px;font-size:12px;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:5px;">
+          <span class="material-symbols-outlined" style="font-size:13px;">account_tree</span> Ver flujos
+        </span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ── HOTELES IMPLEMENTADOS ── -->
+  <section>
+    <div class="section-label">
+      <span class="material-symbols-outlined">hotel</span> Hoteles Implementados
+    </div>
+
+    <div style="background:white;border-radius:14px;border:1px solid #E5E7EB;overflow:hidden;">
+      <!-- Header row -->
+      <div style="padding:18px 24px 16px;border-bottom:1px solid #F3F4F6;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;">Hoteles activos</div>
+          <div style="font-size:12px;color:#9CA3AF;margin-top:2px;">Selecciona un hotel para ver su configuración y flujos</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span id="hotel-count-badge" style="padding:4px 12px;background:#FEF3C7;color:#92400E;border-radius:20px;font-size:11px;font-weight:700;border:1px solid rgba(217,119,6,.2);display:flex;align-items:center;gap:4px;">
+            <span class="material-symbols-outlined" style="font-size:12px;">check_circle</span>
+            1 hotel
+          </span>
+          <button onclick="window.location.href='/plantillas/FORMULARIO_ONBOARDING_HOTEL.html?nuevo=1'"
+                  title="Agregar hotel nuevo"
+                  style="width:34px;height:34px;background:#D97706;border:none;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:white;transition:background .15s;"
+                  onmouseover="this.style.background='#B45309'" onmouseout="this.style.background='#D97706'">
+            <span class="material-symbols-outlined" style="font-size:20px;">add</span>
+          </button>
+        </div>
       </div>
 
-      <!-- Lista de hoteles -->
-      <div class="divide-y divide-outline-variant">
+      <!-- Hotel list -->
+      <div id="hotel-list">
 
-        <!-- Hotel: BeWow Querétaro -->
-        <a href="hoteles/BEWOW_QUERETARO/"
-           class="flex flex-col sm:flex-row sm:items-center gap-md p-lg hover:bg-surface-container-low transition-colors group">
-
-          <!-- Avatar / Iniciales -->
-          <div class="w-14 h-14 rounded-xl bg-[#1C1C1E] flex items-center justify-center flex-shrink-0 border border-outline-variant group-hover:border-[#C8974A]/40 transition-colors">
-            <span class="text-[#C8974A] font-bold text-headline-sm leading-none">BW</span>
+        <!-- BEWOW — static hardcoded -->
+        <a href="/hoteles/BEWOW_QUERETARO/"
+           style="display:flex;align-items:center;gap:16px;padding:20px 24px;border-bottom:1px solid #F9FAFB;text-decoration:none;color:inherit;transition:background .15s;"
+           onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background=''">
+          <!-- Avatar -->
+          <div style="width:48px;height:48px;border-radius:10px;background:#0F172A;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid #374151;">
+            <span style="color:#D97706;font-weight:800;font-size:14px;letter-spacing:.03em;">BW</span>
           </div>
-
-          <!-- Info principal -->
-          <div class="flex-1 min-w-0">
-            <div class="flex flex-wrap items-center gap-sm mb-xs">
-              <h3 class="font-headline-sm text-headline-sm text-on-surface">Hotel Urbano BeWow© Querétaro</h3>
-              <span class="px-sm py-[2px] bg-[#E8F9EE] text-[#248A3D] rounded-full text-label-sm font-bold border border-[#34C759]/25 flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-[#34C759] inline-block"></span> En implementación
+          <!-- Info -->
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+              <span style="font-weight:700;font-size:14px;">Hotel Urbano BeWow© Querétaro</span>
+              <span style="padding:2px 10px;background:#ECFDF5;color:#065F46;border-radius:20px;font-size:11px;font-weight:700;border:1px solid rgba(16,185,129,.2);display:inline-flex;align-items:center;gap:3px;">
+                <span style="width:5px;height:5px;border-radius:50%;background:#10B981;display:inline-block;"></span> En implementación
               </span>
             </div>
-            <p class="text-on-surface-variant text-body-sm">Santiago de Querétaro, Qro. · ⭐⭐⭐⭐ 4 estrellas · 70 habitaciones</p>
-
-            <!-- Badges de estado -->
-            <div class="flex flex-wrap gap-2 mt-sm">
-              <span class="px-sm py-[3px] bg-surface-container text-on-surface-variant rounded-full text-label-sm font-semibold">ManyChat · JAIME_HMV2</span>
-              <span class="px-sm py-[3px] bg-[#FBF5EC] text-[#8B6420] rounded-full text-label-sm font-semibold">12 flujos completos</span>
-              <span class="px-sm py-[3px] bg-surface-container text-on-surface-variant rounded-full text-label-sm font-semibold">WhatsApp +52 1 442 216-0100</span>
+            <div style="font-size:12px;color:#9CA3AF;margin-bottom:6px;">Santiago de Querétaro, Qro. · ⭐⭐⭐⭐ 4 estrellas · 70 habitaciones</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <span style="padding:2px 8px;background:#F3F4F6;color:#6B7280;border-radius:20px;font-size:10px;font-weight:600;">ManyChat · JAIME_HMV2</span>
+              <span style="padding:2px 8px;background:#FEF3C7;color:#92400E;border-radius:20px;font-size:10px;font-weight:600;">12 flujos completos</span>
+              <span style="padding:2px 8px;background:#F3F4F6;color:#6B7280;border-radius:20px;font-size:10px;font-weight:600;">WhatsApp +52 1 442 216-0100</span>
             </div>
           </div>
-
-          <!-- Flecha -->
-          <div class="flex-shrink-0 flex items-center gap-sm">
-            <span class="text-on-surface-variant text-body-sm group-hover:text-primary transition-colors">Ver detalles</span>
-            <span class="material-symbols-outlined text-outline group-hover:text-primary group-hover:translate-x-1 transition-all">arrow_forward</span>
+          <!-- Arrow -->
+          <div style="flex-shrink:0;display:flex;align-items:center;gap:4px;color:#9CA3AF;font-size:12px;">
+            Ver detalles
+            <span class="material-symbols-outlined" style="font-size:16px;color:#D97706;">arrow_forward</span>
           </div>
         </a>
 
-      </div><!-- /divide-y -->
+        <!-- Dynamic hotels injected here by JS -->
+        <div id="dynamic-hotel-rows"></div>
 
+        <!-- Add hotel CTA row -->
+        <div style="padding:16px 24px;display:flex;align-items:center;justify-content:center;">
+          <button onclick="window.location.href='/plantillas/FORMULARIO_ONBOARDING_HOTEL.html?nuevo=1'"
+                  style="display:flex;align-items:center;gap:8px;padding:10px 20px;background:none;border:1.5px dashed #D1D5DB;border-radius:9px;cursor:pointer;color:#9CA3AF;font-size:13px;font-weight:600;transition:border-color .15s,color .15s;"
+                  onmouseover="this.style.borderColor='#D97706';this.style.color='#D97706';"
+                  onmouseout="this.style.borderColor='#D1D5DB';this.style.color='#9CA3AF';">
+            <span class="material-symbols-outlined" style="font-size:18px;">add_circle</span>
+            Agregar hotel nuevo
+          </button>
+        </div>
+
+      </div>
     </div>
   </section>
 
-  <!-- REDES SOCIALES -->
-  <section class="reveal">
-    <div class="flex items-center gap-sm mb-md text-primary">
-      <span class="material-symbols-outlined">share</span>
-      <span class="font-label-md text-label-md tracking-wider uppercase">Síguenos</span>
+  <!-- ── REDES SOCIALES ── -->
+  <section>
+    <div class="section-label">
+      <span class="material-symbols-outlined">share</span> Síguenos
     </div>
-    <div class="bg-surface-container-low rounded-xl p-lg text-center border border-outline-variant">
-      <p class="text-on-surface-variant font-body-md text-body-md mb-lg">Mantente al día con las novedades de Chatbot Jaime</p>
-      <div class="flex justify-center gap-md flex-wrap">
-        <a href="https://wa.me/524421314203" target="_blank" rel="noopener"
-           class="social-pill" style="background:#25D366;">
-          <i class="fab fa-whatsapp text-base"></i> WhatsApp
+    <div style="background:white;border-radius:12px;border:1px solid #E5E7EB;padding:24px;text-align:center;">
+      <p style="color:#9CA3AF;font-size:13px;margin:0 0 18px;">Mantente al día con las novedades de Chatbot Jaime</p>
+      <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+        <a href="https://wa.me/524421314203" target="_blank" rel="noopener" class="social-pill" style="background:#25D366;">
+          <i class="fab fa-whatsapp"></i> WhatsApp
         </a>
-        <a href="#" target="_blank" rel="noopener"
-           class="social-pill" style="background: linear-gradient(135deg, #833AB4, #FD1D1D 50%, #FCAF45);">
-          <i class="fab fa-instagram text-base"></i> Instagram
+        <a href="#" target="_blank" rel="noopener" class="social-pill" style="background:linear-gradient(135deg,#833AB4,#FD1D1D 50%,#FCAF45);">
+          <i class="fab fa-instagram"></i> Instagram
         </a>
-        <a href="#" target="_blank" rel="noopener"
-           class="social-pill" style="background:#1877F2;">
-          <i class="fab fa-facebook text-base"></i> Facebook
+        <a href="#" target="_blank" rel="noopener" class="social-pill" style="background:#1877F2;">
+          <i class="fab fa-facebook"></i> Facebook
         </a>
-        <a href="#" target="_blank" rel="noopener"
-           class="social-pill" style="background:#0A66C2;">
-          <i class="fab fa-linkedin text-base"></i> LinkedIn
+        <a href="#" target="_blank" rel="noopener" class="social-pill" style="background:#0A66C2;">
+          <i class="fab fa-linkedin"></i> LinkedIn
         </a>
-        <a href="#" target="_blank" rel="noopener"
-           class="social-pill" style="background:#FF0000;">
-          <i class="fab fa-youtube text-base"></i> YouTube
+        <a href="#" target="_blank" rel="noopener" class="social-pill" style="background:#FF0000;">
+          <i class="fab fa-youtube"></i> YouTube
         </a>
       </div>
     </div>
   </section>
 
-  <!-- LINKS PARA COMPARTIR -->
-  <section id="compartir" class="reveal">
-    <div class="flex items-center gap-sm mb-md text-primary">
-      <span class="material-symbols-outlined">link</span>
-      <span class="font-label-md text-label-md tracking-wider uppercase">Links para compartir con tu cliente</span>
+  <!-- ── LINKS PARA COMPARTIR ── -->
+  <section id="compartir">
+    <div class="section-label">
+      <span class="material-symbols-outlined">link</span> Links para compartir con tu cliente
     </div>
 
-    <div class="bg-white rounded-2xl p-lg md:p-xl border border-outline-variant relative overflow-hidden">
-
-      <!-- Badge "listo" -->
-      <div class="absolute top-md right-md bg-[#34C759]/10 text-[#248A3D] px-sm py-xs rounded-lg font-bold border border-[#34C759]/25 text-body-sm flex items-center gap-1">
-        <span class="material-symbols-outlined text-[14px]">check_circle</span> En línea ahora
+    <div style="background:white;border-radius:14px;border:1px solid #E5E7EB;padding:28px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:16px;right:16px;background:#ECFDF5;color:#065F46;padding:4px 12px;border-radius:8px;font-size:11px;font-weight:700;border:1px solid rgba(16,185,129,.2);display:flex;align-items:center;gap:4px;">
+        <span class="material-symbols-outlined" style="font-size:12px;">check_circle</span> En línea ahora
       </div>
+      <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;margin:0 0 6px;">Links listos para enviar</h2>
+      <p style="font-size:13px;color:#9CA3AF;margin:0 0 24px;max-width:480px;">Tu portal está desplegado en Vercel. Copia y envía cualquiera de estos links directamente a tu cliente.</p>
 
-      <h2 class="font-headline-lg text-headline-lg mb-sm">Links listos para enviar</h2>
-      <p class="text-on-surface-variant text-body-md mb-lg max-w-xl">
-        Tu portal está desplegado en Vercel. Copia y envía cualquiera de estos links directamente a tu cliente.
-      </p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
 
-      <div class="space-y-md">
-
-        <!-- Link 1 — Formulario Onboarding (destacado) -->
-        <div class="border-2 border-[#C8974A]/30 rounded-xl p-md flex flex-col sm:flex-row sm:items-center gap-md bg-[#FBF5EC]/50">
-          <div class="flex items-center gap-md flex-1 min-w-0">
-            <div class="w-11 h-11 bg-[#C8974A]/15 rounded-lg flex items-center justify-center flex-shrink-0">
-              <span class="material-symbols-outlined text-[#C8974A] text-[22px]">assignment</span>
-            </div>
-            <div class="min-w-0">
-              <p class="font-semibold text-on-surface text-body-md">Formulario de Onboarding</p>
-              <p class="text-on-surface-variant text-body-sm truncate">jaime-chatbot.vercel.app/plantillas/FORMULARIO_ONBOARDING_HOTEL.html</p>
-            </div>
+        <!-- Link 1 — Onboarding (destacado) -->
+        <div style="border:2px solid rgba(217,119,6,.3);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;background:rgba(255,251,235,.6);">
+          <div style="width:40px;height:40px;background:rgba(217,119,6,.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="material-symbols-outlined" style="color:#D97706;font-size:20px;">assignment</span>
           </div>
-          <div class="flex gap-sm flex-shrink-0">
-            <a href="https://jaime-chatbot.vercel.app/plantillas/FORMULARIO_ONBOARDING_HOTEL.html"
-               target="_blank" rel="noopener"
-               class="px-sm py-xs bg-[#1C1C1E] text-white rounded-lg text-body-sm font-semibold flex items-center gap-1 hover:bg-black transition-colors">
-              <span class="material-symbols-outlined text-[16px]">open_in_new</span> Abrir
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:600;font-size:13px;">Formulario de Onboarding</div>
+            <div style="font-size:11px;color:#9CA3AF;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">jaime-chatbot.vercel.app/plantillas/FORMULARIO_ONBOARDING_HOTEL.html</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;">
+            <a href="https://jaime-chatbot.vercel.app/plantillas/FORMULARIO_ONBOARDING_HOTEL.html" target="_blank" rel="noopener"
+               style="padding:6px 12px;background:#0F172A;color:white;border-radius:7px;font-size:12px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:4px;">
+              <span class="material-symbols-outlined" style="font-size:13px;">open_in_new</span> Abrir
             </a>
             <button onclick="copyLink(this,'https://jaime-chatbot.vercel.app/plantillas/FORMULARIO_ONBOARDING_HOTEL.html')"
-                    class="px-sm py-xs bg-[#C8974A] text-white rounded-lg text-body-sm font-semibold flex items-center gap-1 hover:bg-[#8B6420] transition-colors">
-              <span class="material-symbols-outlined text-[16px]">content_copy</span> Copiar
+                    style="padding:6px 12px;background:#D97706;color:white;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;">
+              <span class="material-symbols-outlined" style="font-size:13px;">content_copy</span> Copiar
             </button>
           </div>
         </div>
 
-        <!-- Link 2 — Portal completo -->
-        <div class="border border-outline-variant rounded-xl p-md flex flex-col sm:flex-row sm:items-center gap-md bg-surface-container-low/50">
-          <div class="flex items-center gap-md flex-1 min-w-0">
-            <div class="w-11 h-11 bg-surface-container rounded-lg flex items-center justify-center flex-shrink-0">
-              <span class="material-symbols-outlined text-primary text-[22px]">home</span>
-            </div>
-            <div class="min-w-0">
-              <p class="font-semibold text-on-surface text-body-md">Portal completo</p>
-              <p class="text-on-surface-variant text-body-sm truncate">jaime-chatbot.vercel.app</p>
-            </div>
+        <!-- Link 2 — Portal -->
+        <div style="border:1px solid #E5E7EB;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;">
+          <div style="width:40px;height:40px;background:#F3F4F6;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="material-symbols-outlined" style="color:#1E3A5F;font-size:20px;">home</span>
           </div>
-          <div class="flex gap-sm flex-shrink-0">
-            <a href="https://jaime-chatbot.vercel.app"
-               target="_blank" rel="noopener"
-               class="px-sm py-xs bg-[#1C1C1E] text-white rounded-lg text-body-sm font-semibold flex items-center gap-1 hover:bg-black transition-colors">
-              <span class="material-symbols-outlined text-[16px]">open_in_new</span> Abrir
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:600;font-size:13px;">Portal completo</div>
+            <div style="font-size:11px;color:#9CA3AF;margin-top:2px;">jaime-chatbot.vercel.app</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;">
+            <a href="https://jaime-chatbot.vercel.app" target="_blank" rel="noopener"
+               style="padding:6px 12px;background:#0F172A;color:white;border-radius:7px;font-size:12px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:4px;">
+              <span class="material-symbols-outlined" style="font-size:13px;">open_in_new</span> Abrir
             </a>
             <button onclick="copyLink(this,'https://jaime-chatbot.vercel.app')"
-                    class="px-sm py-xs border border-outline-variant text-on-surface rounded-lg text-body-sm font-semibold flex items-center gap-1 hover:bg-surface-container transition-colors">
-              <span class="material-symbols-outlined text-[16px]">content_copy</span> Copiar
+                    style="padding:6px 12px;background:none;color:#374151;border:1px solid #E5E7EB;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;">
+              <span class="material-symbols-outlined" style="font-size:13px;">content_copy</span> Copiar
             </button>
           </div>
         </div>
 
-        <!-- Link 3 — Plantilla Convenio -->
-        <div class="border border-outline-variant rounded-xl p-md flex flex-col sm:flex-row sm:items-center gap-md bg-surface-container-low/50">
-          <div class="flex items-center gap-md flex-1 min-w-0">
-            <div class="w-11 h-11 bg-surface-container rounded-lg flex items-center justify-center flex-shrink-0">
-              <span class="material-symbols-outlined text-[#0D7A6B] text-[22px]">description</span>
-            </div>
-            <div class="min-w-0">
-              <p class="font-semibold text-on-surface text-body-md">Plantilla de Convenio</p>
-              <p class="text-on-surface-variant text-body-sm truncate">jaime-chatbot.vercel.app/plantillas/PLANTILLA_FORMULARIO_CONVENIO.html</p>
-            </div>
+        <!-- Link 3 — Convenio -->
+        <div style="border:1px solid #E5E7EB;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;">
+          <div style="width:40px;height:40px;background:#F3F4F6;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="material-symbols-outlined" style="color:#0D7A6B;font-size:20px;">description</span>
           </div>
-          <div class="flex gap-sm flex-shrink-0">
-            <a href="https://jaime-chatbot.vercel.app/plantillas/PLANTILLA_FORMULARIO_CONVENIO.html"
-               target="_blank" rel="noopener"
-               class="px-sm py-xs bg-[#1C1C1E] text-white rounded-lg text-body-sm font-semibold flex items-center gap-1 hover:bg-black transition-colors">
-              <span class="material-symbols-outlined text-[16px]">open_in_new</span> Abrir
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:600;font-size:13px;">Plantilla de Convenio</div>
+            <div style="font-size:11px;color:#9CA3AF;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">jaime-chatbot.vercel.app/plantillas/PLANTILLA_FORMULARIO_CONVENIO.html</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;">
+            <a href="https://jaime-chatbot.vercel.app/plantillas/PLANTILLA_FORMULARIO_CONVENIO.html" target="_blank" rel="noopener"
+               style="padding:6px 12px;background:#0F172A;color:white;border-radius:7px;font-size:12px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:4px;">
+              <span class="material-symbols-outlined" style="font-size:13px;">open_in_new</span> Abrir
             </a>
             <button onclick="copyLink(this,'https://jaime-chatbot.vercel.app/plantillas/PLANTILLA_FORMULARIO_CONVENIO.html')"
-                    class="px-sm py-xs border border-outline-variant text-on-surface rounded-lg text-body-sm font-semibold flex items-center gap-1 hover:bg-surface-container transition-colors">
-              <span class="material-symbols-outlined text-[16px]">content_copy</span> Copiar
+                    style="padding:6px 12px;background:none;color:#374151;border:1px solid #E5E7EB;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;">
+              <span class="material-symbols-outlined" style="font-size:13px;">content_copy</span> Copiar
             </button>
           </div>
         </div>
 
-        <!-- Link 4 — Extractor IA -->
-        <div class="border border-outline-variant rounded-xl p-md flex flex-col sm:flex-row sm:items-center gap-md bg-surface-container-low/50">
-          <div class="flex items-center gap-md flex-1 min-w-0">
-            <div class="w-11 h-11 bg-surface-container rounded-lg flex items-center justify-center flex-shrink-0">
-              <span class="material-symbols-outlined text-[#6D28D9] text-[22px]">auto_fix_high</span>
-            </div>
-            <div class="min-w-0">
-              <p class="font-semibold text-on-surface text-body-md">Extractor IA</p>
-              <p class="text-on-surface-variant text-body-sm truncate">jaime-chatbot.vercel.app/extractor/</p>
-            </div>
+        <!-- Link 4 — Extractor -->
+        <div style="border:1px solid #E5E7EB;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;">
+          <div style="width:40px;height:40px;background:#F3F4F6;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="material-symbols-outlined" style="color:#6D28D9;font-size:20px;">auto_fix_high</span>
           </div>
-          <div class="flex gap-sm flex-shrink-0">
-            <a href="https://jaime-chatbot.vercel.app/extractor/"
-               target="_blank" rel="noopener"
-               class="px-sm py-xs bg-[#1C1C1E] text-white rounded-lg text-body-sm font-semibold flex items-center gap-1 hover:bg-black transition-colors">
-              <span class="material-symbols-outlined text-[16px]">open_in_new</span> Abrir
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:600;font-size:13px;">Extractor IA</div>
+            <div style="font-size:11px;color:#9CA3AF;margin-top:2px;">jaime-chatbot.vercel.app/extractor/</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;">
+            <a href="https://jaime-chatbot.vercel.app/extractor/" target="_blank" rel="noopener"
+               style="padding:6px 12px;background:#0F172A;color:white;border-radius:7px;font-size:12px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:4px;">
+              <span class="material-symbols-outlined" style="font-size:13px;">open_in_new</span> Abrir
             </a>
             <button onclick="copyLink(this,'https://jaime-chatbot.vercel.app/extractor/')"
-                    class="px-sm py-xs border border-outline-variant text-on-surface rounded-lg text-body-sm font-semibold flex items-center gap-1 hover:bg-surface-container transition-colors">
-              <span class="material-symbols-outlined text-[16px]">content_copy</span> Copiar
+                    style="padding:6px 12px;background:none;color:#374151;border:1px solid #E5E7EB;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;">
+              <span class="material-symbols-outlined" style="font-size:13px;">content_copy</span> Copiar
             </button>
           </div>
         </div>
@@ -583,163 +450,166 @@
     </div>
   </section>
 
-</main>
+</div><!-- /main content -->
 
-<!-- ── FOOTER ── -->
-<footer class="bg-[#1C1C1E] py-xl text-white">
-  <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-lg mb-xl">
+<!-- FOOTER -->
+<footer style="background:#0F172A;padding:40px 24px 24px;color:white;">
+  <div style="max-width:960px;margin:0 auto;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;margin-bottom:32px;">
 
       <!-- Brand -->
-      <div class="space-y-md">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-[#C8974A] rounded-full flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined text-white text-[20px]">smart_toy</span>
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <div style="width:36px;height:36px;background:#D97706;border-radius:9px;display:flex;align-items:center;justify-content:center;">
+            <span class="material-symbols-outlined" style="color:white;font-size:18px;font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;">smart_toy</span>
           </div>
-          <span class="font-headline-sm font-bold text-[#C8974A]">Chatbot Jaime</span>
+          <span style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;color:#D97706;font-size:15px;">Chatbot Jaime</span>
         </div>
-        <p class="text-white/55 font-body-sm text-body-sm leading-relaxed">
-          Tu asistente de hotel, siempre disponible.<br/>
-          Hospitality AI para la hotelería moderna.
+        <p style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.7;margin:0 0 14px;">
+          Tu asistente de hotel, siempre disponible.<br/>Hospitality AI para la hotelería moderna.
         </p>
-        <!-- Social icons (small, footer) -->
-        <div class="flex gap-2 pt-1">
-          <a href="https://wa.me/524421314203" target="_blank" rel="noopener" class="footer-social wa">
-            <i class="fab fa-whatsapp"></i>
-          </a>
-          <a href="#" target="_blank" rel="noopener" class="footer-social ig">
-            <i class="fab fa-instagram"></i>
-          </a>
-          <a href="#" target="_blank" rel="noopener" class="footer-social fb">
-            <i class="fab fa-facebook-f"></i>
-          </a>
-          <a href="#" target="_blank" rel="noopener" class="footer-social li">
-            <i class="fab fa-linkedin-in"></i>
-          </a>
-          <a href="#" target="_blank" rel="noopener" class="footer-social yt">
-            <i class="fab fa-youtube"></i>
-          </a>
-          <a href="https://github.com/rpenacovarrubias-alt/Jaime_Chat_Bot" target="_blank" rel="noopener" class="footer-social gh">
-            <i class="fab fa-github"></i>
-          </a>
+        <div style="display:flex;gap:6px;">
+          <a href="https://wa.me/524421314203" target="_blank" rel="noopener" class="footer-social wa"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" target="_blank" rel="noopener" class="footer-social ig"><i class="fab fa-instagram"></i></a>
+          <a href="#" target="_blank" rel="noopener" class="footer-social fb"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" target="_blank" rel="noopener" class="footer-social li"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" target="_blank" rel="noopener" class="footer-social yt"><i class="fab fa-youtube"></i></a>
+          <a href="https://github.com/rpenacovarrubias-alt/Jaime_Chat_Bot" target="_blank" rel="noopener" class="footer-social gh"><i class="fab fa-github"></i></a>
         </div>
       </div>
 
       <!-- Recursos -->
       <div>
-        <h4 class="font-bold mb-md text-white/75 text-body-md tracking-wide">Recursos</h4>
-        <ul class="space-y-sm text-white/55 font-body-sm text-body-sm">
-          <li>
-            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2" href="extractor/">
-              <span class="material-symbols-outlined text-[14px] text-[#C8974A]/60">auto_fix_high</span> Extractor IA
-            </a>
-          </li>
-          <li>
-            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2" href="plantillas/FORMULARIO_ONBOARDING_HOTEL.html">
-              <span class="material-symbols-outlined text-[14px] text-[#C8974A]/60">assignment</span> Formulario de Onboarding
-            </a>
-          </li>
-          <li>
-            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2" href="plantillas/PLANTILLA_FORMULARIO_CONVENIO.html">
-              <span class="material-symbols-outlined text-[14px] text-[#C8974A]/60">description</span> Plantilla de Convenio
-            </a>
-          </li>
-          <li>
-            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2"
-               href="https://jaime-chatbot.vercel.app/plantillas/PLANTILLA_FICHA_HOTEL.html"
-               target="_blank" rel="noopener">
-              <span class="material-symbols-outlined text-[14px] text-[#C8974A]/60">description</span> Ficha de Configuración
-            </a>
-          </li>
-          <li>
-            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2"
-               href="https://jaime-chatbot.vercel.app/plantillas/PLANTILLA_FLUJOS_JAIME.html"
-               target="_blank" rel="noopener">
-              <span class="material-symbols-outlined text-[14px] text-[#C8974A]/60">account_tree</span> Flujos de Conversación
-            </a>
-          </li>
+        <h4 style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.35);margin:0 0 14px;">Recursos</h4>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
+          <li><a href="/extractor/" style="color:rgba(255,255,255,.45);font-size:12px;text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .15s;" onmouseover="this.style.color='#D97706'" onmouseout="this.style.color='rgba(255,255,255,.45)'"><span class="material-symbols-outlined" style="font-size:13px;color:#D97706;opacity:.6;">auto_fix_high</span>Extractor IA</a></li>
+          <li><a href="/plantillas/FORMULARIO_ONBOARDING_HOTEL.html" style="color:rgba(255,255,255,.45);font-size:12px;text-decoration:none;display:flex;align-items:center;gap:6px;" onmouseover="this.style.color='#D97706'" onmouseout="this.style.color='rgba(255,255,255,.45)'"><span class="material-symbols-outlined" style="font-size:13px;color:#D97706;opacity:.6;">assignment</span>Formulario Onboarding</a></li>
+          <li><a href="/plantillas/PLANTILLA_FORMULARIO_CONVENIO.html" style="color:rgba(255,255,255,.45);font-size:12px;text-decoration:none;display:flex;align-items:center;gap:6px;" onmouseover="this.style.color='#D97706'" onmouseout="this.style.color='rgba(255,255,255,.45)'"><span class="material-symbols-outlined" style="font-size:13px;color:#D97706;opacity:.6;">description</span>Plantilla de Convenio</a></li>
+          <li><a href="/plantillas/PLANTILLA_FICHA_HOTEL.html" style="color:rgba(255,255,255,.45);font-size:12px;text-decoration:none;display:flex;align-items:center;gap:6px;" onmouseover="this.style.color='#D97706'" onmouseout="this.style.color='rgba(255,255,255,.45)'"><span class="material-symbols-outlined" style="font-size:13px;color:#D97706;opacity:.6;">settings_applications</span>Ficha de Configuración</a></li>
+          <li><a href="/plantillas/PLANTILLA_FLUJOS_JAIME.html" style="color:rgba(255,255,255,.45);font-size:12px;text-decoration:none;display:flex;align-items:center;gap:6px;" onmouseover="this.style.color='#D97706'" onmouseout="this.style.color='rgba(255,255,255,.45)'"><span class="material-symbols-outlined" style="font-size:13px;color:#D97706;opacity:.6;">account_tree</span>Flujos de Conversación</a></li>
         </ul>
       </div>
 
       <!-- Proyecto -->
       <div>
-        <h4 class="font-bold mb-md text-white/75 text-body-md tracking-wide">Proyecto</h4>
-        <ul class="space-y-sm text-white/55 font-body-sm text-body-sm">
-          <li>
-            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2"
-               href="https://github.com/rpenacovarrubias-alt/Jaime_Chat_Bot" target="_blank" rel="noopener">
-              <i class="fab fa-github text-[#C8974A]/60 w-3.5 text-center"></i> Repositorio GitHub
-            </a>
-          </li>
-          <li>
-            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2"
-               href="https://github.com/rpenacovarrubias-alt/Jaime_Chat_Bot/issues/new" target="_blank" rel="noopener">
-              <span class="material-symbols-outlined text-[14px] text-[#C8974A]/60">bug_report</span> Reportar un Problema
-            </a>
-          </li>
-          <li>
-            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2"
-               href="https://wa.me/524421314203" target="_blank" rel="noopener">
-              <i class="fab fa-whatsapp text-[#C8974A]/60 w-3.5 text-center"></i> Solicitar Implementación
-            </a>
-          </li>
-          <li>
-            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2"
-               href="mailto:ventas@avantahotel.com.mx">
-              <span class="material-symbols-outlined text-[14px] text-[#C8974A]/60">mail</span> ventas@avantahotel.com.mx
-            </a>
-          </li>
-          <li>
-            <a class="hover:text-[#C8974A] transition-colors flex items-center gap-2"
-               href="tel:4421314203">
-              <span class="material-symbols-outlined text-[14px] text-[#C8974A]/60">phone</span> 442 131 4203
-            </a>
-          </li>
+        <h4 style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.35);margin:0 0 14px;">Proyecto</h4>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
+          <li><a href="https://github.com/rpenacovarrubias-alt/Jaime_Chat_Bot" target="_blank" rel="noopener" style="color:rgba(255,255,255,.45);font-size:12px;text-decoration:none;display:flex;align-items:center;gap:6px;" onmouseover="this.style.color='#D97706'" onmouseout="this.style.color='rgba(255,255,255,.45)'"><i class="fab fa-github" style="color:#D97706;opacity:.6;width:13px;text-align:center;"></i>Repositorio GitHub</a></li>
+          <li><a href="https://wa.me/524421314203" target="_blank" rel="noopener" style="color:rgba(255,255,255,.45);font-size:12px;text-decoration:none;display:flex;align-items:center;gap:6px;" onmouseover="this.style.color='#D97706'" onmouseout="this.style.color='rgba(255,255,255,.45)'"><span class="material-symbols-outlined" style="font-size:13px;color:#D97706;opacity:.6;">support_agent</span>Solicitar Implementación</a></li>
+          <li><a href="mailto:ventas@avantahotel.com.mx" style="color:rgba(255,255,255,.45);font-size:12px;text-decoration:none;display:flex;align-items:center;gap:6px;" onmouseover="this.style.color='#D97706'" onmouseout="this.style.color='rgba(255,255,255,.45)'"><span class="material-symbols-outlined" style="font-size:13px;color:#D97706;opacity:.6;">mail</span>ventas@avantahotel.com.mx</a></li>
+          <li><a href="tel:4421314203" style="color:rgba(255,255,255,.45);font-size:12px;text-decoration:none;display:flex;align-items:center;gap:6px;" onmouseover="this.style.color='#D97706'" onmouseout="this.style.color='rgba(255,255,255,.45)'"><span class="material-symbols-outlined" style="font-size:13px;color:#D97706;opacity:.6;">phone</span>442 131 4203</a></li>
         </ul>
       </div>
+
     </div>
 
     <!-- Bottom bar -->
-    <div class="border-t border-white/10 pt-md flex flex-col md:flex-row justify-between items-center gap-sm text-white/35 font-body-sm text-body-sm">
-      <span>© 2025 Chatbot Jaime · Kit de Implementación v1.1</span>
-      <span>
-        Desarrollado por
-        <a href="mailto:rpenacovarrubias@gmail.com" class="hover:text-[#C8974A] transition-colors">RPC Consulting</a>
-        · Ricardo Peña Covarrubias
-      </span>
+    <div style="border-top:1px solid rgba(255,255,255,.08);padding-top:16px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:rgba(255,255,255,.25);gap:8px;flex-wrap:wrap;">
+      <span>© 2026 Chatbot Jaime · JAIME_HMV2 v2.1</span>
+      <span>Desarrollado por <a href="mailto:rpenacovarrubias@gmail.com" style="color:rgba(255,255,255,.35);text-decoration:none;" onmouseover="this.style.color='#D97706'" onmouseout="this.style.color='rgba(255,255,255,.35)'">RPC Consulting</a> · Ricardo Peña Covarrubias</span>
     </div>
-
   </div>
 </footer>
 
+<!-- ── SCRIPTS ── -->
+<script src="/assets/js/shared.js"></script>
 <script>
-  // Scroll reveal
-  function reveal() {
-    document.querySelectorAll(".reveal").forEach(function(el) {
-      if (el.getBoundingClientRect().top < window.innerHeight - 130) {
-        el.classList.add("active");
-      }
-    });
-  }
-  window.addEventListener("scroll", reveal);
-  reveal();
+(function() {
 
-  // Copy to clipboard
+  // ── Clipboard copy ──────────────────────────────────────────────────────────
   function copyLink(btn, url) {
     navigator.clipboard.writeText(url).then(function() {
       var icon = btn.querySelector('.material-symbols-outlined');
-      var original = icon.textContent;
-      icon.textContent = 'check';
-      btn.style.background = '#34C759';
-      btn.style.borderColor = '#34C759';
+      var orig = icon ? icon.textContent : '';
+      if (icon) icon.textContent = 'check';
+      var origBg = btn.style.background;
+      btn.style.background = '#10B981';
       btn.style.color = 'white';
+      btn.style.borderColor = '#10B981';
       setTimeout(function() {
-        icon.textContent = original;
+        if (icon) icon.textContent = orig;
         btn.removeAttribute('style');
       }, 2000);
     });
   }
+  window.copyLink = copyLink;
+
+  // ── Toast ───────────────────────────────────────────────────────────────────
+  function showToast(msg) {
+    var t = document.getElementById('j-toast');
+    var m = document.getElementById('j-toast-msg');
+    if (!t) return;
+    if (msg) m.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 3500);
+  }
+
+  // Check for hotel_saved URL param
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('hotel_saved') === '1') {
+    setTimeout(function() { showToast('¡Hotel guardado y agregado a la lista!'); }, 600);
+    // Clean URL
+    var clean = window.location.pathname;
+    window.history.replaceState({}, '', clean);
+  }
+
+  // ── Dynamic hotels ──────────────────────────────────────────────────────────
+  function renderDynamicHotels() {
+    var hotels = [];
+    try { hotels = JSON.parse(localStorage.getItem('jaime_hoteles_dynamic') || '[]'); } catch(e) {}
+
+    var rows = document.getElementById('dynamic-hotel-rows');
+    if (!rows) return;
+
+    if (!hotels.length) { rows.innerHTML = ''; return; }
+
+    function makeInitials(name) {
+      return (name || 'H').split(/\s+/).filter(Boolean).slice(0,2)
+        .map(function(w){ return w[0].toUpperCase(); }).join('');
+    }
+    function makeSlug(name) {
+      return (name || 'hotel').toUpperCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g,'')
+        .replace(/[^A-Z0-9]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'');
+    }
+
+    rows.innerHTML = hotels.map(function(h) {
+      var slug = h.slug || makeSlug(h.nombre || '');
+      var initials = makeInitials(h.nombre);
+      var href = '/hoteles/' + slug + '/';
+      var ciudad = h.ciudad ? h.ciudad + ' · ' : '';
+      var categoria = h.categoria ? h.categoria + ' · ' : '';
+      var habitaciones = h.habitaciones ? h.habitaciones + ' hab.' : '';
+      var sub = ciudad + categoria + habitaciones;
+      return '<a href="' + href + '"' +
+        ' style="display:flex;align-items:center;gap:16px;padding:20px 24px;border-bottom:1px solid #F9FAFB;text-decoration:none;color:inherit;transition:background .15s;"' +
+        ' onmouseover="this.style.background=\'#F9FAFB\'" onmouseout="this.style.background=\'\'">' +
+        '<div style="width:48px;height:48px;border-radius:10px;background:#0F172A;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid #374151;">' +
+          '<span style="color:#D97706;font-weight:800;font-size:14px;">' + initials + '</span>' +
+        '</div>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="font-weight:700;font-size:14px;margin-bottom:4px;">' + (h.nombre || 'Hotel') + '</div>' +
+          (sub ? '<div style="font-size:12px;color:#9CA3AF;">' + sub + '</div>' : '') +
+        '</div>' +
+        '<div style="flex-shrink:0;display:flex;align-items:center;gap:4px;color:#9CA3AF;font-size:12px;">' +
+          'Ver detalles <span class="material-symbols-outlined" style="font-size:16px;color:#D97706;">arrow_forward</span>' +
+        '</div>' +
+        '</a>';
+    }).join('');
+
+    // Update count badge
+    var badge = document.getElementById('hotel-count-badge');
+    if (badge) {
+      var total = hotels.length + 1; // +1 for BeWow
+      badge.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;">check_circle</span> ' + total + ' hotel' + (total !== 1 ? 'es' : '');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', renderDynamicHotels);
+  // Also run immediately in case DOM is already ready
+  if (document.readyState !== 'loading') renderDynamicHotels();
+
+})();
 </script>
 
 </body>

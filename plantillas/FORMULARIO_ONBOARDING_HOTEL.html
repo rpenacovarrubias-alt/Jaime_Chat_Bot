@@ -4,21 +4,24 @@
 <meta charset="UTF-8">
 <title>Jaime — Configuración del Hotel</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 :root {
-  --primary:      #1B3C6B;
-  --primary-dark: #0F2647;
-  --accent:       #2563EB;
-  --text:   #1F2933;
+  --primary:      #1E3A5F;
+  --primary-dark: #0F172A;
+  --accent:       #D97706;
+  --text:   #1C1C1E;
   --muted:  #9CA3AF;
-  --bg:     #F5F5F5;
+  --bg:     #F8FAFC;
   --card:   #FFFFFF;
   --border: #E5E7EB;
 }
 * { box-sizing: border-box; }
-body { margin: 0; font-family: "Kodchasan", sans-serif; background: var(--bg); color: var(--text); }
+body { margin: 0; font-family: "Inter", sans-serif; background: var(--bg); color: var(--text); }
+.material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24; vertical-align:middle; }
 
 /* ── WRAPPER ── */
 .wrapper { display: flex; min-height: 100vh; max-width: 1300px; margin: 0 auto; background: var(--card); box-shadow: 0 4px 20px rgba(0,0,0,.08); }
@@ -26,14 +29,14 @@ body { margin: 0; font-family: "Kodchasan", sans-serif; background: var(--bg); c
 /* ── LEFT PANEL ── */
 .aside {
   width: 280px; min-width: 280px;
-  background: linear-gradient(160deg, #1B3C6B 0%, #0F2647 100%);
+  background: linear-gradient(160deg, #1E3A5F 0%, #0F172A 100%);
   color: #fff;
   position: sticky; top: 0; height: 100vh;
   overflow-y: auto; padding: 50px 28px;
   display: flex; flex-direction: column; gap: 0;
 }
-.aside-brand { font-family: "Cormorant Garamond", serif; font-size: 36px; font-weight: 400; font-style: italic; margin: 0; }
-.aside-brand span { font-family: "Kodchasan", sans-serif; font-style: normal; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; opacity: .6; display: block; margin-bottom: 4px; }
+.aside-brand { font-family: "Plus Jakarta Sans", sans-serif; font-size: 26px; font-weight: 700; font-style: normal; margin: 0; }
+.aside-brand span { font-family: "Inter", sans-serif; font-style: normal; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; opacity: .5; display: block; margin-bottom: 4px; }
 .aside-divider { width: 40px; height: 2px; background: rgba(255,255,255,.25); margin: 20px 0; }
 .aside p { font-size: 13px; line-height: 1.7; opacity: .8; margin: 0 0 28px; }
 .nav { list-style: none; padding: 0; margin: 0; }
@@ -58,7 +61,7 @@ body { margin: 0; font-family: "Kodchasan", sans-serif; background: var(--bg); c
 /* ── SECTION ── */
 .sb { margin-bottom: 52px; scroll-margin-top: 30px; }
 .s-num { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 500; margin: 0 0 4px; }
-.s-title { font-family: "Cormorant Garamond", serif; font-size: 24px; font-weight: 500; color: var(--primary); margin: 0 0 16px; }
+.s-title { font-family: "Plus Jakarta Sans", sans-serif; font-size: 20px; font-weight: 700; color: var(--primary); margin: 0 0 16px; }
 .s-line { height: 1px; background: var(--border); margin-bottom: 24px; }
 
 /* ── FIELDS ── */
@@ -73,15 +76,15 @@ body { margin: 0; font-family: "Kodchasan", sans-serif; background: var(--bg); c
 input[type=text], input[type=email], input[type=tel],
 input[type=url], input[type=number], input[type=time],
 select, textarea {
-  width: 100%; padding: 12px 14px; font-size: 14px;
+  width: 100%; padding: 11px 13px; font-size: 14px;
   border-radius: 8px; border: 1px solid var(--border);
   background: #FAFAFA; color: var(--text);
-  transition: all .2s; font-family: "Kodchasan", sans-serif;
+  transition: all .2s; font-family: "Inter", sans-serif;
 }
 input::placeholder, textarea::placeholder { color: #C1C7CD; }
 input:focus, select:focus, textarea:focus {
-  outline: none; border-color: var(--accent);
-  background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,.08);
+  outline: none; border-color: #D97706;
+  background: #fff; box-shadow: 0 0 0 3px rgba(217,119,6,.08);
 }
 textarea { resize: vertical; min-height: 72px; }
 
@@ -142,12 +145,12 @@ textarea { resize: vertical; min-height: 72px; }
 
 /* ── SUBMIT ── */
 .btn {
-  width: 100%; padding: 16px; font-size: 15px; font-weight: 600;
+  width: 100%; padding: 14px; font-size: 15px; font-weight: 700;
   background: var(--primary); color: #fff; border: none; border-radius: 8px;
-  cursor: pointer; transition: all .2s; font-family: "Kodchasan", sans-serif;
-  letter-spacing: .02em; margin-top: 10px;
+  cursor: pointer; transition: all .2s; font-family: "Inter", sans-serif;
+  letter-spacing: .01em; margin-top: 10px;
 }
-.btn:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(27,60,107,.25); }
+.btn:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(30,58,95,.25); }
 .btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 
 /* ── LOADING / SUCCESS ── */
@@ -205,9 +208,19 @@ textarea { resize: vertical; min-height: 72px; }
 
 <!-- ════════════════ RIGHT PANEL ════════════════ -->
 <div class="main">
-  <div style="margin-bottom:40px;">
-    <h1 style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:500;margin:0 0 8px;color:#1F2933;">Ficha de Configuración</h1>
-    <p style="color:var(--muted);font-size:14px;margin:0;">Completa todos los campos para activar a Jaime en el WhatsApp de tu hotel.</p>
+  <div style="margin-bottom:36px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+    <div>
+      <h1 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:700;margin:0 0 6px;color:#0F172A;">Ficha de Configuración</h1>
+      <p style="color:var(--muted);font-size:13px;margin:0;">Completa todos los campos para activar a Jaime en el WhatsApp de tu hotel.</p>
+    </div>
+    <!-- Extractor IA button — visible when ?nuevo=1 -->
+    <button id="btn-extractor-open"
+            onclick="openExtractorDrawer()"
+            style="display:none;align-items:center;gap:8px;padding:10px 18px;background:#D97706;color:white;border:none;border-radius:9px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s;flex-shrink:0;"
+            onmouseover="this.style.background='#B45309'" onmouseout="this.style.background='#D97706'">
+      <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;">auto_fix_high</span>
+      Extractor IA
+    </button>
   </div>
 
   <form id="fichaForm">
@@ -612,18 +625,132 @@ textarea { resize: vertical; min-height: 72px; }
   <!-- ══ SUBMIT ══ -->
   <div style="padding-top:24px;border-top:2px solid var(--border);">
     <p style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:16px;">Al enviar esta ficha, Jaime quedará listo para ser configurado en ManyChat.</p>
-    <button type="submit" class="btn" id="submitBtn"><i class="fas fa-check-circle" style="margin-right:8px;"></i>Enviar Ficha de Configuración</button>
+    <button type="submit" class="btn" id="submitBtn">
+      <i class="fas fa-check-circle" style="margin-right:8px;"></i>Enviar Ficha de Configuración
+    </button>
+    <!-- Save as new hotel (visible when ?nuevo=1) -->
+    <button type="button" id="btn-save-hotel"
+            onclick="saveHotelToList()"
+            style="display:none;width:100%;padding:14px;font-size:15px;font-weight:700;background:#D97706;color:#fff;border:none;border-radius:8px;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;margin-top:10px;"
+            onmouseover="this.style.background='#B45309'" onmouseout="this.style.background='#D97706'">
+      <span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;margin-right:6px;font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;">hotel</span>
+      Guardar Hotel en la Lista
+    </button>
   </div>
 
   </form>
 
   <div id="success">
     <div class="success-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--primary);font-weight:500;margin-bottom:16px;">¡Ficha recibida!</h2>
-    <p style="font-size:16px;color:var(--muted);max-width:400px;margin:0 auto;line-height:1.7;">Gracias. Procederemos a configurar a Jaime en el WhatsApp de tu hotel. Te contactaremos en las próximas 24 horas.</p>
+    <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;color:var(--primary);font-weight:700;margin-bottom:16px;">¡Ficha recibida!</h2>
+    <p style="font-size:15px;color:var(--muted);max-width:400px;margin:0 auto;line-height:1.7;">Gracias. Procederemos a configurar a Jaime en el WhatsApp de tu hotel. Te contactaremos en las próximas 24 horas.</p>
   </div>
 </div>
 </div>
+
+<!-- ══ EXTRACTOR IA DRAWER ══ -->
+<div id="extractor-overlay"
+     style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;backdrop-filter:blur(4px);"
+     onclick="closeExtractorDrawer(event)">
+  <div id="extractor-drawer"
+       style="position:absolute;right:0;top:0;bottom:0;width:min(560px,100vw);background:white;display:flex;flex-direction:column;overflow:hidden;box-shadow:-8px 0 48px rgba(0,0,0,.2);"
+       onclick="event.stopPropagation()">
+
+    <!-- Drawer header -->
+    <div style="padding:20px 24px 18px;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;gap:12px;background:#0F172A;">
+      <div style="width:36px;height:36px;background:rgba(217,119,6,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+        <span class="material-symbols-outlined" style="color:#F59E0B;font-size:18px;font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;">auto_fix_high</span>
+      </div>
+      <div style="flex:1;">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;color:white;font-size:15px;">Extractor IA</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.45);">Powered by Claude AI · Extrae datos del hotel automáticamente</div>
+      </div>
+      <button onclick="closeExtractorDrawer()" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.5);padding:4px;font-size:20px;line-height:1;" title="Cerrar">✕</button>
+    </div>
+
+    <!-- Drawer body (scrollable) -->
+    <div style="flex:1;overflow-y:auto;padding:20px 24px;">
+
+      <!-- URLs -->
+      <div style="margin-bottom:18px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9CA3AF;margin-bottom:8px;display:flex;align-items:center;gap:5px;">
+          <i class="fa-solid fa-link" style="color:#1E3A5F;font-size:12px;"></i> URLs del hotel
+        </div>
+        <div id="ext-url-list">
+          <div class="ext-url-row" style="display:flex;gap:6px;margin-bottom:6px;">
+            <input type="url" class="ext-url-input" placeholder="https://www.nombrehotel.com"
+                   style="flex:1;padding:9px 12px;border:1.5px solid #E5E7EB;border-radius:7px;font-family:'Inter',sans-serif;font-size:13px;">
+            <button onclick="extRemoveUrl(this)" style="width:34px;height:34px;border:1.5px solid #E5E7EB;background:white;border-radius:7px;cursor:pointer;color:#9CA3AF;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">✕</button>
+          </div>
+        </div>
+        <button onclick="extAddUrl()" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border:1.5px dashed #D1D5DB;border-radius:7px;background:transparent;color:#9CA3AF;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">
+          <i class="fa-solid fa-plus"></i> Agregar URL
+        </button>
+      </div>
+
+      <!-- Files -->
+      <div style="margin-bottom:18px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9CA3AF;margin-bottom:8px;display:flex;align-items:center;gap:5px;">
+          <i class="fa-solid fa-file-arrow-up" style="color:#1E3A5F;font-size:12px;"></i> Archivos (PDF, imágenes)
+        </div>
+        <div id="ext-dropzone"
+             style="border:2px dashed #D1D5DB;border-radius:9px;padding:20px;text-align:center;cursor:pointer;position:relative;transition:border-color .15s;"
+             onmouseover="this.style.borderColor='#1E3A5F'" onmouseout="this.style.borderColor='#D1D5DB'">
+          <input type="file" id="ext-file-input" multiple accept=".pdf,.jpg,.jpeg,.png,.webp,.txt"
+                 style="position:absolute;inset:0;opacity:0;cursor:pointer;" onchange="extHandleFiles(this.files)">
+          <i class="fa-solid fa-cloud-arrow-up" style="font-size:1.6rem;color:#9CA3AF;margin-bottom:6px;display:block;"></i>
+          <div style="font-size:13px;color:#6B7280;"><strong>Arrastra archivos</strong> o haz clic</div>
+          <div style="font-size:11px;color:#9CA3AF;margin-top:3px;">PDF, JPG, PNG — máx 10 archivos</div>
+        </div>
+        <div id="ext-file-list" style="display:flex;flex-direction:column;gap:5px;margin-top:8px;"></div>
+      </div>
+
+      <!-- Text -->
+      <div style="margin-bottom:18px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9CA3AF;margin-bottom:8px;display:flex;align-items:center;gap:5px;">
+          <i class="fa-solid fa-align-left" style="color:#1E3A5F;font-size:12px;"></i> Texto adicional
+        </div>
+        <textarea id="ext-text" rows="3" placeholder="Pega aquí información adicional del hotel…"
+                  style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:7px;font-family:'Inter',sans-serif;font-size:13px;resize:vertical;"></textarea>
+      </div>
+
+      <!-- Error -->
+      <div id="ext-error" style="display:none;background:#FEE2E2;border:1px solid #FECACA;color:#DC2626;border-radius:7px;padding:10px 14px;font-size:12px;margin-bottom:12px;"></div>
+
+      <!-- Progress -->
+      <div id="ext-progress" style="display:none;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:7px;padding:14px;margin-bottom:12px;">
+        <div style="font-size:13px;font-weight:600;color:#065F46;margin-bottom:8px;">Analizando con Claude AI…</div>
+        <div style="height:6px;background:#D1FAE5;border-radius:20px;overflow:hidden;">
+          <div id="ext-pbar" style="height:100%;background:#10B981;border-radius:20px;width:0;transition:width .4s ease;"></div>
+        </div>
+      </div>
+
+      <!-- Results summary -->
+      <div id="ext-summary" style="display:none;background:#FFFBEB;border:1px solid rgba(217,119,6,.3);border-radius:7px;padding:12px 16px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;color:#92400E;margin-bottom:4px;">
+          <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;">check_circle</span>
+          Extracción completada
+        </div>
+        <div id="ext-summary-text" style="font-size:12px;color:#B45309;"></div>
+      </div>
+
+    </div><!-- /drawer body -->
+
+    <!-- Drawer footer -->
+    <div style="padding:16px 24px;border-top:1px solid #E5E7EB;display:flex;gap:10px;">
+      <button id="ext-btn-analyze" onclick="extAnalyze()"
+              style="flex:1;padding:11px;background:#D97706;color:white;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s;"
+              onmouseover="this.style.background='#B45309'" onmouseout="this.style.background='#D97706'">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Analizar con IA
+      </button>
+      <button id="ext-btn-fill" onclick="extFillForm()" style="display:none;flex:1;padding:11px;background:#16A34A;color:white;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:none;align-items:center;justify-content:center;gap:8px;transition:background .15s;"
+              onmouseover="this.style.background='#15803D'" onmouseout="this.style.background='#16A34A'">
+        <i class="fa-solid fa-file-import"></i> Rellenar formulario
+      </button>
+    </div>
+
+  </div><!-- /drawer -->
+</div><!-- /overlay -->
 
 <script>
 // Active nav on scroll
@@ -698,6 +825,270 @@ function eliminarContacto(btn) {
   row.style.transition = 'all .2s ease';
   setTimeout(function() { row.remove(); }, 200);
 }
+
+// ── ?nuevo=1 — Show extractor & save buttons ────────────────────────────────
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('nuevo') === '1') {
+    var btnExt = document.getElementById('btn-extractor-open');
+    var btnSave = document.getElementById('btn-save-hotel');
+    if (btnExt)  btnExt.style.display  = 'inline-flex';
+    if (btnSave) btnSave.style.display = 'block';
+  }
+})();
+
+// ── Save hotel to localStorage list ─────────────────────────────────────────
+function saveHotelToList() {
+  var nombre    = (document.querySelector('[name="hotel_nombre"]') || {}).value || '';
+  var ciudad    = (document.querySelector('[name="hotel_ciudad"]') || {}).value || '';
+  var categoria = (document.querySelector('[name="hotel_estrellas"]') || {}).value || '';
+  var habitaciones = (document.querySelector('[name="hotel_habitaciones"]') || {}).value || '';
+
+  if (!nombre.trim()) {
+    alert('Completa al menos el nombre del hotel antes de guardar.');
+    return;
+  }
+
+  function makeSlug(name) {
+    return (name || 'hotel').toUpperCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g,'')
+      .replace(/[^A-Z0-9]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'');
+  }
+
+  var hotel = {
+    id:           'dyn_' + Date.now(),
+    nombre:       nombre.trim(),
+    slug:         makeSlug(nombre.trim()),
+    ciudad:       ciudad.trim(),
+    categoria:    categoria,
+    habitaciones: habitaciones,
+    creado:       new Date().toISOString(),
+  };
+
+  var list = [];
+  try { list = JSON.parse(localStorage.getItem('jaime_hoteles_dynamic') || '[]'); } catch(e) {}
+  list.push(hotel);
+  try {
+    localStorage.setItem('jaime_hoteles_dynamic', JSON.stringify(list));
+  } catch(e) {
+    alert('No se pudo guardar en el navegador. Por favor inténtalo de nuevo.');
+    return;
+  }
+
+  window.location.href = '/?hotel_saved=1';
+}
+
+// ── Extractor IA Drawer ──────────────────────────────────────────────────────
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+var extFiles = [];
+var extData  = null;
+
+function openExtractorDrawer() {
+  document.getElementById('extractor-overlay').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeExtractorDrawer(evt) {
+  if (evt && evt.target !== document.getElementById('extractor-overlay')) return;
+  document.getElementById('extractor-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function extAddUrl() {
+  var list = document.getElementById('ext-url-list');
+  var row  = document.createElement('div');
+  row.className = 'ext-url-row';
+  row.style.cssText = 'display:flex;gap:6px;margin-bottom:6px;';
+  row.innerHTML = '<input type="url" class="ext-url-input" placeholder="https://…" style="flex:1;padding:9px 12px;border:1.5px solid #E5E7EB;border-radius:7px;font-family:Inter,sans-serif;font-size:13px;">' +
+    '<button onclick="extRemoveUrl(this)" style="width:34px;height:34px;border:1.5px solid #E5E7EB;background:white;border-radius:7px;cursor:pointer;color:#9CA3AF;font-size:14px;flex-shrink:0;">✕</button>';
+  list.appendChild(row);
+}
+
+function extRemoveUrl(btn) {
+  var rows = document.querySelectorAll('.ext-url-row');
+  if (rows.length > 1) btn.closest('.ext-url-row').remove();
+  else btn.closest('.ext-url-row').querySelector('input').value = '';
+}
+
+function extHandleFiles(files) {
+  Array.from(files).forEach(function(file) {
+    if (extFiles.length >= 10) return;
+    var ext = file.name.split('.').pop().toLowerCase();
+    if (['jpg','jpeg','png','webp'].includes(ext)) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        extFiles.push({ name: file.name, kind: 'image', type: file.type, content: e.target.result.split(',')[1] });
+        extRenderFiles();
+      };
+      reader.readAsDataURL(file);
+    } else if (ext === 'pdf') {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        pdfjsLib.getDocument({ data: new Uint8Array(e.target.result) }).promise.then(function(pdf) {
+          var text = '';
+          var pages = Math.min(pdf.numPages, 20);
+          var done = 0;
+          for (var i = 1; i <= pages; i++) {
+            (function(pageNum) {
+              pdf.getPage(pageNum).then(function(page) {
+                return page.getTextContent();
+              }).then(function(tc) {
+                text += tc.items.map(function(s) { return s.str; }).join(' ') + '\n';
+                done++;
+                if (done === pages) {
+                  extFiles.push({ name: file.name, kind: 'text', type: 'text/plain', content: text.trim() });
+                  extRenderFiles();
+                }
+              });
+            })(i);
+          }
+        });
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        extFiles.push({ name: file.name, kind: 'text', type: 'text/plain', content: e.target.result });
+        extRenderFiles();
+      };
+      reader.readAsText(file);
+    }
+  });
+}
+
+function extRenderFiles() {
+  var list = document.getElementById('ext-file-list');
+  list.innerHTML = extFiles.map(function(f, i) {
+    return '<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#F9FAFB;border-radius:7px;border:1px solid #E5E7EB;">' +
+      '<i class="fa-solid ' + (f.kind === 'image' ? 'fa-image' : 'fa-file-lines') + '" style="color:#1E3A5F;opacity:.6;"></i>' +
+      '<span style="flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + f.name + '</span>' +
+      '<button onclick="extFiles.splice(' + i + ',1);extRenderFiles();" style="background:none;border:none;cursor:pointer;color:#9CA3AF;font-size:14px;">✕</button>' +
+      '</div>';
+  }).join('');
+}
+
+async function extAnalyze() {
+  var urls  = Array.from(document.querySelectorAll('.ext-url-input')).map(function(i) { return i.value.trim(); }).filter(Boolean);
+  var text  = document.getElementById('ext-text').value.trim();
+  var files = extFiles;
+
+  if (!urls.length && !text && !files.length) {
+    var err = document.getElementById('ext-error');
+    err.textContent = 'Agrega al menos una URL, archivo o texto.';
+    err.style.display = 'block';
+    return;
+  }
+
+  document.getElementById('ext-error').style.display = 'none';
+  document.getElementById('ext-summary').style.display = 'none';
+  var progress = document.getElementById('ext-progress');
+  var pbar     = document.getElementById('ext-pbar');
+  var btnA     = document.getElementById('ext-btn-analyze');
+  progress.style.display = 'block';
+  btnA.disabled = true;
+  pbar.style.width = '20%';
+
+  try {
+    await new Promise(function(r) { setTimeout(r, 200); });
+    pbar.style.width = '45%';
+
+    var res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ urls: urls, text: text, files: files })
+    });
+
+    pbar.style.width = '80%';
+    if (!res.ok) {
+      var err2 = await res.json().catch(function() { return {}; });
+      throw new Error(err2.error || 'Error ' + res.status);
+    }
+    var data = await res.json();
+    extData = data.fields || {};
+    pbar.style.width = '100%';
+    await new Promise(function(r) { setTimeout(r, 300); });
+    progress.style.display = 'none';
+
+    var found = Object.values(extData).filter(function(v) { return v !== null && v !== undefined && v !== ''; }).length;
+    var total = Object.keys(extData).length;
+    document.getElementById('ext-summary-text').textContent = found + ' de ' + total + ' campos encontrados.';
+    document.getElementById('ext-summary').style.display = 'block';
+
+    var btnF = document.getElementById('ext-btn-fill');
+    btnF.style.display = 'flex';
+    btnA.style.display = 'none';
+
+  } catch(e) {
+    progress.style.display = 'none';
+    var errEl = document.getElementById('ext-error');
+    errEl.textContent = 'Error: ' + e.message;
+    errEl.style.display = 'block';
+  } finally {
+    btnA.disabled = false;
+  }
+}
+
+function extFillForm() {
+  if (!extData) return;
+  var filled = 0;
+
+  // Map extraction keys to form field names
+  var MAP = {
+    'nombre_hotel':        'hotel_nombre',
+    'marca_concepto':      'hotel_concepto',
+    'categoria_estrellas': 'hotel_estrellas',
+    'total_habitaciones':  'hotel_habitaciones',
+    'anio_apertura':       'hotel_apertura',
+    'direccion':           'hotel_direccion',
+    'ciudad_estado':       'hotel_ciudad',
+    'telefono_principal':  'hotel_telefono',
+    'email_reservaciones': 'hotel_email_reservas',
+    'email_admin':         'hotel_email_admin',
+    'sitio_web':           'hotel_web',
+    'motor_reservas_url':  'hotel_motor_reservas',
+    'facebook_url':        'hotel_facebook',
+    'instagram_url':       'hotel_instagram',
+    'googlemaps_url':      'hotel_gmaps',
+    'distancia_aeropuerto':'hotel_dist_aeropuerto',
+    'distancia_centro':    'hotel_dist_centro',
+    'referencias_ubicacion':'hotel_referencias',
+    'checkin_hora':        'hotel_checkin',
+    'checkout_hora':       'hotel_checkout',
+    'wifi_ssid':           'wifi_nombre',
+    'wifi_password':       'wifi_password',
+    'desayuno_tipo':       'desayuno_tipo',
+    'desayuno_horario':    'desayuno_horario',
+    'restaurante_nombre':  'rest_nombre',
+    'restaurante_menu_url':'rest_menu_url',
+    'pms_nombre':          'pms',
+    'channel_manager':     'channel_manager',
+  };
+
+  Object.keys(MAP).forEach(function(extKey) {
+    var val = extData[extKey];
+    if (!val) return;
+    var fieldName = MAP[extKey];
+    var el = document.querySelector('[name="' + fieldName + '"]');
+    if (!el) return;
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      el.value = typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val);
+      el.classList.add('input-ai-filled');
+      filled++;
+    } else if (el.tagName === 'SELECT') {
+      var lower = String(val).toLowerCase();
+      Array.from(el.options).forEach(function(o) {
+        if (o.value.toLowerCase() === lower || o.text.toLowerCase().includes(lower)) o.selected = true;
+      });
+      if (el.value) { el.classList.add('input-ai-filled'); filled++; }
+    }
+  });
+
+  document.getElementById('extractor-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+  alert('✅ ' + filled + ' campos rellenados con IA. Los campos marcados en dorado fueron llenados automáticamente. Revisa y ajusta antes de enviar.');
+}
 </script>
 
 <style>
@@ -706,6 +1097,12 @@ function eliminarContacto(btn) {
   to   { opacity:1; transform:translateY(0); }
 }
 .dir-row { position:relative; }
+/* AI-filled field indicator */
+.input-ai-filled {
+  border-left: 3px solid #D97706 !important;
+  background-color: #fffbeb !important;
+}
 </style>
+<script src="/assets/js/shared.js"></script>
 </body>
 </html>

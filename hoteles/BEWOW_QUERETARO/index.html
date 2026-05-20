@@ -20,7 +20,7 @@
           "on-surface-variant": "#4f4538", "outline-variant": "#d3c4b3",
           "outline": "#817566", "surface-container": "#f0edef",
           "surface-container-low": "#f6f3f5", "surface-container-high": "#eae7ea",
-          "primary": "#7e570c", "primary-container": "#c8974a",
+          "primary": "#B45309", "primary-container": "#D97706",
           "on-primary": "#ffffff", "on-primary-container": "#4c3100",
         },
         fontFamily: {
@@ -57,19 +57,19 @@
   }
 
   /* ── Markdown content styles ── */
-  .md-body h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 26px; font-weight: 700; color: #1C1C1E; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #C8974A; }
-  .md-body h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; color: #1C1C1E; margin: 1.75rem 0 0.75rem; padding-left: 12px; border-left: 4px solid #C8974A; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .md-body h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 26px; font-weight: 700; color: #0F172A; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #D97706; }
+  .md-body h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; color: #0F172A; margin: 1.75rem 0 0.75rem; padding-left: 12px; border-left: 4px solid #D97706; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
   .md-body h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 600; color: #4f4538; margin: 1.25rem 0 0.5rem; }
   .md-body p  { color: #4f4538; line-height: 1.7; margin-bottom: 0.75rem; }
   .md-body ul, .md-body ol { padding-left: 1.4rem; margin-bottom: 0.75rem; color: #4f4538; }
   .md-body li { margin-bottom: 0.3rem; line-height: 1.6; }
-  .md-body strong { color: #1C1C1E; font-weight: 600; }
-  .md-body blockquote { border-left: 4px solid #C8974A; background: #FBF5EC; padding: 10px 16px; border-radius: 0 8px 8px 0; margin: 1rem 0; color: #4f4538; font-style: italic; }
-  .md-body code { background: #F5E8D0; color: #8B6420; padding: 2px 6px; border-radius: 4px; font-size: 13px; font-family: monospace; }
-  .md-body pre { background: #1C1C1E; color: #F5E8D0; padding: 16px 20px; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
-  .md-body pre code { background: transparent; color: #C8974A; padding: 0; }
+  .md-body strong { color: #0F172A; font-weight: 600; }
+  .md-body blockquote { border-left: 4px solid #D97706; background: #FBF5EC; padding: 10px 16px; border-radius: 0 8px 8px 0; margin: 1rem 0; color: #4f4538; font-style: italic; }
+  .md-body code { background: #F5E8D0; color: #92400E; padding: 2px 6px; border-radius: 4px; font-size: 13px; font-family: monospace; }
+  .md-body pre { background: #0F172A; color: #F5E8D0; padding: 16px 20px; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
+  .md-body pre code { background: transparent; color: #D97706; padding: 0; }
   .md-body table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 14px; }
-  .md-body th { background: #1C1C1E; color: #C8974A; font-weight: 700; text-align: left; padding: 10px 14px; }
+  .md-body th { background: #0F172A; color: #D97706; font-weight: 700; text-align: left; padding: 10px 14px; }
   .md-body td { border: 1px solid #d3c4b3; padding: 9px 14px; color: #4f4538; background: #fff; }
   .md-body tr:hover td { background: #FBF5EC; }
   .md-body hr { border: none; border-top: 1px solid #d3c4b3; margin: 1.5rem 0; }
@@ -77,7 +77,7 @@
   /* ── Tab active ── */
   .tab-btn.active {
     color: #7e570c;
-    border-bottom: 3px solid #C8974A;
+    border-bottom: 3px solid #D97706;
     font-weight: 700;
   }
 
@@ -95,7 +95,7 @@
     gap: 3px;
     padding: 2px 10px 2px 8px;
     background: #F5E8D0;
-    color: #8B6420;
+    color: #92400E;
     border: 1px solid rgba(200,151,74,0.4);
     border-radius: 20px;
     font-size: 11px;
@@ -109,18 +109,18 @@
     flex-shrink: 0;
     text-transform: uppercase;
   }
-  .edit-btn:hover { background: #C8974A; color: white; border-color: #C8974A; }
+  .edit-btn:hover { background: #D97706; color: white; border-color: #D97706; }
   .edit-btn .ms { font-family: 'Material Symbols Outlined'; font-size: 13px; font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
 
   /* ── Search highlight ── */
   .search-hl {
     background: #FFF5D0 !important;
-    outline: 2px solid #C8974A;
+    outline: 2px solid #D97706;
     border-radius: 3px;
   }
   .search-hl-first {
     background: #FFE97A !important;
-    outline: 2px solid #8B6420;
+    outline: 2px solid #92400E;
     border-radius: 3px;
   }
 
@@ -150,8 +150,8 @@
     </a>
 
     <div class="flex items-center gap-sm overflow-hidden">
-      <div class="w-7 h-7 rounded-lg bg-[#1C1C1E] flex items-center justify-center flex-shrink-0">
-        <span class="text-[#C8974A] font-bold text-label-sm leading-none">BW</span>
+      <div class="w-7 h-7 rounded-lg bg-[#0F172A] flex items-center justify-center flex-shrink-0">
+        <span class="text-[#D97706] font-bold text-label-sm leading-none">BW</span>
       </div>
       <span class="font-bold text-on-surface text-body-sm truncate">BeWow© Querétaro</span>
       <span class="hidden sm:inline-flex items-center gap-1 px-sm py-[2px] bg-[#E8F9EE] text-[#248A3D] rounded-full text-label-sm font-bold border border-[#34C759]/25 flex-shrink-0">
@@ -169,37 +169,37 @@
 </nav>
 
 <!-- ── HEADER DEL HOTEL ── -->
-<header class="pt-16 bg-[#1C1C1E]">
+<header class="bg-[#0F172A]">
   <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-lg">
     <div class="flex flex-col md:flex-row md:items-center gap-lg">
 
-      <div class="w-20 h-20 rounded-2xl bg-[#C8974A]/15 border-2 border-[#C8974A]/40 flex items-center justify-center flex-shrink-0">
-        <span class="text-[#C8974A] font-bold text-headline-lg leading-none">BW</span>
+      <div class="w-20 h-20 rounded-2xl bg-[#D97706]/15 border-2 border-[#D97706]/40 flex items-center justify-center flex-shrink-0">
+        <span class="text-[#D97706] font-bold text-headline-lg leading-none">BW</span>
       </div>
 
       <div class="flex-1">
         <div class="flex flex-wrap items-center gap-sm mb-xs">
           <span class="px-sm py-[3px] bg-white/10 text-white/70 rounded-full text-label-sm font-semibold">ManyChat · JAIME_HMV2</span>
-          <span class="px-sm py-[3px] bg-[#C8974A]/20 text-[#F5E8D0] rounded-full text-label-sm font-semibold">⭐⭐⭐⭐ 4 estrellas</span>
+          <span class="px-sm py-[3px] bg-[#D97706]/20 text-[#F5E8D0] rounded-full text-label-sm font-semibold">⭐⭐⭐⭐ 4 estrellas</span>
         </div>
         <h1 class="font-display-lg text-[28px] md:text-[36px] leading-tight font-bold text-white">
-          Hotel Urbano <span class="text-[#C8974A]">BeWow©</span> Querétaro
+          Hotel Urbano <span class="text-[#D97706]">BeWow©</span> Querétaro
         </h1>
         <p class="text-white/55 text-body-md mt-xs">Santiago de Querétaro, Qro. · 70 habitaciones · Personalidad: Amistoso</p>
 
         <div class="flex flex-wrap gap-md mt-md">
           <div class="text-center">
-            <div class="text-[#C8974A] font-bold text-headline-sm">12</div>
+            <div class="text-[#D97706] font-bold text-headline-sm">12</div>
             <div class="text-white/40 text-label-sm">Flujos completos</div>
           </div>
           <div class="w-px bg-white/10"></div>
           <div class="text-center">
-            <div class="text-[#C8974A] font-bold text-headline-sm">15</div>
+            <div class="text-[#D97706] font-bold text-headline-sm">15</div>
             <div class="text-white/40 text-label-sm">Secciones config.</div>
           </div>
           <div class="w-px bg-white/10"></div>
           <div class="text-center">
-            <div class="text-[#C8974A] font-bold text-headline-sm">3</div>
+            <div class="text-[#D97706] font-bold text-headline-sm">3</div>
             <div class="text-white/40 text-label-sm">Pendientes</div>
           </div>
           <div class="w-px bg-white/10"></div>
@@ -255,9 +255,9 @@
       <div id="logo-container"
            onclick="document.getElementById('logo-input').click()"
            title="Toca para subir el logotipo del hotel"
-           class="relative w-14 h-14 rounded-xl bg-[#1C1C1E] border-2 border-outline-variant overflow-hidden cursor-pointer group flex items-center justify-center hover:border-[#C8974A] transition-colors">
+           class="relative w-14 h-14 rounded-xl bg-[#0F172A] border-2 border-outline-variant overflow-hidden cursor-pointer group flex items-center justify-center hover:border-[#D97706] transition-colors">
         <img id="hotel-logo" src="" alt="Logo BeWow" class="hidden w-full h-full object-contain p-1"/>
-        <span id="logo-initials" class="text-[#C8974A] font-bold text-headline-sm leading-none select-none">BW</span>
+        <span id="logo-initials" class="text-[#D97706] font-bold text-headline-sm leading-none select-none">BW</span>
         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
           <span class="material-symbols-outlined text-white text-[18px] opacity-0 group-hover:opacity-100 transition-opacity drop-shadow">photo_camera</span>
         </div>
@@ -276,7 +276,7 @@
     <span id="search-count" class="hidden text-label-sm text-on-surface-variant whitespace-nowrap flex-shrink-0"></span>
 
     <!-- Campo de búsqueda (derecha) -->
-    <div class="flex items-center gap-xs bg-surface-container rounded-xl px-sm py-xs border border-outline-variant focus-within:border-[#C8974A] focus-within:shadow-sm transition-all w-56 md:w-72">
+    <div class="flex items-center gap-xs bg-surface-container rounded-xl px-sm py-xs border border-outline-variant focus-within:border-[#D97706] focus-within:shadow-sm transition-all w-56 md:w-72">
       <span class="material-symbols-outlined text-on-surface-variant text-[18px] flex-shrink-0">search</span>
       <input type="text" id="search-input"
              placeholder="Buscar sección o campo..."
@@ -297,28 +297,28 @@
   <!-- Tab: Configuración -->
   <div id="panel-config">
     <div id="config-loading" class="flex flex-col items-center justify-center py-xl gap-md text-on-surface-variant">
-      <span class="material-symbols-outlined text-[48px] text-[#C8974A] pulse-gold">settings_applications</span>
+      <span class="material-symbols-outlined text-[48px] text-[#D97706] pulse-gold">settings_applications</span>
       <p class="text-body-md">Cargando configuración del hotel...</p>
     </div>
     <div id="config-content" class="hidden bg-white rounded-2xl border border-outline-variant p-lg md:p-xl md-body"></div>
     <div id="config-error" class="hidden bg-red-50 border border-red-200 rounded-xl p-lg text-center">
       <span class="material-symbols-outlined text-red-400 text-[36px]">error</span>
       <p class="text-red-700 font-semibold mt-sm">No se pudo cargar el archivo de configuración.</p>
-      <a href="BEWOW_QUERETARO_configuracion.md" class="text-[#C8974A] font-bold mt-sm inline-block hover:underline">Ver archivo .md directo →</a>
+      <a href="BEWOW_QUERETARO_configuracion.md" class="text-[#D97706] font-bold mt-sm inline-block hover:underline">Ver archivo .md directo →</a>
     </div>
   </div>
 
   <!-- Tab: Flujos -->
   <div id="panel-flujos" class="hidden">
     <div id="flujos-loading" class="flex flex-col items-center justify-center py-xl gap-md text-on-surface-variant">
-      <span class="material-symbols-outlined text-[48px] text-[#C8974A] pulse-gold">account_tree</span>
+      <span class="material-symbols-outlined text-[48px] text-[#D97706] pulse-gold">account_tree</span>
       <p class="text-body-md">Cargando flujos de conversación...</p>
     </div>
     <div id="flujos-content" class="hidden bg-white rounded-2xl border border-outline-variant p-lg md:p-xl md-body"></div>
     <div id="flujos-error" class="hidden bg-red-50 border border-red-200 rounded-xl p-lg text-center">
       <span class="material-symbols-outlined text-red-400 text-[36px]">error</span>
       <p class="text-red-700 font-semibold mt-sm">No se pudo cargar el archivo de flujos.</p>
-      <a href="BEWOW_QUERETARO_flujos.md" class="text-[#C8974A] font-bold mt-sm inline-block hover:underline">Ver archivo .md directo →</a>
+      <a href="BEWOW_QUERETARO_flujos.md" class="text-[#D97706] font-bold mt-sm inline-block hover:underline">Ver archivo .md directo →</a>
     </div>
   </div>
 
@@ -332,14 +332,14 @@
           <p class="text-on-surface-variant text-body-sm mt-1">Última revisión: 19 Mayo 2026</p>
         </div>
         <div class="text-right">
-          <div class="text-headline-md font-headline-md text-[#C8974A]">80%</div>
+          <div class="text-headline-md font-headline-md text-[#D97706]">80%</div>
           <div class="text-label-sm text-on-surface-variant">completado</div>
         </div>
       </div>
 
       <div class="px-lg py-md border-b border-outline-variant">
         <div class="w-full bg-surface-container-high rounded-full h-2.5">
-          <div class="bg-[#C8974A] h-2.5 rounded-full transition-all" style="width: 80%"></div>
+          <div class="bg-[#D97706] h-2.5 rounded-full transition-all" style="width: 80%"></div>
         </div>
         <div class="flex justify-between mt-xs text-label-sm text-on-surface-variant">
           <span>14 de 17 ítems completos</span>
@@ -387,7 +387,7 @@
 
         <div class="px-lg py-md bg-surface-container-low">
           <div class="flex items-start gap-md">
-            <span class="material-symbols-outlined text-[#C8974A] text-[22px] mt-1 flex-shrink-0">arrow_circle_right</span>
+            <span class="material-symbols-outlined text-[#D97706] text-[22px] mt-1 flex-shrink-0">arrow_circle_right</span>
             <div>
               <p class="font-bold text-on-surface text-body-md">Siguiente paso</p>
               <p class="text-on-surface-variant text-body-sm mt-xs">Configurar los flujos en ManyChat usando la plantilla de flujos completada y conectar con el número de WhatsApp <strong>+52 1 442 216-0100</strong>.</p>
@@ -401,10 +401,10 @@
 </main>
 
 <!-- ── FOOTER ── -->
-<footer class="bg-[#1C1C1E] py-lg text-white/40 no-print">
+<footer class="bg-[#0F172A] py-lg text-white/40 no-print">
   <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex flex-col sm:flex-row justify-between items-center gap-sm text-body-sm">
     <span>Hotel Urbano BeWow© Querétaro · Chatbot Jaime · JAIME_HMV2</span>
-    <a href="../../" class="text-[#C8974A]/70 hover:text-[#C8974A] transition-colors flex items-center gap-xs">
+    <a href="../../" class="text-[#D97706]/70 hover:text-[#D97706] transition-colors flex items-center gap-xs">
       <span class="material-symbols-outlined text-[14px]">arrow_back</span> Portal Jaime
     </a>
   </div>
@@ -417,9 +417,9 @@
   <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
 
     <!-- Header modal -->
-    <div class="px-lg py-md bg-[#1C1C1E] flex items-center justify-between gap-md">
+    <div class="px-lg py-md bg-[#0F172A] flex items-center justify-between gap-md">
       <div class="flex items-center gap-sm overflow-hidden">
-        <span class="material-symbols-outlined text-[#C8974A] text-[20px] flex-shrink-0">edit</span>
+        <span class="material-symbols-outlined text-[#D97706] text-[20px] flex-shrink-0">edit</span>
         <h3 id="modal-title" class="text-white font-bold text-body-md truncate">Actualizar sección</h3>
       </div>
       <button onclick="closeModal()" class="text-white/50 hover:text-white transition-colors flex-shrink-0">
@@ -434,10 +434,10 @@
         <input type="text" id="pin-input" maxlength="10"
                placeholder="Código (ej. HBW)"
                autocomplete="off"
-               class="flex-1 border border-outline-variant rounded-xl px-md py-sm text-body-md font-mono uppercase tracking-widest focus:outline-none focus:border-[#C8974A] transition-colors"
+               class="flex-1 border border-outline-variant rounded-xl px-md py-sm text-body-md font-mono uppercase tracking-widest focus:outline-none focus:border-[#D97706] transition-colors"
                onkeydown="if(event.key==='Enter') validatePin()"/>
         <button onclick="validatePin()"
-                class="px-md py-sm bg-[#C8974A] text-white rounded-xl font-bold text-body-sm hover:bg-[#8B6420] transition-colors whitespace-nowrap">
+                class="px-md py-sm bg-[#D97706] text-white rounded-xl font-bold text-body-sm hover:bg-[#92400E] transition-colors whitespace-nowrap">
           Verificar
         </button>
       </div>
@@ -458,7 +458,7 @@
             Cancelar
           </button>
           <button onclick="saveEdits()"
-                  class="px-md py-xs bg-[#C8974A] text-white rounded-lg font-bold text-body-sm hover:bg-[#8B6420] transition-colors flex items-center gap-xs">
+                  class="px-md py-xs bg-[#D97706] text-white rounded-lg font-bold text-body-sm hover:bg-[#92400E] transition-colors flex items-center gap-xs">
             <span class="material-symbols-outlined text-[15px]">save</span> Guardar
           </button>
         </div>
@@ -470,7 +470,7 @@
 
 <!-- ── TOAST ── -->
 <div id="toast"
-     class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] bg-[#1C1C1E] text-white px-lg py-sm rounded-xl shadow-2xl flex items-center gap-sm text-body-sm font-semibold no-print pointer-events-none">
+     class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] bg-[#0F172A] text-white px-lg py-sm rounded-xl shadow-2xl flex items-center gap-sm text-body-sm font-semibold no-print pointer-events-none">
   <span class="material-symbols-outlined text-[#34C759] text-[18px]">check_circle</span>
   <span id="toast-msg">Guardado correctamente</span>
 </div>
@@ -719,7 +719,7 @@ function buildEditFields() {
         escHtml(label) + '</label>' +
         '<input type="text" data-label="' + escHtml(label) + '" value="' + escHtml(value) + '" ' +
         'class="flex-1 border border-outline-variant rounded-lg px-sm py-xs text-body-sm ' +
-        'focus:outline-none focus:border-[#C8974A] focus:ring-1 focus:ring-[#C8974A]/20 transition-colors"/>';
+        'focus:outline-none focus:border-[#D97706] focus:ring-1 focus:ring-[#D97706]/20 transition-colors"/>';
       container.appendChild(row);
     });
   });
@@ -870,6 +870,6 @@ function loadFlujos() {
   );
 }
 </script>
-
+<script src="/assets/js/shared.js"></script>
 </body>
 </html>

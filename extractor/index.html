@@ -4,17 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jaime — Extractor IA de Información Hotelera</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Kodchasan:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --navy:      #1B3C6B;
-      --navy-dark: #0F2647;
+      --navy:      #1E3A5F;
+      --navy-dark: #0F172A;
       --navy-light:#2A5299;
-      --gold:      #C9A84C;
-      --gold-lt:   #E8C96A;
+      --gold:      #D97706;
+      --gold-lt:   #F59E0B;
       --green:     #16A34A;
       --green-lt:  #DCFCE7;
       --red:       #DC2626;
@@ -30,50 +31,40 @@
       --gray-500:  #64748B;
       --gray-700:  #334155;
       --radius:    12px;
-      --shadow:    0 4px 24px rgba(27,60,107,.1);
-      --shadow-lg: 0 12px 48px rgba(27,60,107,.16);
+      --shadow:    0 4px 24px rgba(30,58,95,.08);
+      --shadow-lg: 0 12px 48px rgba(30,58,95,.14);
     }
-    body { font-family:'Kodchasan',sans-serif; background:var(--gray-50); color:var(--gray-700); min-height:100vh; }
+    body { font-family:'Inter',sans-serif; background:var(--gray-50); color:var(--gray-700); min-height:100vh; }
+    .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24; vertical-align:middle; }
 
-    /* HEADER */
-    header {
-      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
-      color:white; padding:48px 32px 56px; text-align:center; position:relative; overflow:hidden;
+    /* PAGE HEADER */
+    .page-header {
+      background:var(--navy-dark); padding:28px 32px 26px; border-bottom:1px solid rgba(255,255,255,.07);
     }
-    header::before {
-      content:''; position:absolute; inset:0;
-      background: radial-gradient(ellipse 80% 60% at 50% 110%, rgba(201,168,76,.15) 0%, transparent 70%);
-    }
-    .hbadge {
-      display:inline-flex; align-items:center; gap:8px;
-      background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
-      border-radius:50px; padding:5px 16px; font-size:.72rem; font-weight:500;
-      letter-spacing:.08em; text-transform:uppercase; margin-bottom:20px;
-    }
-    .hbadge i { color:var(--gold-lt); }
-    header h1 { font-family:'Cormorant Garamond',serif; font-size:clamp(2rem,4vw,3rem); font-weight:300; margin-bottom:6px; }
-    header h1 span { font-weight:600; color:var(--gold-lt); }
-    header p { font-size:.9rem; opacity:.7; font-weight:300; max-width:520px; margin:0 auto; line-height:1.7; }
-    .wave { display:block; width:100%; height:48px; background:var(--gray-50); clip-path:ellipse(60% 100% at 50% 100%); margin-top:-2px; }
+    .page-header-inner { max-width:960px; margin:0 auto; }
+    .page-header-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:rgba(255,255,255,.3); margin-bottom:5px; display:flex; align-items:center; gap:6px; }
+    .page-header h1 { font-family:'Plus Jakarta Sans',sans-serif; font-size:24px; font-weight:700; color:white; margin:0 0 5px; }
+    .page-header h1 span { color:#D97706; }
+    .page-header p { font-size:13px; color:rgba(255,255,255,.45); margin:0; }
 
     /* LAYOUT */
     .container { max-width:960px; margin:0 auto; padding:0 24px 80px; }
     .step-label {
-      display:flex; align-items:center; gap:12px; margin:40px 0 16px;
+      display:flex; align-items:center; gap:12px; margin:36px 0 14px;
     }
     .step-label .num {
-      width:28px; height:28px; flex-shrink:0;
+      width:26px; height:26px; flex-shrink:0;
       background:var(--navy); color:white; border-radius:50%;
       display:flex; align-items:center; justify-content:center;
-      font-size:.75rem; font-weight:700;
+      font-size:.72rem; font-weight:700;
     }
-    .step-label span { font-size:.72rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--navy); }
+    .step-label span { font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(30,58,95,.6); }
     .step-label::after { content:''; flex:1; height:1px; background:var(--gray-200); }
 
     /* CARDS */
-    .card { background:white; border-radius:var(--radius); box-shadow:var(--shadow); padding:24px; margin-bottom:16px; }
-    .card-title { font-size:.88rem; font-weight:600; color:var(--navy-dark); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
-    .card-title i { color:var(--navy); opacity:.7; }
+    .card { background:white; border-radius:var(--radius); border:1px solid var(--gray-200); padding:24px; margin-bottom:14px; }
+    .card-title { font-size:.83rem; font-weight:700; color:var(--navy-dark); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+    .card-title i { color:var(--navy); opacity:.65; }
 
     /* URL INPUTS */
     .url-list { display:flex; flex-direction:column; gap:8px; }
@@ -137,21 +128,21 @@
     .paste-area::placeholder { color:var(--gray-400); }
 
     /* ANALYZE BUTTON */
-    .analyze-wrap { text-align:center; margin:32px 0; }
+    .analyze-wrap { text-align:center; margin:28px 0; }
     .btn-analyze {
       display:inline-flex; align-items:center; gap:10px;
-      padding:14px 40px; background:linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+      padding:13px 40px; background:#D97706;
       color:white; border:none; border-radius:10px;
-      font-family:'Kodchasan',sans-serif; font-size:1rem; font-weight:600;
-      cursor:pointer; transition:all .2s; box-shadow:0 4px 16px rgba(27,60,107,.3);
+      font-family:'Inter',sans-serif; font-size:.95rem; font-weight:700;
+      cursor:pointer; transition:all .2s; box-shadow:0 4px 16px rgba(217,119,6,.3);
     }
-    .btn-analyze:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(27,60,107,.4); }
+    .btn-analyze:hover { transform:translateY(-2px); background:#B45309; box-shadow:0 8px 24px rgba(217,119,6,.35); }
     .btn-analyze:disabled { opacity:.6; cursor:not-allowed; transform:none; }
 
     /* PROGRESS */
     #progress-section { display:none; }
-    .progress-card { background:white; border-radius:var(--radius); box-shadow:var(--shadow); padding:28px 24px; }
-    .progress-title { font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:600; color:var(--navy-dark); margin-bottom:16px; }
+    .progress-card { background:white; border-radius:var(--radius); border:1px solid var(--gray-200); padding:28px 24px; }
+    .progress-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.1rem; font-weight:700; color:var(--navy-dark); margin-bottom:16px; }
     .progress-bar-wrap { height:8px; background:var(--gray-100); border-radius:50px; overflow:hidden; margin-bottom:12px; }
     .progress-bar { height:100%; background:linear-gradient(90deg, var(--navy) 0%, var(--gold) 100%); border-radius:50px; width:0; transition:width .4s ease; }
     .progress-steps { display:flex; flex-direction:column; gap:6px; }
@@ -168,8 +159,8 @@
       display:flex; align-items:center; justify-content:space-between;
       flex-wrap:wrap; gap:16px; margin-bottom:20px;
     }
-    .results-summary h3 { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:600; }
-    .results-summary p { font-size:.83rem; opacity:.75; margin-top:2px; }
+    .results-summary h3 { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.15rem; font-weight:700; }
+    .results-summary p { font-size:.82rem; opacity:.7; margin-top:3px; }
     .stats { display:flex; gap:24px; }
     .stat { text-align:center; }
     .stat .num { font-size:1.6rem; font-weight:700; }
@@ -178,7 +169,7 @@
     .stat.missing .num { color:rgba(255,255,255,.5); }
 
     /* SECTION RESULTS */
-    .result-section { background:white; border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:14px; overflow:hidden; }
+    .result-section { background:white; border-radius:var(--radius); border:1px solid var(--gray-200); margin-bottom:10px; overflow:hidden; }
     .result-section-head {
       padding:14px 20px; display:flex; align-items:center; gap:12px; cursor:pointer;
       border-bottom:1px solid var(--gray-100); user-select:none;
@@ -210,16 +201,16 @@
     .field-item.missing .field-value { color:var(--gray-400); font-style:italic; }
 
     /* DOWNLOAD */
-    .download-wrap { text-align:center; margin-top:28px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .download-wrap { text-align:center; margin-top:28px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
     .btn-download {
       display:inline-flex; align-items:center; gap:8px;
-      padding:12px 28px; border-radius:10px; font-family:'Kodchasan',sans-serif;
-      font-size:.88rem; font-weight:600; cursor:pointer; text-decoration:none;
-      transition:all .2s; border:none;
+      padding:11px 26px; border-radius:10px; font-family:'Inter',sans-serif;
+      font-size:.85rem; font-weight:700; cursor:pointer; text-decoration:none;
+      transition:all .18s; border:none;
     }
     .btn-download.primary { background:var(--green); color:white; }
-    .btn-download.primary:hover { background:#15803D; }
-    .btn-download.secondary { background:white; color:var(--navy); border:1.5px solid var(--gray-300); }
+    .btn-download.primary:hover { background:#15803D; transform:translateY(-1px); }
+    .btn-download.secondary { background:white; color:var(--navy); border:1.5px solid var(--gray-200); }
     .btn-download.secondary:hover { background:var(--gray-50); }
 
     /* ERROR */
@@ -230,9 +221,10 @@
     }
     .error-banner.show { display:flex; }
 
-    /* BACK LINK */
-    .back-link { display:inline-flex; align-items:center; gap:6px; color:rgba(255,255,255,.6); font-size:.78rem; text-decoration:none; margin-bottom:20px; transition:color .15s; }
-    .back-link:hover { color:white; }
+    /* URL inputs */
+    .url-row input { font-family:'Inter',sans-serif; }
+    .btn-add-url { font-family:'Inter',sans-serif; }
+    .paste-area { font-family:'Inter',sans-serif; }
 
     @media(max-width:600px) {
       header { padding:36px 16px 48px; }
@@ -244,13 +236,16 @@
 </head>
 <body>
 
-<header>
-  <a href="../" class="back-link"><i class="fa-solid fa-arrow-left"></i> Portal Jaime</a>
-  <div class="hbadge"><i class="fa-solid fa-wand-magic-sparkles"></i> Powered by Claude AI</div>
-  <h1>Extractor <span>IA</span> de Hotel</h1>
-  <p>Sube URLs, documentos e imágenes del hotel. La IA extrae automáticamente toda la información para llenar el formulario de onboarding.</p>
-</header>
-<div class="wave"></div>
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-label">
+      <span class="material-symbols-outlined" style="font-size:13px;color:#D97706;">auto_fix_high</span>
+      Powered by Claude AI
+    </div>
+    <h1>Extractor <span>IA</span> de Hotel</h1>
+    <p>Sube URLs, documentos e imágenes del hotel. La IA extrae automáticamente toda la información para llenar el formulario de onboarding.</p>
+  </div>
+</div>
 
 <div class="container">
 
@@ -840,7 +835,7 @@ async function downloadFilledForm() {
 
   // Add filled-by banner at top of form
   const hotelName = extractedData.nombre_hotel || 'Hotel';
-  const banner = `<div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#16A34A;color:white;text-align:center;padding:8px 16px;font-family:Kodchasan,sans-serif;font-size:.82rem;font-weight:600;">
+  const banner = `<div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#16A34A;color:white;text-align:center;padding:8px 16px;font-family:Inter,sans-serif;font-size:.82rem;font-weight:600;">
     ✅ Formulario pre-llenado con IA para: <strong>${escHtml(hotelName)}</strong> — Revisa y ajusta los campos antes de enviar
   </div>`;
   html = html.replace('<body', `<body style="padding-top:40px"`) .replace(/(<body[^>]*>)/, `$1${banner}`);
@@ -874,5 +869,6 @@ function resetAll() {
   window.scrollTo({ top:0, behavior:'smooth' });
 }
 </script>
+<script src="/assets/js/shared.js"></script>
 </body>
 </html>
