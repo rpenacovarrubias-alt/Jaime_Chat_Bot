@@ -166,6 +166,7 @@
       <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#herramienta">Herramienta</a>
       <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#formularios">Formularios</a>
       <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#documentacion">Documentación</a>
+      <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#hoteles">Hoteles</a>
       <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#compartir">Compartir</a>
     </div>
     <a href="extractor/" class="bg-primary text-on-primary px-md py-sm rounded-lg font-bold hover:translate-y-[-2px] transition-transform text-body-sm">
@@ -362,6 +363,69 @@
           <span class="material-symbols-outlined" style="font-size:15px;line-height:1">account_tree</span> Ver flujos
         </a>
       </div>
+    </div>
+  </section>
+
+  <!-- HOTELES IMPLEMENTADOS -->
+  <section id="hoteles" class="reveal">
+    <div class="flex items-center gap-sm mb-md text-primary">
+      <span class="material-symbols-outlined">hotel</span>
+      <span class="font-label-md text-label-md tracking-wider uppercase">Hoteles Implementados</span>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-outline-variant overflow-hidden">
+
+      <!-- Header de la sección -->
+      <div class="px-lg py-md border-b border-outline-variant flex flex-col sm:flex-row sm:items-center justify-between gap-sm">
+        <div>
+          <h2 class="font-headline-md text-headline-md">Hoteles activos</h2>
+          <p class="text-on-surface-variant text-body-sm mt-1">Selecciona un hotel para ver su configuración y flujos.</p>
+        </div>
+        <span class="inline-flex items-center gap-xs px-sm py-xs bg-[#FBF5EC] text-[#8B6420] rounded-full font-bold text-body-sm border border-[#C8974A]/25 self-start sm:self-auto">
+          <span class="material-symbols-outlined text-[14px]">check_circle</span>
+          1 hotel configurado
+        </span>
+      </div>
+
+      <!-- Lista de hoteles -->
+      <div class="divide-y divide-outline-variant">
+
+        <!-- Hotel: BeWow Querétaro -->
+        <a href="hoteles/BEWOW_QUERETARO/"
+           class="flex flex-col sm:flex-row sm:items-center gap-md p-lg hover:bg-surface-container-low transition-colors group">
+
+          <!-- Avatar / Iniciales -->
+          <div class="w-14 h-14 rounded-xl bg-[#1C1C1E] flex items-center justify-center flex-shrink-0 border border-outline-variant group-hover:border-[#C8974A]/40 transition-colors">
+            <span class="text-[#C8974A] font-bold text-headline-sm leading-none">BW</span>
+          </div>
+
+          <!-- Info principal -->
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center gap-sm mb-xs">
+              <h3 class="font-headline-sm text-headline-sm text-on-surface">Hotel Urbano BeWow© Querétaro</h3>
+              <span class="px-sm py-[2px] bg-[#E8F9EE] text-[#248A3D] rounded-full text-label-sm font-bold border border-[#34C759]/25 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#34C759] inline-block"></span> En implementación
+              </span>
+            </div>
+            <p class="text-on-surface-variant text-body-sm">Santiago de Querétaro, Qro. · ⭐⭐⭐⭐ 4 estrellas · 70 habitaciones</p>
+
+            <!-- Badges de estado -->
+            <div class="flex flex-wrap gap-2 mt-sm">
+              <span class="px-sm py-[3px] bg-surface-container text-on-surface-variant rounded-full text-label-sm font-semibold">ManyChat · JAIME_HMV2</span>
+              <span class="px-sm py-[3px] bg-[#FBF5EC] text-[#8B6420] rounded-full text-label-sm font-semibold">12 flujos completos</span>
+              <span class="px-sm py-[3px] bg-surface-container text-on-surface-variant rounded-full text-label-sm font-semibold">WhatsApp +52 1 442 216-0100</span>
+            </div>
+          </div>
+
+          <!-- Flecha -->
+          <div class="flex-shrink-0 flex items-center gap-sm">
+            <span class="text-on-surface-variant text-body-sm group-hover:text-primary transition-colors">Ver detalles</span>
+            <span class="material-symbols-outlined text-outline group-hover:text-primary group-hover:translate-x-1 transition-all">arrow_forward</span>
+          </div>
+        </a>
+
+      </div><!-- /divide-y -->
+
     </div>
   </section>
 

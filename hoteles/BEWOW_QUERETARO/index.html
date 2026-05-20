@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BeWow Querétaro — Chatbot Jaime</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "surface": "#fcf8fb", "background": "#fcf8fb",
+          "on-background": "#1b1b1d", "on-surface": "#1b1b1d",
+          "on-surface-variant": "#4f4538", "outline-variant": "#d3c4b3",
+          "outline": "#817566", "surface-container": "#f0edef",
+          "surface-container-low": "#f6f3f5", "surface-container-high": "#eae7ea",
+          "primary": "#7e570c", "primary-container": "#c8974a",
+          "on-primary": "#ffffff", "on-primary-container": "#4c3100",
+        },
+        fontFamily: {
+          "body-md": ["Inter"], "headline-lg": ["Plus Jakarta Sans"],
+          "display-lg": ["Plus Jakarta Sans"], "body-lg": ["Inter"],
+          "label-sm": ["Inter"], "headline-md": ["Plus Jakarta Sans"],
+          "label-md": ["Inter"], "headline-sm": ["Plus Jakarta Sans"],
+        },
+        fontSize: {
+          "body-md":  ["16px", { lineHeight:"24px", fontWeight:"400" }],
+          "headline-lg": ["32px", { lineHeight:"40px", fontWeight:"700" }],
+          "display-lg": ["48px", { lineHeight:"56px", letterSpacing:"-0.02em", fontWeight:"700" }],
+          "body-lg":  ["18px", { lineHeight:"28px", fontWeight:"400" }],
+          "label-sm": ["12px", { lineHeight:"16px", fontWeight:"600" }],
+          "body-sm":  ["14px", { lineHeight:"20px", fontWeight:"400" }],
+          "headline-md": ["24px", { lineHeight:"32px", fontWeight:"600" }],
+          "label-md": ["14px", { lineHeight:"20px", letterSpacing:"0.01em", fontWeight:"500" }],
+          "headline-sm": ["20px", { lineHeight:"28px", fontWeight:"600" }],
+        },
+        spacing: {
+          "sm": "12px", "md": "24px", "lg": "40px", "xl": "64px",
+          "xs": "4px", "container-max": "1280px",
+          "margin-desktop": "32px", "margin-mobile": "16px",
+        },
+        borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }
+      }
+    }
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+
+  /* ── Markdown content styles ── */
+  .md-body h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 26px; font-weight: 700; color: #1C1C1E; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #C8974A; }
+  .md-body h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; color: #1C1C1E; margin: 1.75rem 0 0.75rem; padding-left: 12px; border-left: 4px solid #C8974A; }
+  .md-body h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 600; color: #4f4538; margin: 1.25rem 0 0.5rem; }
+  .md-body p  { color: #4f4538; line-height: 1.7; margin-bottom: 0.75rem; }
+  .md-body ul, .md-body ol { padding-left: 1.4rem; margin-bottom: 0.75rem; color: #4f4538; }
+  .md-body li { margin-bottom: 0.3rem; line-height: 1.6; }
+  .md-body strong { color: #1C1C1E; font-weight: 600; }
+  .md-body blockquote { border-left: 4px solid #C8974A; background: #FBF5EC; padding: 10px 16px; border-radius: 0 8px 8px 0; margin: 1rem 0; color: #4f4538; font-style: italic; }
+  .md-body code { background: #F5E8D0; color: #8B6420; padding: 2px 6px; border-radius: 4px; font-size: 13px; font-family: monospace; }
+  .md-body pre { background: #1C1C1E; color: #F5E8D0; padding: 16px 20px; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
+  .md-body pre code { background: transparent; color: #C8974A; padding: 0; }
+  .md-body table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 14px; }
+  .md-body th { background: #1C1C1E; color: #C8974A; font-weight: 700; text-align: left; padding: 10px 14px; }
+  .md-body td { border: 1px solid #d3c4b3; padding: 9px 14px; color: #4f4538; background: #fff; }
+  .md-body tr:hover td { background: #FBF5EC; }
+  .md-body hr { border: none; border-top: 1px solid #d3c4b3; margin: 1.5rem 0; }
+
+  /* Tab active */
+  .tab-btn.active {
+    color: #7e570c;
+    border-bottom: 3px solid #C8974A;
+    font-weight: 700;
+  }
+
+  /* Loading pulse */
+  @keyframes pulse-gold {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .pulse-gold { animation: pulse-gold 1.5s ease-in-out infinite; }
+
+  /* Print */
+  @media print {
+    nav, .no-print { display: none !important; }
+    .md-body { font-size: 12px; }
+  }
+</style>
+</head>
+<body class="bg-background text-on-background font-body-md">
+
+<!-- ── NAV ── -->
+<nav class="fixed top-0 w-full z-50 bg-background/90 backdrop-blur-md border-b border-outline-variant shadow-sm no-print">
+  <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex items-center justify-between h-16 gap-md">
+
+    <!-- Back -->
+    <a href="../../" class="flex items-center gap-xs text-on-surface-variant hover:text-primary transition-colors font-body-sm text-body-sm">
+      <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+      Portal Jaime
+    </a>
+
+    <!-- Hotel name -->
+    <div class="flex items-center gap-sm overflow-hidden">
+      <div class="w-7 h-7 rounded-lg bg-[#1C1C1E] flex items-center justify-center flex-shrink-0">
+        <span class="text-[#C8974A] font-bold text-label-sm leading-none">BW</span>
+      </div>
+      <span class="font-bold text-on-surface text-body-sm truncate">BeWow© Querétaro</span>
+      <span class="hidden sm:inline-flex items-center gap-1 px-sm py-[2px] bg-[#E8F9EE] text-[#248A3D] rounded-full text-label-sm font-bold border border-[#34C759]/25 flex-shrink-0">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#34C759] inline-block"></span> En implementación
+      </span>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-sm flex-shrink-0">
+      <button onclick="window.print()" class="hidden sm:flex items-center gap-xs px-sm py-xs border border-outline-variant rounded-lg text-body-sm text-on-surface-variant hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined text-[16px]">print</span> Imprimir
+      </button>
+    </div>
+
+  </div>
+</nav>
+
+<!-- ── HEADER DEL HOTEL ── -->
+<header class="pt-16 bg-[#1C1C1E]">
+  <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-lg">
+    <div class="flex flex-col md:flex-row md:items-center gap-lg">
+
+      <!-- Avatar grande -->
+      <div class="w-20 h-20 rounded-2xl bg-[#C8974A]/15 border-2 border-[#C8974A]/40 flex items-center justify-center flex-shrink-0">
+        <span class="text-[#C8974A] font-bold text-headline-lg leading-none">BW</span>
+      </div>
+
+      <!-- Info -->
+      <div class="flex-1">
+        <div class="flex flex-wrap items-center gap-sm mb-xs">
+          <span class="px-sm py-[3px] bg-white/10 text-white/70 rounded-full text-label-sm font-semibold">ManyChat · JAIME_HMV2</span>
+          <span class="px-sm py-[3px] bg-[#C8974A]/20 text-[#F5E8D0] rounded-full text-label-sm font-semibold">⭐⭐⭐⭐ 4 estrellas</span>
+        </div>
+        <h1 class="font-display-lg text-[28px] md:text-[36px] leading-tight font-bold text-white">
+          Hotel Urbano <span class="text-[#C8974A]">BeWow©</span> Querétaro
+        </h1>
+        <p class="text-white/55 text-body-md mt-xs">Santiago de Querétaro, Qro. · 70 habitaciones · Personalidad: Amistoso</p>
+
+        <!-- Stats rápidos -->
+        <div class="flex flex-wrap gap-md mt-md">
+          <div class="text-center">
+            <div class="text-[#C8974A] font-bold text-headline-sm">12</div>
+            <div class="text-white/40 text-label-sm">Flujos completos</div>
+          </div>
+          <div class="w-px bg-white/10"></div>
+          <div class="text-center">
+            <div class="text-[#C8974A] font-bold text-headline-sm">15</div>
+            <div class="text-white/40 text-label-sm">Secciones config.</div>
+          </div>
+          <div class="w-px bg-white/10"></div>
+          <div class="text-center">
+            <div class="text-[#C8974A] font-bold text-headline-sm">3</div>
+            <div class="text-white/40 text-label-sm">Pendientes</div>
+          </div>
+          <div class="w-px bg-white/10"></div>
+          <div class="text-center">
+            <div class="text-white/80 font-bold text-headline-sm">18 May</div>
+            <div class="text-white/40 text-label-sm">Última actualización</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contacto rápido -->
+      <div class="flex flex-col gap-sm flex-shrink-0">
+        <a href="https://wa.me/5214422160100" target="_blank" rel="noopener"
+           class="flex items-center gap-sm px-md py-sm bg-[#25D366] text-white rounded-xl font-bold text-body-sm hover:bg-[#1EB85A] transition-colors">
+          <i class="fab fa-whatsapp text-base"></i> +52 1 442 216-0100
+        </a>
+        <a href="https://bewow.mx" target="_blank" rel="noopener"
+           class="flex items-center gap-sm px-md py-sm bg-white/10 text-white rounded-xl font-bold text-body-sm hover:bg-white/15 transition-colors">
+          <span class="material-symbols-outlined text-[16px]">language</span> bewow.mx
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop no-print">
+    <div class="flex border-b border-white/10 gap-xs">
+      <button onclick="showTab('config')" id="tab-config"
+              class="tab-btn active px-md py-sm text-white/70 text-body-sm font-semibold transition-all hover:text-white border-b-3 border-transparent">
+        <span class="material-symbols-outlined text-[16px] mr-1">settings_applications</span>
+        Configuración
+      </button>
+      <button onclick="showTab('flujos')" id="tab-flujos"
+              class="tab-btn px-md py-sm text-white/70 text-body-sm font-semibold transition-all hover:text-white border-b-3 border-transparent">
+        <span class="material-symbols-outlined text-[16px] mr-1">account_tree</span>
+        Flujos de Conversación
+      </button>
+      <button onclick="showTab('estado')" id="tab-estado"
+              class="tab-btn px-md py-sm text-white/70 text-body-sm font-semibold transition-all hover:text-white border-b-3 border-transparent">
+        <span class="material-symbols-outlined text-[16px] mr-1">task_alt</span>
+        Estado
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ── CONTENIDO ── -->
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-lg">
+
+  <!-- Tab: Configuración -->
+  <div id="panel-config">
+    <div id="config-loading" class="flex flex-col items-center justify-center py-xl gap-md text-on-surface-variant">
+      <span class="material-symbols-outlined text-[48px] text-[#C8974A] pulse-gold">settings_applications</span>
+      <p class="text-body-md">Cargando configuración del hotel...</p>
+    </div>
+    <div id="config-content" class="hidden bg-white rounded-2xl border border-outline-variant p-lg md:p-xl md-body"></div>
+    <div id="config-error" class="hidden bg-red-50 border border-red-200 rounded-xl p-lg text-center">
+      <span class="material-symbols-outlined text-red-400 text-[36px]">error</span>
+      <p class="text-red-700 font-semibold mt-sm">No se pudo cargar el archivo de configuración.</p>
+      <a href="BEWOW_QUERETARO_configuracion.md" class="text-[#C8974A] font-bold mt-sm inline-block hover:underline">Ver archivo .md directo →</a>
+    </div>
+  </div>
+
+  <!-- Tab: Flujos -->
+  <div id="panel-flujos" class="hidden">
+    <div id="flujos-loading" class="flex flex-col items-center justify-center py-xl gap-md text-on-surface-variant">
+      <span class="material-symbols-outlined text-[48px] text-[#C8974A] pulse-gold">account_tree</span>
+      <p class="text-body-md">Cargando flujos de conversación...</p>
+    </div>
+    <div id="flujos-content" class="hidden bg-white rounded-2xl border border-outline-variant p-lg md:p-xl md-body"></div>
+    <div id="flujos-error" class="hidden bg-red-50 border border-red-200 rounded-xl p-lg text-center">
+      <span class="material-symbols-outlined text-red-400 text-[36px]">error</span>
+      <p class="text-red-700 font-semibold mt-sm">No se pudo cargar el archivo de flujos.</p>
+      <a href="BEWOW_QUERETARO_flujos.md" class="text-[#C8974A] font-bold mt-sm inline-block hover:underline">Ver archivo .md directo →</a>
+    </div>
+  </div>
+
+  <!-- Tab: Estado -->
+  <div id="panel-estado" class="hidden">
+    <div class="bg-white rounded-2xl border border-outline-variant overflow-hidden">
+
+      <!-- Header estado -->
+      <div class="px-lg py-md border-b border-outline-variant bg-surface-container-low flex items-center justify-between">
+        <div>
+          <h2 class="font-headline-md text-headline-md">Estado de Implementación</h2>
+          <p class="text-on-surface-variant text-body-sm mt-1">Última revisión: 19 Mayo 2026</p>
+        </div>
+        <div class="text-right">
+          <div class="text-headline-md font-headline-md text-[#C8974A]">80%</div>
+          <div class="text-label-sm text-on-surface-variant">completado</div>
+        </div>
+      </div>
+
+      <!-- Barra de progreso -->
+      <div class="px-lg py-md border-b border-outline-variant">
+        <div class="w-full bg-surface-container-high rounded-full h-2.5">
+          <div class="bg-[#C8974A] h-2.5 rounded-full transition-all" style="width: 80%"></div>
+        </div>
+        <div class="flex justify-between mt-xs text-label-sm text-on-surface-variant">
+          <span>14 de 17 ítems completos</span>
+          <span>3 pendientes</span>
+        </div>
+      </div>
+
+      <!-- Lista de ítems -->
+      <div class="divide-y divide-outline-variant">
+
+        <!-- Completos -->
+        <div class="px-lg py-md">
+          <h3 class="font-bold text-on-surface text-body-md mb-md flex items-center gap-sm">
+            <span class="material-symbols-outlined text-[#34C759] text-[18px]">check_circle</span>
+            Completos
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-sm">
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
+              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
+              <span class="text-body-sm text-on-surface">Ficha de configuración del hotel</span>
+            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
+              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
+              <span class="text-body-sm text-on-surface">Directorio interno y escalamiento</span>
+            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
+              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
+              <span class="text-body-sm text-on-surface">Menú principal (8 opciones)</span>
+            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
+              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
+              <span class="text-body-sm text-on-surface">Submenús confirmados</span>
+            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
+              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
+              <span class="text-body-sm text-on-surface">Flujo 1 — Pre-Registro</span>
+            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
+              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
+              <span class="text-body-sm text-on-surface">Flujo 2 — Check Out Express</span>
+            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
+              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
+              <span class="text-body-sm text-on-surface">Flujo 3 — Facturación</span>
+            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
+              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
+              <span class="text-body-sm text-on-surface">Flujo 4 — Amenidades</span>
+            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
+              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
+              <span class="text-body-sm text-on-surface">Flujo 5 — Reportar Falla</span>
+            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
+              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
+              <span class="text-body-sm text-on-surface">Flujo 6 — Limpieza</span>
+            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
+              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
+              <span class="text-body-sm text-on-surface">Flujo 7 — Room Service</span>
+            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
+              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
+              <span class="text-body-sm text-on-surface">Flujo 8 — Ubicación</span>
+            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
+              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
+              <span class="text-body-sm text-on-surface">Flujo 9 — Instalaciones</span>
+            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
+              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
+              <span class="text-body-sm text-on-surface">Flujo 10 — Políticas</span>
+            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
+              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
+              <span class="text-body-sm text-on-surface">Flujo 11 — Habitaciones y tarifas</span>
+            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#E8F9EE] rounded-lg border border-[#34C759]/20">
+              <span class="material-symbols-outlined text-[#34C759] text-[16px]">check</span>
+              <span class="text-body-sm text-on-surface">Flujo 12 — Eventos y salones</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pendientes -->
+        <div class="px-lg py-md">
+          <h3 class="font-bold text-on-surface text-body-md mb-md flex items-center gap-sm">
+            <span class="material-symbols-outlined text-[#FF9500] text-[18px]">schedule</span>
+            Pendientes
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-sm">
+            <div class="flex items-center gap-sm p-sm bg-[#FFF8EC] rounded-lg border border-[#FF9500]/20">
+              <span class="material-symbols-outlined text-[#FF9500] text-[16px]">radio_button_unchecked</span>
+              <span class="text-body-sm text-on-surface">Configuración en ManyChat</span>
+            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#FFF8EC] rounded-lg border border-[#FF9500]/20">
+              <span class="material-symbols-outlined text-[#FF9500] text-[16px]">radio_button_unchecked</span>
+              <span class="text-body-sm text-on-surface">Pruebas con WhatsApp real</span>
+            </div>
+            <div class="flex items-center gap-sm p-sm bg-[#FFF8EC] rounded-lg border border-[#FF9500]/20">
+              <span class="material-symbols-outlined text-[#FF9500] text-[16px]">radio_button_unchecked</span>
+              <span class="text-body-sm text-on-surface">Capacitación al equipo de Recepción</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Siguiente paso -->
+        <div class="px-lg py-md bg-surface-container-low">
+          <div class="flex items-start gap-md">
+            <span class="material-symbols-outlined text-[#C8974A] text-[22px] mt-1 flex-shrink-0">arrow_circle_right</span>
+            <div>
+              <p class="font-bold text-on-surface text-body-md">Siguiente paso</p>
+              <p class="text-on-surface-variant text-body-sm mt-xs">Configurar los flujos en ManyChat usando la plantilla de flujos completada y conectar con el número de WhatsApp <strong>+52 1 442 216-0100</strong>.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer class="bg-[#1C1C1E] py-lg text-white/40 no-print">
+  <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex flex-col sm:flex-row justify-between items-center gap-sm text-body-sm">
+    <span>Hotel Urbano BeWow© Querétaro · Chatbot Jaime · JAIME_HMV2</span>
+    <a href="../../" class="text-[#C8974A]/70 hover:text-[#C8974A] transition-colors flex items-center gap-xs">
+      <span class="material-symbols-outlined text-[14px]">arrow_back</span> Portal Jaime
+    </a>
+  </div>
+</footer>
+
+<script>
+  // ── Tabs ──────────────────────────────────────────────────────────────────
+  var tabs = ['config', 'flujos', 'estado'];
+
+  function showTab(name) {
+    tabs.forEach(function(t) {
+      var panel = document.getElementById('panel-' + t);
+      var btn   = document.getElementById('tab-' + t);
+      if (panel) panel.classList.toggle('hidden', t !== name);
+      if (btn)   btn.classList.toggle('active', t === name);
+    });
+    if (name === 'flujos' && !window._flujosCargados) loadFlujos();
+  }
+
+  // ── Loader helper ─────────────────────────────────────────────────────────
+  function loadMd(file, loadingId, contentId, errorId) {
+    fetch(file)
+      .then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.text();
+      })
+      .then(function(md) {
+        document.getElementById(loadingId).classList.add('hidden');
+        var el = document.getElementById(contentId);
+        el.innerHTML = marked.parse(md);
+        el.classList.remove('hidden');
+      })
+      .catch(function() {
+        document.getElementById(loadingId).classList.add('hidden');
+        document.getElementById(errorId).classList.remove('hidden');
+      });
+  }
+
+  // ── Carga inicial: configuración ──────────────────────────────────────────
+  loadMd(
+    'BEWOW_QUERETARO_configuracion.md',
+    'config-loading', 'config-content', 'config-error'
+  );
+
+  // ── Carga lazy: flujos ────────────────────────────────────────────────────
+  function loadFlujos() {
+    window._flujosCargados = true;
+    loadMd(
+      'BEWOW_QUERETARO_flujos.md',
+      'flujos-loading', 'flujos-content', 'flujos-error'
+    );
+  }
+</script>
+
+</body>
+</html>
