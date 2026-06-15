@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -265,7 +265,9 @@ textarea { resize: vertical; min-height: 72px; }
       <div class="fg"><label class="lbl">Motor de reservas (URL)</label><input type="url" name="hotel_motor" placeholder="https://reservas.mihotel.com"></div>
     </div>
     <div class="row">
-      <div class="fg"><label class="lbl">Facebook</label><input type="url" name="hotel_facebook" placeholder="https://facebook.com/mihotel"></div>
+          <div class="fg full"><label class="lbl">Micro guion — Reservaciones y Ventas</label><textarea name="reserv_guion" placeholder="Ej. ¡Con gusto! Consigue aqui las mejores tarifas y reserva en menos de un minuto 👇
+https://reservas.mihotel.com"></textarea></div>
+    <div class="fg"><label class="lbl">Facebook</label><input type="url" name="hotel_facebook" placeholder="https://facebook.com/mihotel"></div>
       <div class="fg"><label class="lbl">Instagram (@usuario)</label><input type="text" name="hotel_instagram" placeholder="@mihotel"></div>
     </div>
     <div class="fg full"><label class="lbl">Google Maps (link)</label><input type="url" name="hotel_maps" placeholder="https://maps.google.com/..."></div>
@@ -406,6 +408,7 @@ textarea { resize: vertical; min-height: 72px; }
       <div class="fg"><label class="lbl">Contraseña huéspedes</label><input type="text" name="wifi_h_pass" placeholder=""></div>
     </div>
     <div class="fg"><label class="lbl">Velocidad / observaciones</label><input type="text" name="wifi_vel" placeholder="Ej. 100 Mbps · Disponible en todas las áreas"></div>
+    <div class="fg full"><label class="lbl">Micro guion — WiFi</label><textarea name="wifi_guion" placeholder="Ej. El WiFi es gratuito durante tu estancia. Accede a la red [SSID], e ingresa tu número de habitación y apellido para conectarte ✅"></textarea></div>
   </div>
 
   <!-- ══ S6 DESAYUNO ══ -->
@@ -425,6 +428,9 @@ textarea { resize: vertical; min-height: 72px; }
       <div class="fg"><label class="lbl">Costo si no está incluido</label><input type="text" name="desayuno_costo" placeholder="Ej. $180 MXN por persona"></div>
       <div class="fg"><label class="lbl">Ubicación del restaurante</label><input type="text" name="desayuno_ubic" placeholder="Ej. Planta baja, junto a la recepción"></div>
     </div>
+    <div class="fg full"><label class="lbl">URL menú de desayuno / cafetería</label><input type="url" name="desayuno_menu_url" placeholder="https://mihotel.com/desayunos/menu"></div>
+    <div class="fg full"><label class="lbl">Micro guion — Desayuno</label><textarea name="desayuno_guion" placeholder="Ej. Sí, contamos con desayuno tipo buffet con varias opciones. Si quieres conocer nuestra carta aquí puedes verla 👇
+[URL menú]"></textarea></div>
   </div>
 
   <!-- ══ S7 RESTAURANTE ══ -->
@@ -434,6 +440,8 @@ textarea { resize: vertical; min-height: 72px; }
       <div class="fg"><label class="lbl">Nombre del restaurante</label><input type="text" name="rest_nombre" placeholder="Ej. Restaurante La Terraza"></div>
       <div class="fg"><label class="lbl">URL del menú en línea</label><input type="url" name="rest_menu" placeholder="https://mihotel.com/menu"></div>
     </div>
+    <div class="fg full"><label class="lbl">Micro guion — Menú del Restaurante</label><textarea name="rest_menu_guion" placeholder="Ej. Descubre nuestro delicioso menú y deléitate con las mejores opciones 🍽️
+[URL menú]"></textarea></div>
     <div class="row">
       <div class="fg"><label class="lbl">Horario desayuno</label><input type="text" name="rest_des" placeholder="Ej. 7:00 – 11:00 a.m."></div>
       <div class="fg"><label class="lbl">Horario comida</label><input type="text" name="rest_com" placeholder="Ej. 1:00 – 5:00 p.m."></div>
@@ -445,6 +453,14 @@ textarea { resize: vertical; min-height: 72px; }
       <div class="fg"><label class="lbl">Horario room service</label><input type="text" name="rs_horario" placeholder="Ej. 7:00 a.m. – 10:00 p.m."></div>
       <div class="fg"><label class="lbl">Tiempo de entrega</label><input type="text" name="rs_tiempo" placeholder="Ej. 30–45 minutos"></div>
     </div>
+    <div class="row">
+      <div class="fg"><label class="lbl">URL menú Room Service</label><input type="url" name="rs_menu_url" placeholder="https://mihotel.com/roomservice/menu"></div>
+      <div class="fg"><label class="lbl">URL ordenar Room Service</label><input type="url" name="rs_ordenar_url" placeholder="https://mihotel.com/roomservice/ordenar"></div>
+    </div>
+    <div class="fg full"><label class="lbl">Micro guion — Ver menú Room Service</label><textarea name="rs_menu_guion" placeholder="Ej. Descubre nuestro delicioso menú de Room Service y deléitate en tu habitación 🍽️
+[URL menú]"></textarea></div>
+    <div class="fg full"><label class="lbl">Micro guion — Ordenar Room Service</label><textarea name="rs_ordenar_guion" placeholder="Ej. Si ya sabes lo que deseas ordenar, hazlo aquí y te llegarán tus alimentos 👨‍🍳
+[URL ordenar]"></textarea></div>
     <p class="lbl" style="margin:12px 0 10px;">Menú de Room Service (hasta 5 platillos)</p>
     <div class="row"><div class="fg"><label class="lbl">Platillo 1</label><input type="text" name="rs1_nom" placeholder="Ej. Club Sándwich"></div><div class="fg"><label class="lbl">Descripción</label><input type="text" name="rs1_desc" placeholder="Ej. Pavo, jamón, papas"></div><div class="fg" style="max-width:120px"><label class="lbl">Precio</label><input type="text" name="rs1_precio" placeholder="$185"></div></div>
     <div class="row"><div class="fg"><label class="lbl">Platillo 2</label><input type="text" name="rs2_nom" placeholder=""></div><div class="fg"><label class="lbl">Descripción</label><input type="text" name="rs2_desc" placeholder=""></div><div class="fg" style="max-width:120px"><label class="lbl">Precio</label><input type="text" name="rs2_precio" placeholder=""></div></div>
@@ -491,6 +507,17 @@ textarea { resize: vertical; min-height: 72px; }
       <div class="it-row"><span>Bar</span><span style="text-align:center"><input type="checkbox" name="ba_d"></span><input type="text" name="ba_h" placeholder=""><input type="text" name="ba_c" placeholder=""><input type="text" name="ba_n" placeholder=""></div>
       <div class="it-row"><span>Kids Club</span><span style="text-align:center"><input type="checkbox" name="kc_d"></span><input type="text" name="kc_h" placeholder=""><input type="text" name="kc_c" placeholder=""><input type="text" name="kc_n" placeholder=""></div>
       <div class="it-row"><span>Canchas deportivas</span><span style="text-align:center"><input type="checkbox" name="ca_d"></span><input type="text" name="ca_h" placeholder=""><input type="text" name="ca_c" placeholder=""><input type="text" name="ca_n" placeholder=""></div>
+    </div></div>
+    <p class="lbl" style="margin:20px 0 12px;">URLs y micro guiones de instalaciones</p>
+    <div class="card"><p class="card-title">Lavandería</p>
+      <div class="fg full"><label class="lbl">URL registro de lavandería</label><input type="url" name="lavanderia_url" placeholder="https://mihotel.com/lavanderia"></div>
+      <div class="fg full"><label class="lbl">Micro guion — Lavandería</label><textarea name="lavanderia_guion" placeholder="Ej. Puedes registrar tu servicio de lavandería aquí 👇
+[URL lavandería]"></textarea></div>
+    </div>
+    <div class="card"><p class="card-title">Alberca</p>
+      <div class="fg full"><label class="lbl">URL reglamento alberca</label><input type="url" name="alberca_url" placeholder="https://mihotel.com/alberca"></div>
+      <div class="fg full"><label class="lbl">Micro guion — Alberca</label><textarea name="alberca_guion" placeholder="Ej. Nuestra alberca está disponible de 9am a 9pm. Aquí puedes ver el reglamento 🏊️
+[URL alberca]"></textarea></div>
     </div>
   </div>
 
@@ -517,6 +544,8 @@ textarea { resize: vertical; min-height: 72px; }
       <div class="fg"><label class="lbl">URL cotización de eventos</label><input type="url" name="eventos_url" placeholder="https://mihotel.com/eventos"></div>
       <div class="fg"><label class="lbl">Depósito para reservar salón</label><input type="text" name="salon_dep" placeholder="Ej. 30% del costo total"></div>
     </div>
+    <div class="fg full"><label class="lbl">Micro guion — Eventos y Salones</label><textarea name="eventos_guion" placeholder="Ej. Claro, contamos con espacios para eventos y reuniones. Te dejo la información aquí 👇
+[URL eventos]"></textarea></div>
   </div>
 
   <!-- ══ S11 POLÍTICAS ══ -->
@@ -553,6 +582,9 @@ textarea { resize: vertical; min-height: 72px; }
       <div class="fg"><label class="lbl">¿Emiten facturas (CFDI)?</label><div class="tg"><input type="radio" name="factura" id="fc_s" value="si"><label for="fc_s">Sí</label><input type="radio" name="factura" id="fc_n" value="no" checked><label for="fc_n">No</label></div></div>
       <div class="fg"><label class="lbl">URL facturación en línea</label><input type="url" name="factura_url" placeholder="https://mihotel.com/facturacion"></div>
     </div>
+    <div class="fg full"><label class="lbl">Micro guion — Facturación</label><textarea name="factura_guion" placeholder="Ej. Puedes realizar tu facturación fácilmente aquí 👇
+[URL facturación]
+Te pedirán tus datos fiscales: RFC, Razón Social, CP, Uso de CFDI y Régimen Fiscal."></textarea></div>
   </div>
 
   <!-- ══ S13 INTEGRACIÓN ══ -->
@@ -569,6 +601,24 @@ textarea { resize: vertical; min-height: 72px; }
     <div class="row">
       <div class="fg"><label class="lbl">¿Se integra con n8n?</label><div class="tg"><input type="radio" name="n8n" id="n8_s" value="si"><label for="n8_s">Sí</label><input type="radio" name="n8n" id="n8_n" value="no" checked><label for="n8_n">No</label></div></div>
       <div class="fg"><label class="lbl">¿Google Sheets para tickets?</label><div class="tg"><input type="radio" name="gsheets" id="gs_s" value="si"><label for="gs_s">Sí</label><input type="radio" name="gsheets" id="gs_n" value="no" checked><label for="gs_n">No</label></div></div>
+    </div>
+    <div class="s-line" style="margin:24px 0 20px;"></div>
+    <p class="lbl" style="margin-bottom:12px;">Atención a Incidentes — URLs y micro guiones</p>
+    <div class="card"><p class="card-title">Fallas / Mantenimiento</p>
+      <div class="fg full"><label class="lbl">URL reporte de fallas</label><input type="url" name="fallas_url" placeholder="https://mihotel.com/mantenimiento"></div>
+      <div class="fg full"><label class="lbl">Micro guion — Fallas</label><textarea name="fallas_guion" placeholder="Ej. Lamentamos el inconveniente. Vamos a ayudarte de inmediato 🙏
+Puedes reportarlo aquí 👇
+[URL mantenimiento]"></textarea></div>
+    </div>
+    <div class="card"><p class="card-title">Quejas</p>
+      <div class="fg full"><label class="lbl">URL registro de quejas</label><input type="url" name="quejas_url" placeholder="https://mihotel.com/quejas"></div>
+      <div class="fg full"><label class="lbl">Micro guion — Quejas</label><textarea name="quejas_guion" placeholder="Ej. Lamentamos mucho lo ocurrido. Para dar seguimiento adecuado, por favor regístralo aquí 👇
+[URL quejas]"></textarea></div>
+    </div>
+    <div class="card"><p class="card-title">Sugerencias</p>
+      <div class="fg full"><label class="lbl">URL registro de sugerencias</label><input type="url" name="sugerencias_url" placeholder="https://mihotel.com/sugerencias"></div>
+      <div class="fg full"><label class="lbl">Micro guion — Sugerencias</label><textarea name="sugerencias_guion" placeholder="Ej. ¡Muchas gracias por tu recomendación! Puedes registrarla aquí 👇
+[URL sugerencias]"></textarea></div>
     </div>
   </div>
 
@@ -1106,3 +1156,4 @@ function extFillForm() {
 <script src="/assets/js/shared.js"></script>
 </body>
 </html>
+
