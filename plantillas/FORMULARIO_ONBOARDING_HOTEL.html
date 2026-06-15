@@ -704,6 +704,16 @@ Puedes reportarlo aquí 👇
           <i class="fas fa-file-word" style="margin-right:7px;"></i>Descargar DOC
         </button>
       </div>
+      <!-- ── Constructor Contexto ManyChat ── -->
+      <div style="margin-top:10px;">
+        <button type="button" onclick="construirContextoManyChat()"
+                style="width:100%;padding:12px 0;font-size:14px;font-weight:600;background:#0F766E;color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:8px;"
+                onmouseover="this.style.background='#0D5C57'" onmouseout="this.style.background='#0F766E'">
+          <i class="fas fa-robot" style="font-size:15px;"></i>
+          Constructor Contexto ManyChat
+          <span style="font-size:10px;opacity:.75;font-weight:400;">.PDF</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1710,6 +1720,544 @@ function exportarDOC() {
   a.download = 'Ficha_'+hotelNom.replace(/[^a-zA-Z0-9\s]/g,'').replace(/\s+/g,'_')+'.doc';
   document.body.appendChild(a); a.click();
   setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONSTRUCTOR DE CONTEXTO MANYCHAT
+   Genera un PDF con la estructura estándar del contexto Jaime
+   ═══════════════════════════════════════════════════════════════════════════ */
+function construirContextoManyChat() {
+  if (typeof window.jspdf === 'undefined') {
+    alert('La biblioteca PDF aun se esta cargando. Espera un segundo e intenta de nuevo.');
+    return;
+  }
+  var jsPDF = window.jspdf.jsPDF;
+  var doc   = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  var pW = 210, mg = 14, aw = pW - mg * 2, y = 0;
+  var nombre = (document.querySelector('[name="hotel_nombre"]') || {}).value || 'Hotel';
+  var fecha  = new Date().toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
+
+  // Helper: get field value
+  var g = function(name) {
+    var el = document.querySelector('[name="' + name + '"]');
+    return el ? (el.value || '').trim() : '';
+  };
+
+  // ── Core render functions ─────────────────────────────────────────────────
+
+  function chk(n) {
+    if (y + n > 282) { doc.addPage(); y = 16; }
+  }
+
+  function txt(text, bold, size, colorR, colorG, colorB, indent) {
+    if (!text) return;
+    size   = size   || 9;
+    indent = indent || 0;
+    doc.setFontSize(size);
+    doc.setFont('helvetica', bold ? 'bold' : 'normal');
+    doc.setTextColor(colorR || 30, colorG || 30, colorB || 35);
+    var lines = doc.splitTextToSize(String(text), aw - indent);
+    var lh    = size * 0.43;
+    chk(lines.length * lh + 2);
+    doc.text(lines, mg + indent, y);
+    y += lines.length * lh + 1.5;
+  }
+
+  function urlTxt(href) {
+    if (!href) return;
+    doc.setFontSize(8.5); doc.setFont('helvetica', 'normal');
+    doc.setTextColor(14, 100, 200);
+    var lines = doc.splitTextToSize(href, aw - 4);
+    chk(lines.length * 3.8 + 1);
+    doc.text(lines, mg + 4, y);
+    y += lines.length * 3.8 + 1.5;
+  }
+
+  function blank(n) { y += (n || 3); }
+
+  function sep() {
+    chk(6);
+    doc.setDrawColor(200, 200, 205); doc.setLineWidth(0.25);
+    doc.line(mg, y, mg + aw, y); y += 5;
+  }
+
+  function secHeader(title, r, g2, b) {
+    chk(14);
+    r = r || 30; g2 = g2 || 58; b = b || 95;
+    doc.setFillColor(r, g2, b);
+    doc.roundedRect(mg, y - 5, aw, 10, 2, 2, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+    doc.text(title, mg + 5, y + 2);
+    y += 13;
+  }
+
+  function scriptBox(text) {
+    if (!text) return;
+    doc.setFontSize(8); doc.setFont('helvetica', 'bold');
+    doc.setTextColor(100, 100, 110);
+    chk(5); doc.text('Micro guion:', mg + 2, y); y += 4;
+    var lines = doc.splitTextToSize('"' + text + '"', aw - 10);
+    var lh    = 9 * 0.43;
+    var h     = lines.length * lh + 7;
+    chk(h + 2);
+    doc.setFillColor(240, 247, 255); doc.setDrawColor(147, 197, 253);
+    doc.roundedRect(mg + 2, y - 2, aw - 4, h, 2, 2, 'FD');
+    doc.setTextColor(30, 64, 175); doc.setFont('helvetica', 'italic'); doc.setFontSize(9);
+    doc.text(lines, mg + 7, y + 3);
+    y += h + 3;
+  }
+
+  function bullet(text, indent) {
+    indent = indent || 4;
+    doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+    doc.setTextColor(40, 40, 50);
+    var lines = doc.splitTextToSize('- ' + text, aw - indent - 2);
+    chk(lines.length * 3.9 + 1);
+    doc.text(lines, mg + indent, y);
+    y += lines.length * 3.9 + 1;
+  }
+
+  function rowLabel(label, value) {
+    if (!value) return;
+    doc.setFontSize(8.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(70, 70, 80);
+    chk(5); doc.text(label + ':', mg + 4, y);
+    doc.setFont('helvetica', 'normal'); doc.setTextColor(30, 30, 40);
+    doc.text(value, mg + 4 + doc.getTextWidth(label + ':') + 2, y);
+    y += 4.5;
+  }
+
+  // ── PAGE HEADER ───────────────────────────────────────────────────────────
+  doc.setFillColor(15, 23, 42); doc.rect(0, 0, pW, 30, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(15);
+  doc.text('Contexto ManyChat — Jaime', mg, 13);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  doc.setTextColor(45, 212, 191); doc.text(nombre, mg, 22);
+  doc.setTextColor(148, 163, 184); doc.setFontSize(8);
+  doc.text('Generado: ' + fecha, pW - mg, 22, { align: 'right' });
+  y = 38;
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // BLOQUE IDENTIDAD DEL HOTEL
+  // ══════════════════════════════════════════════════════════════════════════
+  var concepto = g('hotel_concepto');
+  if (concepto) {
+    txt(nombre + ' es ' + concepto, false, 9.5);
+  } else {
+    txt(nombre, true, 11);
+  }
+  urlTxt(g('hotel_web'));
+  blank(2);
+
+  var dirParts = [g('hotel_direccion'), g('hotel_ciudad')].filter(Boolean);
+  if (dirParts.length) txt('Ubicacion: ' + dirParts.join(', '));
+  if (g('hotel_telefono')) txt('Tel: ' + g('hotel_telefono'));
+  if (g('hotel_gmaps')) {
+    txt('Mapa:', false, 9, 60, 60, 60); y -= 4;
+    urlTxt(g('hotel_gmaps'));
+  }
+
+  // Razon social (campos opcionales)
+  var razon = g('razon_social') || g('hotel_razon_social');
+  var rfc   = g('rfc') || g('hotel_rfc');
+  if (razon || rfc) {
+    sep();
+    txt('RAZON SOCIAL', true, 9);
+    var rs = [razon, rfc ? 'RFC: ' + rfc : ''].filter(Boolean).join(' | ');
+    txt(rs, false, 9, 60, 60, 65);
+  }
+
+  sep();
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // HABITACIONES
+  // ══════════════════════════════════════════════════════════════════════════
+  secHeader('HABITACIONES');
+
+  // Room type cards in section s4
+  var roomCards = document.querySelectorAll('#s4 .card');
+  if (roomCards.length) {
+    txt('Tipos de habitacion:', true, 9, 55, 55, 65);
+    roomCards.forEach(function(card) {
+      var cTitle = (card.querySelector('.card-title') || {}).textContent || '';
+      var inps   = Array.from(card.querySelectorAll('input, select, textarea'))
+                       .map(function(i){ return i.value.trim(); }).filter(Boolean);
+      if (cTitle || inps.length) {
+        var row = cTitle + (inps.length ? ': ' + inps.join(' | ') : '');
+        txt(row, false, 9, 30, 30, 40, 6);
+      }
+    });
+    blank(2);
+  }
+
+  // Amenidades (checkboxes en s4)
+  var amenList = [];
+  document.querySelectorAll('#s4 input[type=checkbox]:checked').forEach(function(cb) {
+    var ci = cb.closest('.ci');
+    if (ci) amenList.push(ci.textContent.trim());
+  });
+  if (amenList.length) {
+    txt('Amenidades: ' + amenList.join(', '), false, 9);
+    blank(2);
+  }
+
+  // Info general habitaciones (campos sueltos s4)
+  var habFields = [
+    { name: 'hab_cama',    label: 'Cama' },
+    { name: 'hab_ac',      label: 'Aire acondicionado' },
+    { name: 'hab_tv',      label: 'TV' },
+    { name: 'hab_closet',  label: 'Closet' },
+    { name: 'hab_bano',    label: 'Bano' },
+    { name: 'hab_trabajo', label: 'Area de trabajo' },
+  ];
+  var habSolos = habFields.filter(function(hf){ return g(hf.name); });
+  if (habSolos.length) {
+    habSolos.forEach(function(hf){ txt(hf.label + ': ' + g(hf.name), false, 9, 40, 40, 50, 4); });
+    blank(2);
+  }
+
+  if (g('hotel_habitaciones')) txt('Total habitaciones: ' + g('hotel_habitaciones'));
+
+  var habUrl = g('hotel_web') ? g('hotel_web') + '/habitaciones' : '';
+  if (habUrl) { txt('Mas info:', false, 9, 60, 60, 60); y -= 4; urlTxt(habUrl); }
+
+  sep();
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // REGLAS DE CONVERSION
+  // ══════════════════════════════════════════════════════════════════════════
+  secHeader('REGLAS DE CONVERSION — PRIORIDAD ALTA', 185, 28, 28);
+
+  txt('Reservaciones:', true, 9.5);
+  blank(1);
+  txt('Cuando el huesped quiera reservar:');
+  txt('NO hacer preguntas, invitalo a hacer su reservacion.');
+  txt('Enviar directo el link:');
+  urlTxt(g('hotel_motor'));
+  blank(1);
+  scriptBox(g('reserv_guion'));
+
+  sep();
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // SERVICIOS
+  // ══════════════════════════════════════════════════════════════════════════
+  secHeader('SERVICIOS');
+
+  // ── Desayuno ──────────────────────────────────────────────────────────────
+  var desHor  = g('desayuno_horario');
+  var desTipo = g('desayuno_tipo');
+  var desUbic = g('desayuno_ubic');
+  if (desTipo || desHor || g('desayuno_guion')) {
+    txt('Desayuno:', true, 9.5);
+    if (desTipo) txt(desTipo, false, 9, 40, 40, 50, 4);
+    if (desHor)  txt('Horario: ' + desHor, false, 9, 40, 40, 50, 4);
+    if (desUbic) txt('Ubicacion: ' + desUbic, false, 9, 40, 40, 50, 4);
+    scriptBox(g('desayuno_guion'));
+    urlTxt(g('desayuno_menu_url'));
+    blank(3);
+  }
+
+  // ── Cafeteria / Restaurante ───────────────────────────────────────────────
+  var restNom = g('rest_nombre');
+  var restMen = g('rest_menu');
+  if (restNom || restMen || g('rest_menu_guion')) {
+    txt('Cafeteria' + (restNom ? ' / ' + restNom : '') + ':', true, 9.5);
+    // horarios de desayuno/comida/cena del restaurante
+    var horDesay = g('rest_hor_desay') || g('rest_horario_d');
+    var horComi  = g('rest_hor_comi')  || g('rest_horario_c');
+    var horCena  = g('rest_hor_cena')  || g('rest_horario_n');
+    if (horDesay || horComi || horCena) {
+      var hStr = [horDesay && 'Desayuno ' + horDesay, horComi && 'Comida ' + horComi, horCena && 'Cena ' + horCena].filter(Boolean).join(' | ');
+      txt('Horario: ' + hStr, false, 9, 40, 40, 50, 4);
+    }
+    scriptBox(g('rest_menu_guion'));
+    urlTxt(restMen);
+    blank(3);
+  }
+
+  // ── WiFi ──────────────────────────────────────────────────────────────────
+  if (g('wifi_nombre') || g('wifi_guion')) {
+    txt('WiFi:', true, 9.5);
+    if (g('wifi_nombre')) {
+      var wStr = 'Red: ' + g('wifi_nombre') + (g('wifi_password') ? '  |  Clave: ' + g('wifi_password') : '') + (g('wifi_vel') ? '  |  ' + g('wifi_vel') : '');
+      txt(wStr, false, 9, 40, 40, 50, 4);
+    }
+    scriptBox(g('wifi_guion'));
+    blank(3);
+  }
+
+  // ── Eventos y Salones ─────────────────────────────────────────────────────
+  var eventosUrl = g('salon_url') || g('eventos_url');
+  if (g('eventos_guion') || eventosUrl) {
+    txt('Eventos y Salones:', true, 9.5);
+    // Descripcion de salones (campos de s10)
+    var salonDesc = g('salon_descripcion') || g('salon_info');
+    if (salonDesc) txt(salonDesc, false, 9, 40, 40, 50, 4);
+    scriptBox(g('eventos_guion'));
+    urlTxt(eventosUrl);
+    blank(3);
+  }
+
+  // ── Facturacion ───────────────────────────────────────────────────────────
+  if (g('factura_guion') || g('factura_url')) {
+    txt('Facturacion:', true, 9.5);
+    scriptBox(g('factura_guion'));
+    urlTxt(g('factura_url'));
+    blank(3);
+  }
+
+  // ── Lavanderia ────────────────────────────────────────────────────────────
+  if (g('lavanderia_guion') || g('lavanderia_url')) {
+    txt('Lavanderia:', true, 9.5);
+    scriptBox(g('lavanderia_guion'));
+    urlTxt(g('lavanderia_url'));
+    blank(3);
+  }
+
+  // ── Room Service ──────────────────────────────────────────────────────────
+  if (g('rs_menu_guion') || g('rs_menu_url') || g('rs_ordenar_guion') || g('rs_ordenar_url')) {
+    txt('Room Service:', true, 9.5);
+    txt('Cuando el huesped quiera pedir Room Service:', false, 9, 50, 50, 60, 4);
+    scriptBox(g('rs_menu_guion'));
+    urlTxt(g('rs_menu_url'));
+    blank(1);
+    if (g('rs_ordenar_guion') || g('rs_ordenar_url')) {
+      txt('Cuando el huesped ya sabe lo que desea ordenar:', false, 9, 50, 50, 60, 4);
+      scriptBox(g('rs_ordenar_guion'));
+      urlTxt(g('rs_ordenar_url'));
+    }
+    blank(3);
+  }
+
+  // ── Alberca ───────────────────────────────────────────────────────────────
+  if (g('alberca_guion') || g('alberca_url')) {
+    txt('Alberca:', true, 9.5);
+    scriptBox(g('alberca_guion'));
+    urlTxt(g('alberca_url'));
+    blank(3);
+  }
+
+  // ── Estacionamiento ───────────────────────────────────────────────────────
+  var estacInfo = g('estac_info') || g('estacionamiento_info') || g('estac_nota');
+  var estacToggle = document.querySelector('[name="estac"]:checked') || document.querySelector('[name="estacionamiento"]:checked');
+  if (estacInfo || estacToggle) {
+    txt('Estacionamiento:', true, 9.5);
+    if (estacInfo) txt(estacInfo, false, 9, 40, 40, 50, 4);
+    blank(3);
+  }
+
+  // ── Mascotas ──────────────────────────────────────────────────────────────
+  var mascNota = g('mascota_nota') || g('mascota_info');
+  if (mascNota) {
+    txt('Mascotas:', true, 9.5);
+    txt(mascNota, false, 9, 40, 40, 50, 4);
+    blank(3);
+  }
+
+  // ── Servicios activos de la tabla .it-row ─────────────────────────────────
+  var servActivos = [];
+  document.querySelectorAll('#s9 .it-row').forEach(function(row) {
+    var cb = row.querySelector('input[type=checkbox]');
+    if (!cb || !cb.checked) return;
+    var sp = row.querySelector('span:first-child');
+    if (!sp) return;
+    var name = sp.textContent.trim();
+    var inps = row.querySelectorAll('input[type=text]');
+    var parts = [name];
+    var labels = ['Horario','Costo','Notas'];
+    inps.forEach(function(inp, i) { if (inp.value.trim()) parts.push(labels[i]+': '+inp.value.trim()); });
+    servActivos.push(parts.join(' | '));
+  });
+  if (servActivos.length) {
+    txt('Otros servicios disponibles:', true, 9, 55, 55, 65);
+    servActivos.forEach(function(s) { txt(s, false, 9, 40, 40, 50, 4); });
+    blank(3);
+  }
+
+  // ── Directorio de contactos externos (s15) ────────────────────────────────
+  var dirExt = [];
+  document.querySelectorAll('#s15 .dir-row').forEach(function(row) {
+    var inps = row.querySelectorAll('input');
+    var n = inps[0]?inps[0].value.trim():'', p = inps[1]?inps[1].value.trim():'', t = inps[2]?inps[2].value.trim():'';
+    if (!n && !t) return;
+    dirExt.push([n, p, t?'Tel: '+t:''].filter(Boolean).join(' — '));
+  });
+  if (dirExt.length) {
+    txt('Directorio de servicios externos:', true, 9, 55, 55, 65);
+    dirExt.forEach(function(d) { txt(d, false, 9, 40, 40, 50, 4); });
+    blank(3);
+  }
+
+  sep();
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // POLITICAS
+  // ══════════════════════════════════════════════════════════════════════════
+  var polFields = [
+    { name: 'pol_hospedaje',   label: 'Politica de hospedaje' },
+    { name: 'pol_cancelacion', label: 'Politica de cancelacion' },
+    { name: 'aviso_privacidad',label: 'Aviso de privacidad' },
+    { name: 'politica_url',    label: 'Politicas generales' },
+  ];
+  var polActivas = polFields.filter(function(pf){ return g(pf.name); });
+  if (polActivas.length) {
+    secHeader('POLITICAS Y REGLAMENTOS', 75, 85, 99);
+    polActivas.forEach(function(pf) {
+      txt(pf.label + ':', true, 9);
+      var val = g(pf.name);
+      if (val.startsWith('http')) { urlTxt(val); } else { txt(val, false, 9, 40, 40, 50, 4); }
+      blank(2);
+    });
+    sep();
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // HORARIOS
+  // ══════════════════════════════════════════════════════════════════════════
+  secHeader('HORARIOS');
+
+  var horarios = [];
+  if (g('hotel_checkin') || g('hotel_checkout')) {
+    horarios.push('Check-in: ' + (g('hotel_checkin')||'—') + ' | Check-out: ' + (g('hotel_checkout')||'—') + ' | Recepcion: 24hrs');
+  }
+  if (g('desayuno_horario'))     horarios.push('Cafeteria/Desayuno: ' + g('desayuno_horario'));
+  if (g('rest_hor_desay'))       horarios.push('Room Service: ' + g('rest_hor_desay'));
+
+  // Servicios con horario de la tabla it-row
+  document.querySelectorAll('#s9 .it-row').forEach(function(row) {
+    var cb = row.querySelector('input[type=checkbox]');
+    if (!cb || !cb.checked) return;
+    var sp = row.querySelector('span:first-child');
+    var h  = row.querySelectorAll('input[type=text]')[0];
+    if (sp && h && h.value.trim()) {
+      horarios.push(sp.textContent.trim() + ': ' + h.value.trim());
+    }
+  });
+
+  if (horarios.length) {
+    horarios.forEach(function(h) { bullet(h); });
+  } else {
+    txt('(Horarios no ingresados)', false, 9, 150, 150, 155);
+  }
+  blank(2);
+
+  sep();
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // ATENCION A INCIDENTES
+  // ══════════════════════════════════════════════════════════════════════════
+  secHeader('ATENCION A INCIDENTES', 146, 64, 14);
+
+  var incidentes = [
+    { label: 'Fallas / Mantenimiento', guion: 'fallas_guion',   url: 'fallas_url' },
+    { label: 'Quejas',                 guion: 'quejas_guion',   url: 'quejas_url' },
+    { label: 'Sugerencias',            guion: 'sugerencias_guion', url: 'sugerencias_url' },
+  ];
+  incidentes.forEach(function(inc) {
+    var gv = g(inc.guion), uv = g(inc.url);
+    if (!gv && !uv) return;
+    txt(inc.label + ':', true, 9.5);
+    scriptBox(gv);
+    urlTxt(uv);
+    blank(2);
+  });
+
+  sep();
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // CONTACTO
+  // ══════════════════════════════════════════════════════════════════════════
+  secHeader('CONTACTO');
+
+  var contactos = [
+    { label: 'Recepcion', fields: ['hotel_email_reservas','email_reservas'] },
+    { label: 'Ventas / Admin', fields: ['hotel_email_admin','email_admin'] },
+    { label: 'Telefono', fields: ['hotel_telefono'] },
+    { label: 'WhatsApp Jaime', fields: ['jaime_whatsapp'] },
+  ];
+  contactos.forEach(function(c) {
+    var val = c.fields.map(g).filter(Boolean)[0] || '';
+    if (val) rowLabel(c.label, val);
+  });
+  blank(2);
+
+  sep();
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // LINEAMIENTOS
+  // ══════════════════════════════════════════════════════════════════════════
+  secHeader('LINEAMIENTOS');
+
+  var lineamientos = [
+    'Actuar como un concierge muy amable y profesional, saluda siempre',
+    'Priorizar respuestas con link directo al servicio',
+    'Responder claro y rapido',
+    'Ser amable y directo',
+    'No inventar informacion',
+    'Escalar a recepcion cuando no se tenga la respuesta',
+  ];
+  lineamientos.forEach(function(l) { bullet(l); });
+  blank(2);
+
+  sep();
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // RESTRICCIONES
+  // ══════════════════════════════════════════════════════════════════════════
+  secHeader('RESTRICCIONES', 146, 64, 14);
+
+  var restricciones = [
+    'No compartir datos internos del hotel',
+    'No compartir numeros de habitacion ni pisos (solo para validar solicitudes/fallas)',
+    'NO confirmar disponibilidad en tiempo real — redirigir siempre al motor de reservas',
+    'Lo que no sepas — escalar a recepcion',
+    'No inventar informacion',
+    'NUNCA compartir nombres de huespedes ni conversaciones con otros huespedes',
+    'Siempre mostrar la URL en servicios que la tengan',
+    'Urgencias CRITICAS — escalar a recepcion de inmediato',
+  ];
+  restricciones.forEach(function(r) { bullet(r); });
+  blank(2);
+
+  sep();
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // REDES SOCIALES
+  // ══════════════════════════════════════════════════════════════════════════
+  txt('REDES SOCIALES', true, 9.5, 30, 58, 95);
+  blank(1);
+  var redes = [
+    { label: 'Reservaciones', field: 'hotel_motor' },
+    { label: 'Facebook',      field: 'hotel_facebook' },
+    { label: 'Instagram',     field: 'hotel_instagram' },
+  ];
+  redes.forEach(function(r) {
+    var val = g(r.field);
+    if (!val) return;
+    txt(r.label + ':', false, 9, 60, 60, 65);
+    y -= 4.5;
+    doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+    var lw = doc.getTextWidth(r.label + ':  ');
+    doc.setTextColor(14, 100, 200);
+    var lns = doc.splitTextToSize(val, aw - lw - 4);
+    chk(lns.length * 3.9 + 1);
+    doc.text(lns, mg + 4 + lw, y);
+    y += lns.length * 3.9 + 1.5;
+  });
+
+  // ── Paginacion ───────────────────────────────────────────────────────────
+  var tot = doc.internal.getNumberOfPages();
+  for (var p = 1; p <= tot; p++) {
+    doc.setPage(p);
+    doc.setFontSize(7.5); doc.setTextColor(160, 160, 165); doc.setFont('helvetica', 'normal');
+    doc.text('Pagina ' + p + ' de ' + tot, pW / 2, 292, { align: 'center' });
+    doc.text('Jaime — Contexto ManyChat', mg, 292);
+  }
+
+  doc.save('Contexto_ManyChat_' + nombre.replace(/[^a-zA-Z0-9\s]/g,'').replace(/\s+/g,'_') + '.pdf');
 }
 </script>
 
