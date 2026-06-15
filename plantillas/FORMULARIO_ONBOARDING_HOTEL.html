@@ -803,6 +803,56 @@ Puedes reportarlo aquí 👇
         <div id="ext-summary-text" style="font-size:12px;color:#B45309;"></div>
       </div>
 
+      <!-- ═══ PANEL RESULTADOS (mostrado tras extFillForm) ═══ -->
+      <div id="ext-results-panel" style="display:none;">
+
+        <!-- Conteo de campos rellenados -->
+        <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:12px 16px;margin-bottom:14px;">
+          <div id="ext-fill-count" style="font-size:14px;font-weight:700;color:#065F46;"></div>
+          <div style="font-size:11px;color:#059669;margin-top:3px;">Campos marcados en dorado fueron rellenados automaticamente. Revisa antes de enviar.</div>
+        </div>
+
+        <!-- URLs pendientes -->
+        <div style="margin-bottom:18px;">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9CA3AF;margin-bottom:7px;display:flex;align-items:center;gap:5px;">
+            <i class="fa-solid fa-link" style="color:#D97706;font-size:11px;"></i> URLs pendientes de completar
+          </div>
+          <p style="font-size:11px;color:#6B7280;margin:0 0 9px;">No se encontraron automaticamente. Pegalas aqui o haz clic en <strong>Ir</strong> para ir al campo en el formulario:</p>
+          <div id="ext-urls-pendientes-list"></div>
+        </div>
+
+        <!-- Micro guiones -->
+        <div style="margin-bottom:10px;">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9CA3AF;margin-bottom:7px;display:flex;align-items:center;gap:5px;">
+            <i class="fa-solid fa-pen" style="color:#1E3A5F;font-size:11px;"></i> Micro Guiones — redaccion manual
+          </div>
+          <p style="font-size:11px;color:#6B7280;margin:0 0 10px;">
+            Estos mensajes los escribe el equipo del hotel. Son los textos que Jaime enviara al huesped segun cada situacion.
+            Usa el catalogo de emojis para enriquecer tu redaccion.
+          </p>
+
+          <!-- Catalogo de emojis -->
+          <div style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;padding:10px;margin-bottom:12px;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#9CA3AF;margin-bottom:7px;">
+              Catalogo de emojis — clic para insertar en el campo activo
+            </div>
+            <div id="ext-emoji-grid" style="display:flex;flex-wrap:wrap;gap:3px;"></div>
+          </div>
+
+          <!-- Indicador de campo activo -->
+          <div id="ext-active-field-label" style="display:none;font-size:11px;color:#D97706;font-weight:600;margin-bottom:6px;padding:5px 8px;background:#FFFBEB;border-radius:5px;"></div>
+
+          <!-- Lista de campos de guion -->
+          <div id="ext-guiones-list"></div>
+
+          <!-- Boton guardar guiones -->
+          <button onclick="extGuardarGuiones()" style="width:100%;margin-top:10px;padding:11px;background:#1E3A5F;color:white;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#162d4a'" onmouseout="this.style.background='#1E3A5F'">
+            <i class="fa-solid fa-floppy-disk" style="margin-right:7px;"></i>Guardar todos los micro guiones
+          </button>
+        </div>
+
+      </div><!-- /ext-results-panel -->
+
     </div><!-- /drawer body -->
 
     <!-- Drawer footer -->
@@ -1099,47 +1149,125 @@ async function extAnalyze() {
   }
 }
 
+// ─── CONFIGURACIÓN: URLs pendientes ──────────────────────────────────────────
+var URL_PENDIENTES_CONFIG = [
+  { name: 'hotel_motor',       label: 'Motor de Reservas',      ph: 'https://reservas.mihotel.com' },
+  { name: 'hotel_web',         label: 'Sitio Web',              ph: 'https://www.mihotel.com' },
+  { name: 'hotel_facebook',    label: 'Facebook',               ph: 'https://facebook.com/mihotel' },
+  { name: 'hotel_instagram',   label: 'Instagram',              ph: 'https://instagram.com/mihotel' },
+  { name: 'hotel_gmaps',       label: 'Google Maps',            ph: 'https://maps.google.com/...' },
+  { name: 'desayuno_menu_url', label: 'Menu de Desayuno',       ph: 'https://mihotel.com/desayunos/menu' },
+  { name: 'rest_menu',         label: 'Menu Restaurante',       ph: 'https://mihotel.com/menu' },
+  { name: 'rs_menu_url',       label: 'Menu Room Service',      ph: 'https://mihotel.com/roomservice/menu' },
+  { name: 'rs_ordenar_url',    label: 'Ordenar Room Service',   ph: 'https://mihotel.com/roomservice/ordenar' },
+  { name: 'lavanderia_url',    label: 'Lavanderia',             ph: 'https://mihotel.com/lavanderia' },
+  { name: 'alberca_url',       label: 'Alberca / Pool',         ph: 'https://mihotel.com/alberca' },
+  { name: 'eventos_url',       label: 'Salones y Eventos',      ph: 'https://mihotel.com/eventos' },
+  { name: 'factura_url',       label: 'Facturacion',            ph: 'https://mihotel.com/facturacion' },
+  { name: 'fallas_url',        label: 'Reporte de Fallas',      ph: 'https://mihotel.com/mantenimiento' },
+  { name: 'quejas_url',        label: 'Quejas',                 ph: 'https://mihotel.com/quejas' },
+  { name: 'sugerencias_url',   label: 'Sugerencias',            ph: 'https://mihotel.com/sugerencias' },
+];
+
+// ─── CONFIGURACIÓN: Campos de micro guion ────────────────────────────────────
+var GUION_FIELDS_CONFIG = [
+  { name: 'reserv_guion',   label: 'Reservaciones y Ventas',
+    guia: '¡Con gusto! Consigue aqui las mejores tarifas y reserva en menos de un minuto 👇\nhttps://reservas.mihotel.com\n\nTambien puedes llamarnos al [telefono] o escribirnos por WhatsApp 📱' },
+  { name: 'wifi_guion',     label: 'WiFi',
+    guia: 'El WiFi es totalmente gratuito durante tu estancia 📶\n\nRed: [SSID]\nContrasena: [PASSWORD]\n\nSi tienes problemas para conectarte, nuestro equipo te ayuda ✅' },
+  { name: 'desayuno_guion', label: 'Desayuno / Cafeteria',
+    guia: '¡Contamos con desayuno tipo buffet! 🍳 Disfruta de multiples opciones.\n\n🕗 Horario: [horario]\n📍 Ubicacion: [ubicacion]\n\nAqui puedes ver nuestro menu completo 👇\n[URL menu]' },
+  { name: 'rest_menu_guion', label: 'Menu del Restaurante',
+    guia: '¡Descubre nuestra propuesta gastronomica! 🍽️\n\nNuestro restaurante esta disponible:\n[horarios]\n\nConsulta el menu completo aqui 👇\n[URL menu]' },
+  { name: 'rs_menu_guion',  label: 'Menu Room Service',
+    guia: '¡Disfruta de nuestro Room Service en tu habitacion! 🛎️\n\nMenu completo aqui 👇\n[URL menu]\n\n⏰ Disponible: [horario]' },
+  { name: 'rs_ordenar_guion', label: 'Ordenar Room Service',
+    guia: '¡Con gusto! Ordena aqui directamente 👨‍🍳\n[URL ordenar]\n\nO dime que deseas y lo tramito por ti 😊\n\n⏱️ Entrega estimada: [tiempo]' },
+  { name: 'lavanderia_guion', label: 'Lavanderia',
+    guia: '¡Claro! Contamos con servicio de lavanderia 👔✨\n\nRegistra tu solicitud aqui 👇\n[URL lavanderia]\n\nTambien puedes dejar tu ropa en la bolsa de tu habitacion 🧺' },
+  { name: 'alberca_guion',  label: 'Alberca / Pool',
+    guia: '¡Nuestra alberca esta lista para ti! 🏊\n\n🕘 Horario: [horario]\n📍 Ubicacion: [ubicacion]\n\nReglamento e informacion aqui 👇\n[URL alberca]\n\nTrae tu traje de bano y ¡a disfrutar! ☀️' },
+  { name: 'eventos_guion',  label: 'Salones y Eventos',
+    guia: '¡Contamos con espacios perfectos para tu evento! 🎉\n\nSalones para [capacidad] personas con tecnologia de punta.\n\nInformacion y disponibilidad aqui 👇\n[URL eventos]\n\nO dejame tus datos y un ejecutivo te contactara 📋' },
+  { name: 'factura_guion',  label: 'Facturacion',
+    guia: '¡Con gusto! Factura facilmente aqui 👇\n[URL facturacion]\n\nTen a la mano:\n📋 RFC\n🏢 Razon Social\n📮 Codigo Postal\n📄 Uso de CFDI\n⚖️ Regimen Fiscal\n\n¿Alguna duda? ¡Aqui estoy! 😊' },
+  { name: 'fallas_guion',   label: 'Fallas / Mantenimiento',
+    guia: 'Lamentamos el inconveniente. Nuestro equipo lo atendera de inmediato ⚡🙏\n\nReportalo aqui 👇\n[URL mantenimiento]\n\nO cuentame que ocurre y lo canalizo directamente 🔧' },
+  { name: 'quejas_guion',   label: 'Quejas',
+    guia: 'Nos disculpamos sinceramente. Tu satisfaccion es nuestra prioridad 🙏\n\nRegistra tu queja aqui 👇\n[URL quejas]\n\nUn miembro de nuestro equipo directivo te contactara en [tiempo].\nGracias por permitirnos mejorar ⭐' },
+  { name: 'sugerencias_guion', label: 'Sugerencias',
+    guia: '¡Muchas gracias por compartir tu opinion! 😊 Tus sugerencias nos ayudan a mejorar.\n\nRegistrala aqui 👇\n[URL sugerencias]\n\nNuestro equipo directivo revisa cada sugerencia 📋⭐' },
+];
+
+// ─── CATÁLOGO DE EMOJIS ───────────────────────────────────────────────────────
+var EMOJIS_HOTEL = [
+  '🏨','🛎️','🔑','🛏️','🛁','🚿','🪟',
+  '🍽️','☕','🍳','🥞','🍞','🥐','🍹','🍷','🥗','🍖',
+  '🏊','🧖','🎾','⛳','💆','🧘','🌊','🌺','☀️','🌿',
+  '🚗','🚕','✈️','🗺️','📍','📦',
+  '📱','💬','📞','📧','🌐','🔗',
+  '✅','⭐','💎','🎉','🎊','👍','🙏','🤝','😊','💫','❤️',
+  '📋','📄','💳','🧾','🗓️','📝','📊',
+  '🔧','🔨','⚡','🛠️','🔩',
+  '👇','👆','➡️','⬅️','🔴','🟡','🟢',
+  'ℹ️','⚠️','🚫','❗','❓','💡','🎯',
+  '⏰','🕗','🕘','🕙','🕛','⏱️',
+  '👨‍🍳','👔','🧺','👒','🌅',
+];
+
+var extGuionFocused = null;
+
+// ─── extFillForm AMPLIADO ─────────────────────────────────────────────────────
 function extFillForm() {
   if (!extData) return;
   var filled = 0;
 
-  // Map extraction keys to form field names
   var MAP = {
-    'nombre_hotel':        'hotel_nombre',
-    'marca_concepto':      'hotel_concepto',
-    'categoria_estrellas': 'hotel_estrellas',
-    'total_habitaciones':  'hotel_habitaciones',
-    'anio_apertura':       'hotel_apertura',
-    'direccion':           'hotel_direccion',
-    'ciudad_estado':       'hotel_ciudad',
-    'telefono_principal':  'hotel_telefono',
-    'email_reservaciones': 'hotel_email_reservas',
-    'email_admin':         'hotel_email_admin',
-    'sitio_web':           'hotel_web',
-    'motor_reservas_url':  'hotel_motor_reservas',
-    'facebook_url':        'hotel_facebook',
-    'instagram_url':       'hotel_instagram',
-    'googlemaps_url':      'hotel_gmaps',
-    'distancia_aeropuerto':'hotel_dist_aeropuerto',
-    'distancia_centro':    'hotel_dist_centro',
-    'referencias_ubicacion':'hotel_referencias',
-    'checkin_hora':        'hotel_checkin',
-    'checkout_hora':       'hotel_checkout',
-    'wifi_ssid':           'wifi_nombre',
-    'wifi_password':       'wifi_password',
-    'desayuno_tipo':       'desayuno_tipo',
-    'desayuno_horario':    'desayuno_horario',
-    'restaurante_nombre':  'rest_nombre',
-    'restaurante_menu_url':'rest_menu_url',
-    'pms_nombre':          'pms',
-    'channel_manager':     'channel_manager',
+    'nombre_hotel':          'hotel_nombre',
+    'marca_concepto':        'hotel_concepto',
+    'categoria_estrellas':   'hotel_estrellas',
+    'total_habitaciones':    'hotel_habitaciones',
+    'anio_apertura':         'hotel_apertura',
+    'direccion':             'hotel_direccion',
+    'ciudad_estado':         'hotel_ciudad',
+    'telefono_principal':    'hotel_telefono',
+    'email_reservaciones':   'hotel_email_reservas',
+    'email_admin':           'hotel_email_admin',
+    'sitio_web':             'hotel_web',
+    'motor_reservas_url':    'hotel_motor',
+    'facebook_url':          'hotel_facebook',
+    'instagram_url':         'hotel_instagram',
+    'googlemaps_url':        'hotel_gmaps',
+    'distancia_aeropuerto':  'hotel_dist_aeropuerto',
+    'distancia_centro':      'hotel_dist_centro',
+    'referencias_ubicacion': 'hotel_referencias',
+    'checkin_hora':          'hotel_checkin',
+    'checkout_hora':         'hotel_checkout',
+    'wifi_ssid':             'wifi_nombre',
+    'wifi_password':         'wifi_password',
+    'desayuno_tipo':         'desayuno_tipo',
+    'desayuno_horario':      'desayuno_horario',
+    'restaurante_nombre':    'rest_nombre',
+    'restaurante_menu_url':  'rest_menu',
+    'pms_nombre':            'pms',
+    'channel_manager':       'channel_manager',
+    // Nuevas URLs
+    'desayuno_menu_url':     'desayuno_menu_url',
+    'lavanderia_url':        'lavanderia_url',
+    'alberca_url':           'alberca_url',
+    'fallas_url':            'fallas_url',
+    'quejas_url':            'quejas_url',
+    'sugerencias_url':       'sugerencias_url',
+    'rs_menu_url':           'rs_menu_url',
+    'rs_ordenar_url':        'rs_ordenar_url',
+    'factura_url':           'factura_url',
+    'salon_url':             'salon_url',
   };
 
   Object.keys(MAP).forEach(function(extKey) {
     var val = extData[extKey];
     if (!val) return;
-    var fieldName = MAP[extKey];
-    var el = document.querySelector('[name="' + fieldName + '"]');
+    var el = document.querySelector('[name="' + MAP[extKey] + '"]');
     if (!el) return;
     if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
       el.value = typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val);
@@ -1154,9 +1282,192 @@ function extFillForm() {
     }
   });
 
+  // ── Detección de URLs por palabras clave ─────────────────────────────────
+  var URL_KW = [
+    { kws: ['reserv','booking','book-hotel','reservacion'],    field: 'hotel_motor' },
+    { kws: ['lavander','laundry','lavado'],                    field: 'lavanderia_url' },
+    { kws: ['alberca','pool','piscina','swim'],                field: 'alberca_url' },
+    { kws: ['mantenimiento','falla','maintenance','averia'],   field: 'fallas_url' },
+    { kws: ['queja','complaint','reclamacion','inconformidad'],field: 'quejas_url' },
+    { kws: ['sugerencia','suggestion','feedback','opinion'],   field: 'sugerencias_url' },
+    { kws: ['room-service','roomservice','room_service'],      field: 'rs_menu_url' },
+    { kws: ['ordenar','order-food','pedido','pedir'],          field: 'rs_ordenar_url' },
+    { kws: ['desayuno','breakfast','cafeteria','buffet'],      field: 'desayuno_menu_url' },
+    { kws: ['factura','cfdi','invoice','fiscal','facturacion'],field: 'factura_url' },
+    { kws: ['evento','salon','event','banquet','convencion'],  field: 'salon_url' },
+    { kws: ['menu','carta','food','alimentos'],                field: 'rest_menu' },
+  ];
+
+  var urlsCand = [];
+  Object.values(extData).forEach(function(v) {
+    if (typeof v === 'string' && /^https?:\/\//i.test(v)) urlsCand.push(v);
+    if (Array.isArray(v)) v.forEach(function(i) {
+      if (typeof i === 'string' && /^https?:\/\//i.test(i)) urlsCand.push(i);
+    });
+  });
+
+  urlsCand.forEach(function(url) {
+    var u = url.toLowerCase();
+    URL_KW.forEach(function(cfg) {
+      var el = document.querySelector('[name="' + cfg.field + '"]');
+      if (!el || el.value) return;
+      if (cfg.kws.some(function(kw) { return u.includes(kw); })) {
+        el.value = url;
+        el.classList.add('input-ai-filled');
+        filled++;
+      }
+    });
+  });
+
+  // Mostrar panel de resultados
+  extMostrarResultados(filled);
+}
+
+// ─── extMostrarResultados ─────────────────────────────────────────────────────
+function extMostrarResultados(filled) {
+  // Ocultar secciones de entrada
+  var drawerBody = document.querySelector('#extractor-drawer > div[style*="overflow-y"]');
+  if (drawerBody) {
+    var children = drawerBody.children;
+    for (var i = 0; i < children.length; i++) {
+      var ch = children[i];
+      if (ch.id !== 'ext-results-panel' && ch.id !== 'ext-error') ch.style.display = 'none';
+    }
+  }
+  document.getElementById('ext-btn-fill').style.display = 'none';
+  document.getElementById('ext-btn-analyze').style.display = 'none';
+
+  var panel = document.getElementById('ext-results-panel');
+  panel.style.display = 'block';
+
+  // Conteo
+  document.getElementById('ext-fill-count').textContent =
+    '✅ ' + filled + ' campos rellenados automaticamente';
+
+  // ── URLs pendientes ────────────────────────────────────────────────────────
+  var listEl = document.getElementById('ext-urls-pendientes-list');
+  listEl.innerHTML = '';
+  URL_PENDIENTES_CONFIG.forEach(function(cfg) {
+    var el = document.querySelector('[name="' + cfg.name + '"]');
+    if (el && el.value && el.value.trim()) return;
+    var row = document.createElement('div');
+    row.style.cssText = 'margin-bottom:9px;';
+    row.innerHTML =
+      '<label style="display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:3px;">' + cfg.label + '</label>' +
+      '<div style="display:flex;gap:6px;">' +
+        '<input type="url" placeholder="' + cfg.ph + '" data-field="' + cfg.name + '" ' +
+          'style="flex:1;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:7px;font-family:\'Inter\',sans-serif;font-size:12px;" ' +
+          'oninput="extUrlPendienteSync(this)">' +
+        '<button onclick="extUrlPendienteIr(this)" data-field="' + cfg.name + '" ' +
+          'style="padding:0 12px;border:1.5px solid #E5E7EB;border-radius:7px;background:#F9FAFB;font-size:11px;cursor:pointer;color:#6B7280;white-space:nowrap;font-family:\'Inter\',sans-serif;">' +
+          '↩ Ir</button>' +
+      '</div>';
+    listEl.appendChild(row);
+  });
+  if (!listEl.children.length) {
+    listEl.innerHTML = '<p style="font-size:12px;color:#10B981;margin:0;">✅ Todas las URLs fueron encontradas.</p>';
+  }
+
+  // ── Emoji catalog ──────────────────────────────────────────────────────────
+  var grid = document.getElementById('ext-emoji-grid');
+  grid.innerHTML = '';
+  EMOJIS_HOTEL.forEach(function(em) {
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.textContent = em;
+    btn.style.cssText = 'background:none;border:1.5px solid #E5E7EB;border-radius:5px;padding:3px 5px;font-size:16px;cursor:pointer;transition:background .1s;line-height:1;';
+    btn.addEventListener('mouseover', function(){ this.style.background='#FEF3C7'; });
+    btn.addEventListener('mouseout',  function(){ this.style.background='none'; });
+    btn.addEventListener('click', function() { extInsertarEmoji(em); });
+    grid.appendChild(btn);
+  });
+
+  // ── Campos de guion ────────────────────────────────────────────────────────
+  var gList = document.getElementById('ext-guiones-list');
+  gList.innerHTML = '';
+  GUION_FIELDS_CONFIG.forEach(function(cfg) {
+    var formEl  = document.querySelector('[name="' + cfg.name + '"]');
+    var curVal  = formEl ? formEl.value : '';
+    var safeGuia = cfg.guia.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    var div = document.createElement('div');
+    div.style.cssText = 'margin-bottom:16px;border:1px solid #E5E7EB;border-radius:8px;overflow:hidden;';
+    div.innerHTML =
+      '<div style="background:#1E3A5F;padding:8px 12px;">' +
+        '<span style="font-size:12px;font-weight:700;color:#fff;">✍️ ' + cfg.label + '</span>' +
+      '</div>' +
+      '<div style="background:#EFF6FF;border-bottom:1px solid #BFDBFE;padding:9px 12px;">' +
+        '<div style="font-size:10px;font-weight:700;color:#1D4ED8;margin-bottom:4px;">📖 Guia de escritura:</div>' +
+        '<div style="font-size:10.5px;color:#1E40AF;white-space:pre-wrap;line-height:1.55;">' + safeGuia + '</div>' +
+      '</div>' +
+      '<div style="padding:10px 12px;background:#fff;">' +
+        '<textarea data-guion-name="' + cfg.name + '" rows="4" maxlength="5000" ' +
+          'placeholder="Escribe aqui el mensaje de Jaime para \'' + cfg.label + '\'... (max 5,000 caracteres)" ' +
+          'style="width:100%;padding:9px 11px;border:1.5px solid #E5E7EB;border-radius:7px;font-family:\'Inter\',sans-serif;font-size:12px;resize:vertical;box-sizing:border-box;line-height:1.5;" ' +
+          'onfocus="extGuionFocus(this)" ' +
+          'oninput="extGuionSincronizar(this)">' + (curVal ? curVal.replace(/</g,'&lt;').replace(/>/g,'&gt;') : '') + '</textarea>' +
+        '<div style="display:flex;justify-content:flex-end;margin-top:3px;">' +
+          '<span id="cnt_' + cfg.name + '" style="font-size:10px;color:#9CA3AF;">' + (curVal ? curVal.length : 0) + '/5,000</span>' +
+        '</div>' +
+      '</div>';
+    gList.appendChild(div);
+  });
+}
+
+// ─── Handlers URLs pendientes ────────────────────────────────────────────────
+function extUrlPendienteSync(inp) {
+  var el = document.querySelector('[name="' + inp.dataset.field + '"]');
+  if (el) { el.value = inp.value; if (inp.value) el.classList.add('input-ai-filled'); }
+}
+
+function extUrlPendienteIr(btn) {
+  var el = document.querySelector('[name="' + btn.dataset.field + '"]');
+  if (!el) return;
   document.getElementById('extractor-overlay').style.display = 'none';
   document.body.style.overflow = '';
-  alert('✅ ' + filled + ' campos rellenados con IA. Los campos marcados en dorado fueron llenados automáticamente. Revisa y ajusta antes de enviar.');
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(function() {
+    el.focus();
+    el.style.outline = '3px solid #D97706';
+    el.style.transition = 'outline .3s';
+    setTimeout(function() { el.style.outline = ''; }, 2800);
+  }, 500);
+}
+
+// ─── Handlers Micro Guiones ───────────────────────────────────────────────────
+function extGuionFocus(ta) {
+  extGuionFocused = ta;
+  var lbl = document.getElementById('ext-active-field-label');
+  lbl.style.display = 'block';
+  var cfg = GUION_FIELDS_CONFIG.find(function(c){ return c.name === ta.dataset.guionName; });
+  lbl.textContent = '✍️ Escribiendo: ' + (cfg ? cfg.label : ta.dataset.guionName);
+}
+
+function extInsertarEmoji(em) {
+  var ta = extGuionFocused;
+  if (!ta) { ta = document.querySelector('#ext-guiones-list textarea'); if (!ta) return; }
+  var s = ta.selectionStart != null ? ta.selectionStart : ta.value.length;
+  var e = ta.selectionEnd   != null ? ta.selectionEnd   : ta.value.length;
+  ta.value = ta.value.slice(0, s) + em + ta.value.slice(e);
+  ta.selectionStart = ta.selectionEnd = s + em.length;
+  ta.focus();
+  extGuionSincronizar(ta);
+}
+
+function extGuionSincronizar(ta) {
+  var el = document.querySelector('[name="' + ta.dataset.guionName + '"]');
+  if (el) el.value = ta.value;
+  var cnt = document.getElementById('cnt_' + ta.dataset.guionName);
+  if (cnt) cnt.textContent = ta.value.length.toLocaleString() + '/5,000';
+}
+
+function extGuardarGuiones() {
+  var saved = 0;
+  document.querySelectorAll('#ext-guiones-list textarea').forEach(function(ta) {
+    var el = document.querySelector('[name="' + ta.dataset.guionName + '"]');
+    if (el && ta.value.trim()) { el.value = ta.value; el.classList.add('input-ai-filled'); saved++; }
+  });
+  document.getElementById('extractor-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+  if (saved) alert('✅ ' + saved + ' micro guiones guardados en el formulario.');
 }
 </script>
 
