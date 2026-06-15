@@ -686,6 +686,25 @@ Puedes reportarlo aquí 👇
       <span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;margin-right:6px;font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;">hotel</span>
       Guardar Hotel en la Lista
     </button>
+    <!-- ── Exportar PDF / DOC ────────────────────────── -->
+    <div style="margin-top:18px;padding:16px 16px 10px;background:#F8FAFC;border-radius:10px;border:1px solid var(--border);">
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin:0 0 10px;letter-spacing:.02em;">
+        <i class="fas fa-download" style="margin-right:5px;opacity:.7;"></i>
+        Exportar información del formulario
+      </p>
+      <div style="display:flex;gap:10px;">
+        <button type="button" onclick="exportarPDF()"
+                style="flex:1;padding:11px 0;font-size:14px;font-weight:600;background:#1E3A5F;color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s;"
+                onmouseover="this.style.background='#162d4a'" onmouseout="this.style.background='#1E3A5F'">
+          <i class="fas fa-file-pdf" style="margin-right:7px;"></i>Descargar PDF
+        </button>
+        <button type="button" onclick="exportarDOC()"
+                style="flex:1;padding:11px 0;font-size:14px;font-weight:600;background:#D97706;color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s;"
+                onmouseover="this.style.background='#B45309'" onmouseout="this.style.background='#D97706'">
+          <i class="fas fa-file-word" style="margin-right:7px;"></i>Descargar DOC
+        </button>
+      </div>
+    </div>
   </div>
 
   </form>
@@ -1153,7 +1172,236 @@ function extFillForm() {
   background-color: #fffbeb !important;
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="/assets/js/shared.js"></script>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   RECOPILACIÓN DE DATOS DEL FORMULARIO
+   ═══════════════════════════════════════════════════════════════════════════ */
+function recopilarDatosFormulario() {
+  var secciones = [];
+  document.querySelectorAll('.sb').forEach(function(sb) {
+    var sNum = (sb.querySelector('.s-num')   || {}).textContent || '';
+    var sTit = (sb.querySelector('.s-title') || {}).textContent || '';
+    if (!sTit.trim()) return;
+    var campos = [];
+
+    /* 1) Inputs, selects, textareas con label.lbl */
+    sb.querySelectorAll('label.lbl').forEach(function(lbl) {
+      var labelTxt = lbl.textContent.trim();
+      if (!labelTxt) return;
+      if (lbl.htmlFor) {
+        var elFor = document.getElementById(lbl.htmlFor);
+        if (elFor && (elFor.type === 'radio' || elFor.type === 'checkbox')) return;
+      }
+      var cont = lbl.parentElement;
+      var valor = '';
+      var inp = cont.querySelector('input:not([type=radio]):not([type=checkbox]), select, textarea');
+      if (inp) {
+        if (inp.tagName === 'SELECT') {
+          valor = inp.options[inp.selectedIndex] ? inp.options[inp.selectedIndex].text : '';
+        } else {
+          valor = inp.value || '';
+        }
+      } else {
+        var tg = cont.querySelector('.tg');
+        if (tg) {
+          var chk = tg.querySelector('input[type=radio]:checked');
+          if (chk) {
+            var lf = tg.querySelector('label[for="' + chk.id + '"]');
+            valor = lf ? lf.textContent.trim() : chk.value;
+          }
+        }
+      }
+      if (valor.trim()) campos.push({ label: labelTxt, valor: valor.trim() });
+    });
+
+    /* 2) Checkboxes grupales (.cg) */
+    sb.querySelectorAll('.cg').forEach(function(cg) {
+      var marcados = [];
+      cg.querySelectorAll('input[type=checkbox]:checked').forEach(function(cb) {
+        var ci = cb.closest('.ci');
+        if (ci) { var t = ci.textContent.trim(); if (t) marcados.push(t); }
+      });
+      if (!marcados.length) return;
+      var prev = cg.previousElementSibling;
+      var etiq = (prev && prev.classList && prev.classList.contains('lbl'))
+                 ? prev.textContent.trim() : 'Servicios / Amenidades';
+      campos.push({ label: etiq, valor: marcados.join(', ') });
+    });
+
+    /* 3) Tabla de instalaciones (.it-row) */
+    var itRows = sb.querySelectorAll('.it-row');
+    if (itRows.length) {
+      var activos = [];
+      itRows.forEach(function(row) {
+        var cb = row.querySelector('input[type=checkbox]');
+        if (!cb || !cb.checked) return;
+        var sp = row.querySelector('span:first-child');
+        var nombre = sp ? sp.textContent.trim() : '';
+        var inps = row.querySelectorAll('input[type=text]');
+        var partes = [nombre];
+        ['Horario','Costo','Notas'].forEach(function(k,i){ if(inps[i] && inps[i].value.trim()) partes.push(k+': '+inps[i].value.trim()); });
+        activos.push(partes.join(' | '));
+      });
+      if (activos.length) campos.push({ label: 'Instalaciones activas', valor: activos.join('
+') });
+    }
+
+    /* 4) Directorio interno (.dir-row) */
+    var dirRows = sb.querySelectorAll('.dir-row');
+    if (dirRows.length) {
+      var lineas = [];
+      dirRows.forEach(function(row) {
+        var inps = row.querySelectorAll('input');
+        var n = inps[0]?inps[0].value.trim():'', p = inps[1]?inps[1].value.trim():'', t = inps[2]?inps[2].value.trim():'';
+        if (!n && !p && !t) return;
+        var pr = []; if(n) pr.push(n); if(p) pr.push(p); if(t) pr.push('Tel: '+t);
+        lineas.push(pr.join(' — '));
+      });
+      if (lineas.length) campos.push({ label: 'Directorio Interno', valor: lineas.join('
+') });
+    }
+
+    /* 5) Preguntas frecuentes (.faq-row o similar) */
+    var faqRows = sb.querySelectorAll('.faq-row');
+    if (faqRows.length) {
+      var faqs = [];
+      faqRows.forEach(function(row) {
+        var inps = row.querySelectorAll('input, textarea');
+        var q = inps[0]?inps[0].value.trim():'', a = inps[1]?inps[1].value.trim():'';
+        if (!q && !a) return;
+        faqs.push('P: '+(q||'—')+'
+R: '+(a||'—'));
+      });
+      if (faqs.length) campos.push({ label: 'Preguntas Frecuentes', valor: faqs.join('
+
+') });
+    }
+
+    secciones.push({ num: sNum.trim(), titulo: sTit.trim(), campos: campos });
+  });
+  return secciones;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EXPORTAR PDF  (usa jsPDF CDN)
+   ═══════════════════════════════════════════════════════════════════════════ */
+function exportarPDF() {
+  if (typeof window.jspdf === 'undefined') {
+    alert('La biblioteca PDF aún se está cargando. Espera un segundo e intenta de nuevo.');
+    return;
+  }
+  var jsPDF = window.jspdf.jsPDF;
+  var doc   = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  var pW = 210, mg = 14, aw = pW - mg * 2, y = 0;
+  var hotelNom = (document.querySelector('[name="hotel_nombre"]') || {}).value || 'Hotel';
+  var fecha    = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
+
+  function chkPag(n) { if (y + n > 280) { doc.addPage(); y = 16; } }
+
+  /* Encabezado */
+  doc.setFillColor(30,58,95); doc.rect(0,0,pW,34,'F');
+  doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(15);
+  doc.text('Ficha de Configuración del Hotel', mg, 13);
+  doc.setFontSize(10); doc.setFont('helvetica','normal');
+  doc.setTextColor(217,179,100); doc.text(hotelNom, mg, 22);
+  doc.setTextColor(200,200,200); doc.setFontSize(8);
+  doc.text('Generado: '+fecha, pW-mg, 22, {align:'right'});
+  doc.text('Jaime Chatbot Hotelero · Configuración ManyChat', pW-mg, 29, {align:'right'});
+  y = 42;
+
+  recopilarDatosFormulario().forEach(function(sec) {
+    if (!sec.campos.length) return;
+    chkPag(16);
+    doc.setFillColor(30,58,95);
+    doc.roundedRect(mg, y-5, aw, 10, 2, 2, 'F');
+    doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(9.5);
+    doc.text(sec.num+'  ·  '+sec.titulo, mg+4, y+2);
+    y += 12;
+
+    sec.campos.forEach(function(c) {
+      var lblLines = doc.splitTextToSize(c.label, aw*0.36);
+      var valLines = doc.splitTextToSize(c.valor||'—', aw*0.60);
+      var lh = Math.max(lblLines.length, valLines.length) * 4.8;
+      chkPag(lh+4);
+      doc.setTextColor(80,80,90); doc.setFont('helvetica','bold'); doc.setFontSize(8);
+      doc.text(lblLines, mg+2, y);
+      var isEmpty = !c.valor||!c.valor.trim();
+      doc.setTextColor(isEmpty?150:28, isEmpty?150:28, isEmpty?160:30);
+      doc.setFont('helvetica','normal');
+      doc.text(valLines, mg+aw*0.38, y);
+      y += lh+1;
+      doc.setDrawColor(220,220,225); doc.setLineWidth(0.2);
+      doc.line(mg, y, mg+aw, y);
+      y += 2.5;
+    });
+    y += 5;
+  });
+
+  /* Paginación */
+  var tot = doc.internal.getNumberOfPages();
+  for (var p=1; p<=tot; p++) {
+    doc.setPage(p);
+    doc.setFontSize(7.5); doc.setTextColor(160,160,165); doc.setFont('helvetica','normal');
+    doc.text('Página '+p+' de '+tot, pW/2, 292, {align:'center'});
+    doc.text('Jaime — Chatbot Hotelero', mg, 292);
+  }
+  doc.save('Ficha_'+hotelNom.replace(/[^a-zA-Z0-9\s]/g,'').replace(/\s+/g,'_')+'.pdf');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EXPORTAR DOC  (Blob HTML → Word)
+   ═══════════════════════════════════════════════════════════════════════════ */
+function exportarDOC() {
+  var hotelNom = (document.querySelector('[name="hotel_nombre"]') || {}).value || 'Hotel';
+  var fecha    = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
+  var secciones = recopilarDatosFormulario();
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/
+/g,'<br>'); }
+
+  var html = "<!DOCTYPE html><html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+    "xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>" +
+    "<head><meta charset='utf-8'><title>Ficha "+esc(hotelNom)+"</title>" +
+    "<style>" +
+    "body{font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:2cm;color:#1F2937;}" +
+    "h1{color:#1E3A5F;font-size:20pt;border-bottom:3px solid #1E3A5F;padding-bottom:6pt;margin-bottom:4pt;}" +
+    ".subtit{color:#6B7280;font-size:10pt;margin:0 0 14pt;}" +
+    "h2{color:#fff;background:#1E3A5F;font-size:11pt;padding:5pt 9pt;margin:16pt 0 6pt;}" +
+    ".campo{margin:0 0 7pt;}" +
+    ".lbl2{font-weight:700;color:#374151;font-size:10pt;display:block;}" +
+    ".val{color:#1F2937;font-size:10.5pt;padding-left:10pt;display:block;white-space:pre-wrap;}" +
+    ".vacio{color:#9CA3AF;font-style:italic;}" +
+    "hr{border:none;border-top:1px solid #E5E7EB;margin:4pt 0;}" +
+    "</style></head><body>" +
+    "<h1>Ficha de Configuración del Hotel</h1>" +
+    "<p class='subtit'>"+esc(hotelNom)+" &nbsp;&middot;&nbsp; Generado: "+fecha+"</p>" +
+    "<p style='font-size:9pt;color:#9CA3AF;margin-bottom:20pt;'>Jaime &mdash; Chatbot Hotelero &middot; Configuración ManyChat</p>";
+
+  secciones.forEach(function(sec) {
+    if (!sec.campos.length) return;
+    html += "<h2>"+esc(sec.num)+" &nbsp;&middot;&nbsp; "+esc(sec.titulo)+"</h2>";
+    sec.campos.forEach(function(c) {
+      var isEmpty = !c.valor||!c.valor.trim();
+      html += "<div class='campo'>" +
+        "<span class='lbl2'>"+esc(c.label)+"</span>" +
+        "<span class='val"+(isEmpty?" vacio":"")+"'>"+(isEmpty?"Sin rellenar":esc(c.valor))+"</span>" +
+        "<hr></div>";
+    });
+  });
+
+  html += "</body></html>";
+  var blob = new Blob(['﻿', html], { type: 'application/vnd.ms-word;charset=utf-8' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href   = url;
+  a.download = 'Ficha_'+hotelNom.replace(/[^a-zA-Z0-9\s]/g,'').replace(/\s+/g,'_')+'.doc';
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+}
+</script>
+
 </body>
 </html>
 
