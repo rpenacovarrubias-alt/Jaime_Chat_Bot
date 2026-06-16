@@ -2359,8 +2359,7 @@ function construirContextoManyChat() {
     fill.style.width = ((current.idx / 15) * 100).toFixed(1) + '%';
   }
 
-  var main = document.querySelector('.main');
-  (main || window).addEventListener('scroll', update, { passive: true });
+  window.addEventListener('scroll', update, { passive: true });
   window.addEventListener('resize', update);
   setTimeout(update, 300);
 })();
