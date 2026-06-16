@@ -136,7 +136,7 @@
     style.id = 'j-sidebar-css';
     style.textContent = [
       /* Reset / tokens */
-      ':root{--j-sidebar-w:260px;--j-slate:#0F172A;--j-navy:#1E3A5F;--j-gold:#D97706;--j-amber:#F59E0B;}',
+      ':root{--j-sidebar-w:260px;--j-slate:#0F172A;--j-navy:#1E3A5F;--j-gold:#F97316;--j-amber:#F59E0B;--j-sky:#4EA8DE;--j-cream:#FFF8F2;--j-cream-container:#FDF2E4;}',
 
       /* Sidebar shell */
       '.j-sidebar{position:fixed;top:0;left:0;height:100%;width:var(--j-sidebar-w);background:var(--j-slate);display:flex;flex-direction:column;z-index:500;transition:transform .25s cubic-bezier(.4,0,.2,1);}',
@@ -153,9 +153,9 @@
       '.j-sidebar-nav{flex:1;overflow-y:auto;padding:12px 10px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;}',
       '.j-nav-group{margin-bottom:28px;}',
       '.j-nav-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.25);padding:0 10px 8px;display:block;}',
-      '.j-nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:rgba(255,255,255,.55);font-size:13px;font-family:Inter,sans-serif;font-weight:500;text-decoration:none;transition:background .15s,color .15s,border-left-color .15s;cursor:pointer;background:none;border:none;width:100%;text-align:left;border-left:2px solid transparent;}',
-      '.j-nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9);}',
-      '.j-nav-active{background:rgba(30,58,95,.55)!important;color:white!important;border-left-color:var(--j-gold)!important;padding-left:8px;}',
+      '.j-nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:var(--j-gold);font-size:13px;font-family:Inter,sans-serif;font-weight:500;text-decoration:none;transition:background .15s,color .15s,border-left-color .15s;cursor:pointer;background:none;border:none;width:100%;text-align:left;border-left:2px solid transparent;}',
+      '.j-nav-item:hover{background:rgba(78,168,222,.10);color:var(--j-sky);}',
+      '.j-nav-active{background:rgba(78,168,222,.16)!important;color:var(--j-sky)!important;border-left-color:var(--j-sky)!important;padding-left:8px;}',
       '.j-nav-icon{font-size:17px;flex-shrink:0;font-variation-settings:\'FILL\' 0,\'wght\' 300,\'GRAD\' 0,\'opsz\' 24;}',
       '.j-hotel-badge{width:22px;height:22px;border-radius:5px;background:rgba(30,58,95,.8);color:var(--j-gold);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:0;}',
       '.j-add-hotel-btn{opacity:.45;}.j-add-hotel-btn:hover{opacity:1;}',
