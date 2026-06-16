@@ -229,8 +229,8 @@
     content.appendChild(topbar);
 
     // Move all remaining body children into content
-    while (document.body.children.length > 3) { // sidebar, overlay, content
-      content.appendChild(document.body.children[3]);
+    while (document.body.children.length > 2) { // only sidebar, overlay left on body
+      content.appendChild(document.body.children[2]);
     }
     document.body.appendChild(content);
 
