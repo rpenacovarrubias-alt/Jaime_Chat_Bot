@@ -279,6 +279,10 @@ https://reservas.mihotel.com"></textarea></div>
       <div class="fg"><label class="lbl">Distancia al centro</label><input type="text" name="dist_centro" placeholder="Ej. 2 km / 5 min caminando"></div>
       <div class="fg"><label class="lbl">Referencias de ubicación</label><input type="text" name="referencias" placeholder="Ej. A 200m del Teatro de la República"></div>
     </div>
+    <div class="row">
+      <div class="fg"><label class="lbl">Razón Social</label><input type="text" name="razon_social" placeholder="Ej. OPERADORA EN FRANQUICIAS HOTEL SA DE CV"></div>
+      <div class="fg"><label class="lbl">RFC</label><input type="text" name="rfc" placeholder="Ej. OFH1406136B4"></div>
+    </div>
   </div>
 
   <!-- ══ S3 CHECK-IN / OUT ══ -->
@@ -519,6 +523,47 @@ https://reservas.mihotel.com"></textarea></div>
       <div class="fg full"><label class="lbl">Micro guion — Alberca</label><textarea name="alberca_guion" placeholder="Ej. Nuestra alberca está disponible de 9am a 9pm. Aquí puedes ver el reglamento 🏊️
 [URL alberca]"></textarea></div>
     </div>
+
+    <div class="card"><p class="card-title">Servicio de Cafetería</p>
+      <div class="row">
+        <div class="fg"><label class="lbl">Horario de cafetería</label><input type="text" name="cafeteria_horario" placeholder="Ej. 07:00–12:00"></div>
+        <div class="fg"><label class="lbl">Métodos de pago aceptados</label><input type="text" name="cafeteria_pago" placeholder="Ej. Crédito, débito, efectivo, cargo a habitación"></div>
+      </div>
+      <div class="fg full"><label class="lbl">URL de Cafetería (buffet + carta)</label><input type="url" name="cafeteria_url" placeholder="https://mihotel.com/desayunos/cafeteria"></div>
+      <div class="fg full"><label class="lbl">Micro guion — Cafetería</label><textarea name="cafeteria_guion" placeholder="Ej. Nuestra cafetería abre de 7am a 12pm con buffet y carta. Aquí puedes ver más 👇
+[URL cafetería]"></textarea></div>
+    </div>
+
+    <div class="card"><p class="card-title">Café de Cortesía</p>
+      <div class="fg full"><label class="lbl">Disponibilidad de café de cortesía</label><input type="text" name="cafe_cortesia_nota" placeholder="Ej. Café americano de cortesía en recepción, disponible diariamente hasta las 8pm"></div>
+    </div>
+
+    <p class="lbl" style="margin:20px 0 12px;">Directorio de servicios externos</p>
+    <div class="card"><p class="card-title">Servicio Médico</p>
+      <div class="row">
+        <div class="fg"><label class="lbl">Nombre del médico / clínica</label><input type="text" name="serv_medico_nombre" placeholder="Ej. Dr. Juan Luis Pérez"></div>
+        <div class="fg"><label class="lbl">Teléfono</label><input type="tel" name="serv_medico_tel" placeholder="+52 442 000 0000"></div>
+      </div>
+      <div class="fg full"><label class="lbl">URL / sitio del servicio médico</label><input type="url" name="serv_medico_url" placeholder="https://www.medicosonline.com"></div>
+    </div>
+    <div class="card"><p class="card-title">Taxi</p>
+      <div class="row">
+        <div class="fg"><label class="lbl">Taxi de sitio — Teléfono</label><input type="tel" name="taxi_sitio_tel" placeholder="+52 442 000 0000"></div>
+        <div class="fg"><label class="lbl">Taxi aeropuerto — Teléfono</label><input type="tel" name="taxi_aerop_tel" placeholder="+52 442 000 0000"></div>
+      </div>
+    </div>
+    <div class="card"><p class="card-title">Bolero (limpieza de calzado)</p>
+      <div class="row">
+        <div class="fg"><label class="lbl">Nombre</label><input type="text" name="bolero_nombre" placeholder="Ej. Sr. Francisco"></div>
+        <div class="fg"><label class="lbl">Teléfono</label><input type="tel" name="bolero_tel" placeholder="+52 442 000 0000"></div>
+      </div>
+    </div>
+    <div class="card"><p class="card-title">Lavado de autos</p>
+      <div class="row">
+        <div class="fg"><label class="lbl">Nombre</label><input type="text" name="lavado_auto_nombre" placeholder="Ej. Sr. Palafox"></div>
+        <div class="fg"><label class="lbl">Teléfono</label><input type="tel" name="lavado_auto_tel" placeholder="+52 442 000 0000"></div>
+      </div>
+    </div>
   </div>
 
   <!-- ══ S10 SALONES ══ -->
@@ -561,6 +606,12 @@ https://reservas.mihotel.com"></textarea></div>
     <div class="row"><div class="fg"><label class="lbl">Política de fumadores</label><input type="text" name="pol_fum" placeholder="Ej. Hotel libre de humo. Solo en área exterior."></div><div class="fg"><label class="lbl">Sanción por fumar donde no aplica</label><input type="text" name="pol_fum_sancion" placeholder="Ej. $2,000 MXN de cargo"></div></div>
     <div class="row"><div class="fg"><label class="lbl">Política de menores (edad sin cargo)</label><input type="text" name="pol_menores" placeholder="Ej. Menores de 12 años gratis usando cama existente"></div><div class="fg"><label class="lbl">Horario de silencio</label><input type="text" name="pol_silencio" placeholder="Ej. 11:00 p.m. – 7:00 a.m."></div></div>
     <div class="row"><div class="fg"><label class="lbl">Política de visitas externas</label><input type="text" name="pol_visitas" placeholder="Ej. Solo en lobby, no en habitaciones"></div><div class="fg"><label class="lbl">Política de objetos olvidados</label><input type="text" name="pol_objetos" placeholder="Ej. Guardamos 30 días, envío con costo al huésped"></div></div>
+    <p class="lbl" style="margin:20px 0 12px;">URLs de políticas y reglamentos</p>
+    <div class="row">
+      <div class="fg"><label class="lbl">URL Política de hospedaje</label><input type="url" name="pol_hospedaje_url" placeholder="https://mihotel.com/politica-hospedaje"></div>
+      <div class="fg"><label class="lbl">URL Política de cancelación</label><input type="url" name="pol_cancelacion_url" placeholder="https://mihotel.com/refund-policy"></div>
+    </div>
+    <div class="fg full"><label class="lbl">URL Aviso de privacidad</label><input type="url" name="aviso_privacidad_url" placeholder="https://mihotel.com/privacy-policy"></div>
   </div>
 
   <!-- ══ S12 MÉTODOS DE PAGO ══ -->
@@ -1978,6 +2029,22 @@ function construirContextoManyChat() {
     blank(3);
   }
 
+  // ── Servicio de Cafeteria ────────────────────────────────────────────────
+  if (g('cafeteria_horario') || g('cafeteria_url') || g('cafeteria_guion')) {
+    txt('Servicio de Cafeteria:', true, 9.5);
+    if (g('cafeteria_horario')) txt('Horario: ' + g('cafeteria_horario'), false, 9, 40, 40, 50, 4);
+    if (g('cafeteria_pago'))    txt('Pago: ' + g('cafeteria_pago'), false, 9, 40, 40, 50, 4);
+    scriptBox(g('cafeteria_guion'));
+    urlTxt(g('cafeteria_url'));
+    blank(3);
+  }
+
+  if (g('cafe_cortesia_nota')) {
+    txt('Cafe de Cortesia:', true, 9.5);
+    txt(g('cafe_cortesia_nota'), false, 9, 40, 40, 50, 4);
+    blank(3);
+  }
+
   // ── WiFi ──────────────────────────────────────────────────────────────────
   if (g('wifi_nombre') || g('wifi_guion')) {
     txt('WiFi:', true, 9.5);
@@ -2078,6 +2145,23 @@ function construirContextoManyChat() {
   }
 
   // ── Directorio de contactos externos (s15) ────────────────────────────────
+  var servExternos = [
+    { label: 'Servicio Medico',  fields: ['serv_medico_nombre','serv_medico_tel','serv_medico_url'] },
+    { label: 'Taxi de sitio',    fields: ['taxi_sitio_tel'] },
+    { label: 'Taxi aeropuerto',  fields: ['taxi_aerop_tel'] },
+    { label: 'Bolero',           fields: ['bolero_nombre','bolero_tel'] },
+    { label: 'Lavado de autos',  fields: ['lavado_auto_nombre','lavado_auto_tel'] },
+  ];
+  var servExtActivos = servExternos.filter(function(s){ return s.fields.some(function(f){ return g(f); }); });
+  if (servExtActivos.length) {
+    txt('Directorio de servicios externos:', true, 9, 55, 55, 65);
+    servExtActivos.forEach(function(s) {
+      var vals = s.fields.map(g).filter(Boolean).join(' — ');
+      txt(s.label + ': ' + vals, false, 9, 40, 40, 50, 4);
+    });
+    blank(3);
+  }
+
   var dirExt = [];
   document.querySelectorAll('#s15 .dir-row').forEach(function(row) {
     var inps = row.querySelectorAll('input');
@@ -2097,10 +2181,13 @@ function construirContextoManyChat() {
   // POLITICAS
   // ══════════════════════════════════════════════════════════════════════════
   var polFields = [
-    { name: 'pol_hospedaje',   label: 'Politica de hospedaje' },
-    { name: 'pol_cancelacion', label: 'Politica de cancelacion' },
-    { name: 'aviso_privacidad',label: 'Aviso de privacidad' },
-    { name: 'politica_url',    label: 'Politicas generales' },
+    { name: 'pol_hospedaje',       label: 'Politica de hospedaje' },
+    { name: 'pol_hospedaje_url',   label: 'URL Politica de hospedaje' },
+    { name: 'pol_cancelacion',     label: 'Politica de cancelacion' },
+    { name: 'pol_cancelacion_url', label: 'URL Politica de cancelacion' },
+    { name: 'aviso_privacidad',    label: 'Aviso de privacidad' },
+    { name: 'aviso_privacidad_url',label: 'URL Aviso de privacidad' },
+    { name: 'politica_url',        label: 'Politicas generales' },
   ];
   var polActivas = polFields.filter(function(pf){ return g(pf.name); });
   if (polActivas.length) {
