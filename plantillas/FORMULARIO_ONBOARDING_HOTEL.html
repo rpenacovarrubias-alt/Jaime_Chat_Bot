@@ -1617,8 +1617,7 @@ function recopilarDatosFormulario() {
         ['Horario','Costo','Notas'].forEach(function(k,i){ if(inps[i] && inps[i].value.trim()) partes.push(k+': '+inps[i].value.trim()); });
         activos.push(partes.join(' | '));
       });
-      if (activos.length) campos.push({ label: 'Instalaciones activas', valor: activos.join('
-') });
+      if (activos.length) campos.push({ label: 'Instalaciones activas', valor: activos.join('\n') });
     }
 
     /* 4) Directorio interno (.dir-row) */
@@ -1632,8 +1631,7 @@ function recopilarDatosFormulario() {
         var pr = []; if(n) pr.push(n); if(p) pr.push(p); if(t) pr.push('Tel: '+t);
         lineas.push(pr.join(' — '));
       });
-      if (lineas.length) campos.push({ label: 'Directorio Interno', valor: lineas.join('
-') });
+      if (lineas.length) campos.push({ label: 'Directorio Interno', valor: lineas.join('\n') });
     }
 
     /* 5) Preguntas frecuentes (.faq-row o similar) */
@@ -1644,12 +1642,9 @@ function recopilarDatosFormulario() {
         var inps = row.querySelectorAll('input, textarea');
         var q = inps[0]?inps[0].value.trim():'', a = inps[1]?inps[1].value.trim():'';
         if (!q && !a) return;
-        faqs.push('P: '+(q||'—')+'
-R: '+(a||'—'));
+        faqs.push('P: '+(q||'—')+'\nR: '+(a||'—'));
       });
-      if (faqs.length) campos.push({ label: 'Preguntas Frecuentes', valor: faqs.join('
-
-') });
+      if (faqs.length) campos.push({ label: 'Preguntas Frecuentes', valor: faqs.join('\n\n') });
     }
 
     secciones.push({ num: sNum.trim(), titulo: sTit.trim(), campos: campos });
@@ -1730,8 +1725,7 @@ function exportarDOC() {
   var hotelNom = (document.querySelector('[name="hotel_nombre"]') || {}).value || 'Hotel';
   var fecha    = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
   var secciones = recopilarDatosFormulario();
-  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/
-/g,'<br>'); }
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
 
   var html = "<!DOCTYPE html><html xmlns:o='urn:schemas-microsoft-com:office:office' " +
     "xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>" +
