@@ -180,34 +180,18 @@ textarea { resize: vertical; min-height: 72px; }
 <body>
 <div class="wrapper">
 
-<!-- ════════════════ LEFT PANEL ════════════════ -->
-<aside class="aside">
-  <div>
-    <p class="aside-brand"><span>Chatbot</span>Jaime</p>
-    <div class="aside-divider"></div>
-    <p>Completa esta ficha para configurar a Jaime en el WhatsApp de tu hotel. Una vez llenada, la implementación toma menos de una sesión.</p>
-  </div>
-  <ul class="nav" id="sideNav">
-    <li><a href="#s1"><span class="num">1</span>Identidad del hotel</a></li>
-    <li><a href="#s2"><span class="num">2</span>Contacto y ubicación</a></li>
-    <li><a href="#s3"><span class="num">3</span>Check-in y Check-out</a></li>
-    <li><a href="#s4"><span class="num">4</span>Habitaciones</a></li>
-    <li><a href="#s5"><span class="num">5</span>WiFi</a></li>
-    <li><a href="#s6"><span class="num">6</span>Desayuno</a></li>
-    <li><a href="#s7"><span class="num">7</span>Restaurante / A&amp;B</a></li>
-    <li><a href="#s8"><span class="num">8</span>Estacionamiento</a></li>
-    <li><a href="#s9"><span class="num">9</span>Instalaciones</a></li>
-    <li><a href="#s10"><span class="num">10</span>Salones y eventos</a></li>
-    <li><a href="#s11"><span class="num">11</span>Políticas</a></li>
-    <li><a href="#s12"><span class="num">12</span>Métodos de pago</a></li>
-    <li><a href="#s13"><span class="num">13</span>Integración operativa</a></li>
-    <li><a href="#s14"><span class="num">14</span>Preguntas frecuentes</a></li>
-    <li><a href="#s15"><span class="num">15</span>Directorio interno</a></li>
-  </ul>
-</aside>
-
 <!-- ════════════════ RIGHT PANEL ════════════════ -->
 <div class="main">
+  <!-- ── Barra de progreso por seccion (sticky) ── -->
+  <div id="sectionProgressBar" style="position:sticky;top:0;z-index:50;background:#fff;padding:10px 0 12px;margin:-50px -60px 24px;padding-left:60px;padding-right:60px;border-bottom:1px solid var(--border);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <span id="sectionProgressLabel" style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--primary);">Sección 1 de 15</span>
+      <span id="sectionProgressTitle" style="font-size:12px;color:var(--muted);">Identidad del hotel</span>
+    </div>
+    <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+      <div id="sectionProgressFill" style="height:100%;width:6.6%;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width .25s ease;"></div>
+    </div>
+  </div>
   <div style="margin-bottom:36px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
     <div>
       <h1 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:700;margin:0 0 6px;color:#0F172A;">Ficha de Configuración</h1>
@@ -2340,6 +2324,46 @@ function construirContextoManyChat() {
 
   doc.save('Contexto_ManyChat_' + nombre.replace(/[^a-zA-Z0-9\s]/g,'').replace(/\s+/g,'_') + '.pdf');
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BARRA DE PROGRESO POR SECCION (scroll-spy)
+   ═══════════════════════════════════════════════════════════════════════ */
+(function () {
+  var SECTIONS = [
+    'Identidad del hotel', 'Contacto y ubicacion', 'Check-in y Check-out',
+    'Habitaciones', 'WiFi', 'Desayuno', 'Restaurante / A&B', 'Estacionamiento',
+    'Instalaciones', 'Salones y eventos', 'Politicas', 'Metodos de pago',
+    'Integracion operativa', 'Preguntas frecuentes', 'Directorio interno'
+  ];
+  var label = document.getElementById('sectionProgressLabel');
+  var title = document.getElementById('sectionProgressTitle');
+  var fill  = document.getElementById('sectionProgressFill');
+  if (!label || !title || !fill) return;
+
+  var sectionEls = [];
+  for (var i = 1; i <= 15; i++) {
+    var el = document.getElementById('s' + i);
+    if (el) sectionEls.push({ idx: i, el: el });
+  }
+
+  function update() {
+    var refY = window.innerHeight * 0.3;
+    var current = sectionEls[0];
+    for (var i = 0; i < sectionEls.length; i++) {
+      var rect = sectionEls[i].el.getBoundingClientRect();
+      if (rect.top <= refY) current = sectionEls[i];
+    }
+    if (!current) return;
+    label.textContent = 'Seccion ' + current.idx + ' de 15';
+    title.textContent = SECTIONS[current.idx - 1] || '';
+    fill.style.width = ((current.idx / 15) * 100).toFixed(1) + '%';
+  }
+
+  var main = document.querySelector('.main');
+  (main || window).addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  setTimeout(update, 300);
+})();
 </script>
 
 </body>
