@@ -12,12 +12,16 @@
 :root {
   --primary:      #1E3A5F;
   --primary-dark: #0F172A;
-  --accent:       #D97706;
+  --accent:       #F97316;
+  --accent-deep:  #D97706;
+  --sky:          #4EA8DE;
   --text:   #1C1C1E;
   --muted:  #9CA3AF;
-  --bg:     #F8FAFC;
-  --card:   #FFFFFF;
+  --bg:     #FFF8F2;
+  --card:   #FDF2E4;
   --border: #E5E7EB;
+  --radius-btn: 16px;
+  --shadow-card: 0 4px 20px rgba(15,23,42,.08);
 }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: "Inter", sans-serif; background: var(--bg); color: var(--text); }
@@ -61,7 +65,7 @@ body { margin: 0; font-family: "Inter", sans-serif; background: var(--bg); color
 /* ── SECTION ── */
 .sb { margin-bottom: 52px; scroll-margin-top: 30px; }
 .s-num { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 500; margin: 0 0 4px; }
-.s-title { font-family: "Plus Jakarta Sans", sans-serif; font-size: 20px; font-weight: 700; color: var(--primary); margin: 0 0 16px; }
+.s-title { font-family: "Plus Jakarta Sans", sans-serif; font-size: 24px; font-weight: 600; line-height: 1.3; color: var(--primary-dark); margin: 0 0 16px; }
 .s-line { height: 1px; background: var(--border); margin-bottom: 24px; }
 
 /* ── FIELDS ── */
@@ -77,14 +81,14 @@ input[type=text], input[type=email], input[type=tel],
 input[type=url], input[type=number], input[type=time],
 select, textarea {
   width: 100%; padding: 11px 13px; font-size: 14px;
-  border-radius: 8px; border: 1px solid var(--border);
-  background: #FAFAFA; color: var(--text);
+  border-radius: 8px; border: 1px solid rgba(15,23,42,.10);
+  background: #fff; color: var(--text);
   transition: all .2s; font-family: "Inter", sans-serif;
 }
 input::placeholder, textarea::placeholder { color: #C1C7CD; }
 input:focus, select:focus, textarea:focus {
-  outline: none; border-color: #D97706;
-  background: #fff; box-shadow: 0 0 0 3px rgba(217,119,6,.08);
+  outline: none; border-color: var(--primary); border-width: 1.5px;
+  background: #fff; box-shadow: 0 0 0 3px rgba(30,58,95,.10);
 }
 textarea { resize: vertical; min-height: 72px; }
 
@@ -94,11 +98,11 @@ textarea { resize: vertical; min-height: 72px; }
 .tg label {
   display: flex; align-items: center; gap: 6px;
   padding: 7px 14px; border: 1px solid var(--border);
-  border-radius: 20px; cursor: pointer; font-size: 13px;
+  border-radius: 9999px; cursor: pointer; font-size: 13px;
   text-transform: none; letter-spacing: normal; color: var(--text);
   transition: all .2s;
 }
-.tg input[type=radio]:checked + label { background: var(--primary); color: #fff; border-color: var(--primary); }
+.tg input[type=radio]:checked + label { background: var(--primary-dark); color: #fff; border-color: var(--primary-dark); }
 
 /* ── CHECKBOX GRID ── */
 .cg { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr)); gap: 10px; margin-top: 10px; }
@@ -107,8 +111,9 @@ textarea { resize: vertical; min-height: 72px; }
 
 /* ── CARD ── */
 .card {
-  border: 1px solid var(--border); border-radius: 10px;
-  padding: 18px 20px; margin-bottom: 14px; background: #FAFAFA;
+  border: none; border-radius: 8px;
+  padding: 18px 20px; margin-bottom: 14px; background: #FFFFFF;
+  box-shadow: var(--shadow-card);
 }
 .card-title { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--primary); margin: 0 0 14px; }
 
@@ -145,12 +150,12 @@ textarea { resize: vertical; min-height: 72px; }
 
 /* ── SUBMIT ── */
 .btn {
-  width: 100%; padding: 14px; font-size: 15px; font-weight: 700;
-  background: var(--primary); color: #fff; border: none; border-radius: 8px;
+  width: 100%; padding: 14px; font-size: 16px; font-weight: 600;
+  background: var(--primary-dark); color: #fff; border: none; border-radius: var(--radius-btn);
   cursor: pointer; transition: all .2s; font-family: "Inter", sans-serif;
   letter-spacing: .01em; margin-top: 10px;
 }
-.btn:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(30,58,95,.25); }
+.btn:hover { background: var(--primary); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(30,58,95,.25); }
 .btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 
 /* ── LOADING / SUCCESS ── */
@@ -180,44 +185,28 @@ textarea { resize: vertical; min-height: 72px; }
 <body>
 <div class="wrapper">
 
-<!-- ════════════════ LEFT PANEL ════════════════ -->
-<aside class="aside">
-  <div>
-    <p class="aside-brand"><span>Chatbot</span>Jaime</p>
-    <div class="aside-divider"></div>
-    <p>Completa esta ficha para configurar a Jaime en el WhatsApp de tu hotel. Una vez llenada, la implementación toma menos de una sesión.</p>
-  </div>
-  <ul class="nav" id="sideNav">
-    <li><a href="#s1"><span class="num">1</span>Identidad del hotel</a></li>
-    <li><a href="#s2"><span class="num">2</span>Contacto y ubicación</a></li>
-    <li><a href="#s3"><span class="num">3</span>Check-in y Check-out</a></li>
-    <li><a href="#s4"><span class="num">4</span>Habitaciones</a></li>
-    <li><a href="#s5"><span class="num">5</span>WiFi</a></li>
-    <li><a href="#s6"><span class="num">6</span>Desayuno</a></li>
-    <li><a href="#s7"><span class="num">7</span>Restaurante / A&amp;B</a></li>
-    <li><a href="#s8"><span class="num">8</span>Estacionamiento</a></li>
-    <li><a href="#s9"><span class="num">9</span>Instalaciones</a></li>
-    <li><a href="#s10"><span class="num">10</span>Salones y eventos</a></li>
-    <li><a href="#s11"><span class="num">11</span>Políticas</a></li>
-    <li><a href="#s12"><span class="num">12</span>Métodos de pago</a></li>
-    <li><a href="#s13"><span class="num">13</span>Integración operativa</a></li>
-    <li><a href="#s14"><span class="num">14</span>Preguntas frecuentes</a></li>
-    <li><a href="#s15"><span class="num">15</span>Directorio interno</a></li>
-  </ul>
-</aside>
-
 <!-- ════════════════ RIGHT PANEL ════════════════ -->
 <div class="main">
+  <!-- ── Barra de progreso por seccion (sticky) ── -->
+  <div id="sectionProgressBar" style="position:sticky;top:0;z-index:50;background:#fff;padding:10px 0 12px;margin:-50px -60px 24px;padding-left:60px;padding-right:60px;border-bottom:1px solid var(--border);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <span id="sectionProgressLabel" style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--primary);">Sección 1 de 15</span>
+      <span id="sectionProgressTitle" style="font-size:12px;color:var(--muted);">Identidad del hotel</span>
+    </div>
+    <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+      <div id="sectionProgressFill" style="height:100%;width:6.6%;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width .25s ease;"></div>
+    </div>
+  </div>
   <div style="margin-bottom:36px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
     <div>
-      <h1 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:700;margin:0 0 6px;color:#0F172A;">Ficha de Configuración</h1>
+      <h1 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:30px;font-weight:600;line-height:1.3;margin:0 0 6px;color:#0F172A;">Ficha de Configuración</h1>
       <p style="color:var(--muted);font-size:13px;margin:0;">Completa todos los campos para activar a Jaime en el WhatsApp de tu hotel.</p>
     </div>
     <!-- Extractor IA button — visible when ?nuevo=1 -->
     <button id="btn-extractor-open"
             onclick="openExtractorDrawer()"
-            style="display:none;align-items:center;gap:8px;padding:10px 18px;background:#D97706;color:white;border:none;border-radius:9px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s;flex-shrink:0;"
-            onmouseover="this.style.background='#B45309'" onmouseout="this.style.background='#D97706'">
+            style="display:none;align-items:center;gap:8px;padding:10px 18px;background:#F97316;color:white;border:none;border-radius:16px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;flex-shrink:0;"
+            onmouseover="this.style.background='#D97706'" onmouseout="this.style.background='#F97316'">
       <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;">auto_fix_high</span>
       Extractor IA
     </button>
@@ -278,6 +267,10 @@ https://reservas.mihotel.com"></textarea></div>
     <div class="row">
       <div class="fg"><label class="lbl">Distancia al centro</label><input type="text" name="dist_centro" placeholder="Ej. 2 km / 5 min caminando"></div>
       <div class="fg"><label class="lbl">Referencias de ubicación</label><input type="text" name="referencias" placeholder="Ej. A 200m del Teatro de la República"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label class="lbl">Razón Social</label><input type="text" name="razon_social" placeholder="Ej. OPERADORA EN FRANQUICIAS HOTEL SA DE CV"></div>
+      <div class="fg"><label class="lbl">RFC</label><input type="text" name="rfc" placeholder="Ej. OFH1406136B4"></div>
     </div>
   </div>
 
@@ -507,7 +500,7 @@ https://reservas.mihotel.com"></textarea></div>
       <div class="it-row"><span>Bar</span><span style="text-align:center"><input type="checkbox" name="ba_d"></span><input type="text" name="ba_h" placeholder=""><input type="text" name="ba_c" placeholder=""><input type="text" name="ba_n" placeholder=""></div>
       <div class="it-row"><span>Kids Club</span><span style="text-align:center"><input type="checkbox" name="kc_d"></span><input type="text" name="kc_h" placeholder=""><input type="text" name="kc_c" placeholder=""><input type="text" name="kc_n" placeholder=""></div>
       <div class="it-row"><span>Canchas deportivas</span><span style="text-align:center"><input type="checkbox" name="ca_d"></span><input type="text" name="ca_h" placeholder=""><input type="text" name="ca_c" placeholder=""><input type="text" name="ca_n" placeholder=""></div>
-    </div></div>
+    </div>
     <p class="lbl" style="margin:20px 0 12px;">URLs y micro guiones de instalaciones</p>
     <div class="card"><p class="card-title">Lavandería</p>
       <div class="fg full"><label class="lbl">URL registro de lavandería</label><input type="url" name="lavanderia_url" placeholder="https://mihotel.com/lavanderia"></div>
@@ -518,6 +511,47 @@ https://reservas.mihotel.com"></textarea></div>
       <div class="fg full"><label class="lbl">URL reglamento alberca</label><input type="url" name="alberca_url" placeholder="https://mihotel.com/alberca"></div>
       <div class="fg full"><label class="lbl">Micro guion — Alberca</label><textarea name="alberca_guion" placeholder="Ej. Nuestra alberca está disponible de 9am a 9pm. Aquí puedes ver el reglamento 🏊️
 [URL alberca]"></textarea></div>
+    </div>
+
+    <div class="card"><p class="card-title">Servicio de Cafetería</p>
+      <div class="row">
+        <div class="fg"><label class="lbl">Horario de cafetería</label><input type="text" name="cafeteria_horario" placeholder="Ej. 07:00–12:00"></div>
+        <div class="fg"><label class="lbl">Métodos de pago aceptados</label><input type="text" name="cafeteria_pago" placeholder="Ej. Crédito, débito, efectivo, cargo a habitación"></div>
+      </div>
+      <div class="fg full"><label class="lbl">URL de Cafetería (buffet + carta)</label><input type="url" name="cafeteria_url" placeholder="https://mihotel.com/desayunos/cafeteria"></div>
+      <div class="fg full"><label class="lbl">Micro guion — Cafetería</label><textarea name="cafeteria_guion" placeholder="Ej. Nuestra cafetería abre de 7am a 12pm con buffet y carta. Aquí puedes ver más 👇
+[URL cafetería]"></textarea></div>
+    </div>
+
+    <div class="card"><p class="card-title">Café de Cortesía</p>
+      <div class="fg full"><label class="lbl">Disponibilidad de café de cortesía</label><input type="text" name="cafe_cortesia_nota" placeholder="Ej. Café americano de cortesía en recepción, disponible diariamente hasta las 8pm"></div>
+    </div>
+
+    <p class="lbl" style="margin:20px 0 12px;">Directorio de servicios externos</p>
+    <div class="card"><p class="card-title">Servicio Médico</p>
+      <div class="row">
+        <div class="fg"><label class="lbl">Nombre del médico / clínica</label><input type="text" name="serv_medico_nombre" placeholder="Ej. Dr. Juan Luis Pérez"></div>
+        <div class="fg"><label class="lbl">Teléfono</label><input type="tel" name="serv_medico_tel" placeholder="+52 442 000 0000"></div>
+      </div>
+      <div class="fg full"><label class="lbl">URL / sitio del servicio médico</label><input type="url" name="serv_medico_url" placeholder="https://www.medicosonline.com"></div>
+    </div>
+    <div class="card"><p class="card-title">Taxi</p>
+      <div class="row">
+        <div class="fg"><label class="lbl">Taxi de sitio — Teléfono</label><input type="tel" name="taxi_sitio_tel" placeholder="+52 442 000 0000"></div>
+        <div class="fg"><label class="lbl">Taxi aeropuerto — Teléfono</label><input type="tel" name="taxi_aerop_tel" placeholder="+52 442 000 0000"></div>
+      </div>
+    </div>
+    <div class="card"><p class="card-title">Bolero (limpieza de calzado)</p>
+      <div class="row">
+        <div class="fg"><label class="lbl">Nombre</label><input type="text" name="bolero_nombre" placeholder="Ej. Sr. Francisco"></div>
+        <div class="fg"><label class="lbl">Teléfono</label><input type="tel" name="bolero_tel" placeholder="+52 442 000 0000"></div>
+      </div>
+    </div>
+    <div class="card"><p class="card-title">Lavado de autos</p>
+      <div class="row">
+        <div class="fg"><label class="lbl">Nombre</label><input type="text" name="lavado_auto_nombre" placeholder="Ej. Sr. Palafox"></div>
+        <div class="fg"><label class="lbl">Teléfono</label><input type="tel" name="lavado_auto_tel" placeholder="+52 442 000 0000"></div>
+      </div>
     </div>
   </div>
 
@@ -561,6 +595,12 @@ https://reservas.mihotel.com"></textarea></div>
     <div class="row"><div class="fg"><label class="lbl">Política de fumadores</label><input type="text" name="pol_fum" placeholder="Ej. Hotel libre de humo. Solo en área exterior."></div><div class="fg"><label class="lbl">Sanción por fumar donde no aplica</label><input type="text" name="pol_fum_sancion" placeholder="Ej. $2,000 MXN de cargo"></div></div>
     <div class="row"><div class="fg"><label class="lbl">Política de menores (edad sin cargo)</label><input type="text" name="pol_menores" placeholder="Ej. Menores de 12 años gratis usando cama existente"></div><div class="fg"><label class="lbl">Horario de silencio</label><input type="text" name="pol_silencio" placeholder="Ej. 11:00 p.m. – 7:00 a.m."></div></div>
     <div class="row"><div class="fg"><label class="lbl">Política de visitas externas</label><input type="text" name="pol_visitas" placeholder="Ej. Solo en lobby, no en habitaciones"></div><div class="fg"><label class="lbl">Política de objetos olvidados</label><input type="text" name="pol_objetos" placeholder="Ej. Guardamos 30 días, envío con costo al huésped"></div></div>
+    <p class="lbl" style="margin:20px 0 12px;">URLs de políticas y reglamentos</p>
+    <div class="row">
+      <div class="fg"><label class="lbl">URL Política de hospedaje</label><input type="url" name="pol_hospedaje_url" placeholder="https://mihotel.com/politica-hospedaje"></div>
+      <div class="fg"><label class="lbl">URL Política de cancelación</label><input type="url" name="pol_cancelacion_url" placeholder="https://mihotel.com/refund-policy"></div>
+    </div>
+    <div class="fg full"><label class="lbl">URL Aviso de privacidad</label><input type="url" name="aviso_privacidad_url" placeholder="https://mihotel.com/privacy-policy"></div>
   </div>
 
   <!-- ══ S12 MÉTODOS DE PAGO ══ -->
@@ -681,34 +721,34 @@ Puedes reportarlo aquí 👇
     <!-- Save as new hotel (visible when ?nuevo=1) -->
     <button type="button" id="btn-save-hotel"
             onclick="saveHotelToList()"
-            style="display:none;width:100%;padding:14px;font-size:15px;font-weight:700;background:#D97706;color:#fff;border:none;border-radius:8px;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;margin-top:10px;"
-            onmouseover="this.style.background='#B45309'" onmouseout="this.style.background='#D97706'">
+            style="display:none;width:100%;padding:14px;font-size:16px;font-weight:600;background:#F97316;color:#fff;border:none;border-radius:16px;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;margin-top:10px;"
+            onmouseover="this.style.background='#D97706'" onmouseout="this.style.background='#F97316'">
       <span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;margin-right:6px;font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;">hotel</span>
       Guardar Hotel en la Lista
     </button>
     <!-- ── Exportar PDF / DOC ────────────────────────── -->
-    <div style="margin-top:18px;padding:16px 16px 10px;background:#F8FAFC;border-radius:10px;border:1px solid var(--border);">
+    <div style="margin-top:18px;padding:16px 16px 10px;background:#FFFFFF;border-radius:8px;border:none;box-shadow:var(--shadow-card);">
       <p style="font-size:11px;color:var(--muted);text-align:center;margin:0 0 10px;letter-spacing:.02em;">
         <i class="fas fa-download" style="margin-right:5px;opacity:.7;"></i>
         Exportar información del formulario
       </p>
       <div style="display:flex;gap:10px;">
         <button type="button" onclick="exportarPDF()"
-                style="flex:1;padding:11px 0;font-size:14px;font-weight:600;background:#1E3A5F;color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s;"
-                onmouseover="this.style.background='#162d4a'" onmouseout="this.style.background='#1E3A5F'">
+                style="flex:1;padding:11px 0;font-size:16px;font-weight:600;background:#0F172A;color:#fff;border:none;border-radius:16px;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s;"
+                onmouseover="this.style.background='#1E3A5F'" onmouseout="this.style.background='#0F172A'">
           <i class="fas fa-file-pdf" style="margin-right:7px;"></i>Descargar PDF
         </button>
         <button type="button" onclick="exportarDOC()"
-                style="flex:1;padding:11px 0;font-size:14px;font-weight:600;background:#D97706;color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s;"
-                onmouseover="this.style.background='#B45309'" onmouseout="this.style.background='#D97706'">
+                style="flex:1;padding:11px 0;font-size:16px;font-weight:600;background:#0F172A;color:#fff;border:none;border-radius:16px;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s;"
+                onmouseover="this.style.background='#1E3A5F'" onmouseout="this.style.background='#0F172A'">
           <i class="fas fa-file-word" style="margin-right:7px;"></i>Descargar DOC
         </button>
       </div>
       <!-- ── Constructor Contexto ManyChat ── -->
       <div style="margin-top:10px;">
         <button type="button" onclick="construirContextoManyChat()"
-                style="width:100%;padding:12px 0;font-size:14px;font-weight:600;background:#0F766E;color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:8px;"
-                onmouseover="this.style.background='#0D5C57'" onmouseout="this.style.background='#0F766E'">
+                style="width:100%;padding:12px 0;font-size:16px;font-weight:600;background:#F97316;color:#fff;border:none;border-radius:16px;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:8px;"
+                onmouseover="this.style.background='#D97706'" onmouseout="this.style.background='#F97316'">
           <i class="fas fa-robot" style="font-size:15px;"></i>
           Constructor Contexto ManyChat
           <span style="font-size:10px;opacity:.75;font-weight:400;">.PDF</span>
@@ -856,7 +896,7 @@ Puedes reportarlo aquí 👇
           <div id="ext-guiones-list"></div>
 
           <!-- Boton guardar guiones -->
-          <button onclick="extGuardarGuiones()" style="width:100%;margin-top:10px;padding:11px;background:#1E3A5F;color:white;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#162d4a'" onmouseout="this.style.background='#1E3A5F'">
+          <button onclick="extGuardarGuiones()" style="width:100%;margin-top:10px;padding:11px;background:#0F172A;color:white;border:none;border-radius:16px;font-family:'Inter',sans-serif;font-size:16px;font-weight:600;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#1E3A5F'" onmouseout="this.style.background='#0F172A'">
             <i class="fa-solid fa-floppy-disk" style="margin-right:7px;"></i>Guardar todos los micro guiones
           </button>
         </div>
@@ -868,7 +908,7 @@ Puedes reportarlo aquí 👇
     <!-- Drawer footer -->
     <div style="padding:16px 24px;border-top:1px solid #E5E7EB;display:flex;gap:10px;">
       <button id="ext-btn-analyze" onclick="extAnalyze()"
-              style="flex:1;padding:11px;background:#D97706;color:white;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s;"
+              style="flex:1;padding:11px;background:#F97316;color:white;border:none;border-radius:16px;font-family:'Inter',sans-serif;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s;" onmouseover="this.style.background='#D97706'" onmouseout="this.style.background='#F97316'"
               onmouseover="this.style.background='#B45309'" onmouseout="this.style.background='#D97706'">
         <i class="fa-solid fa-wand-magic-sparkles"></i> Analizar con IA
       </button>
@@ -964,14 +1004,29 @@ function eliminarContacto(btn) {
     if (btnExt)  btnExt.style.display  = 'inline-flex';
     if (btnSave) btnSave.style.display = 'block';
   }
+  // ── Modo Ver/Editar: precargar datos guardados de un hotel existente ──────
+  var hotelId = params.get('hotel_id');
+  if (hotelId) {
+    var btnSave2 = document.getElementById('btn-save-hotel');
+    if (btnSave2) btnSave2.style.display = 'block';
+    var aplicarDatos = function () {
+      if (!window.JaimeHotelData) return;
+      var hotel = window.JaimeHotelData.getHotelById(hotelId);
+      if (hotel && hotel.formData) {
+        window.JaimeHotelData.llenarFormDesdeData(document, hotel.formData);
+      }
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', aplicarDatos);
+    } else {
+      aplicarDatos();
+    }
+  }
 })();
 
-// ── Save hotel to localStorage list ─────────────────────────────────────────
+// ── Save hotel to localStorage list (crea nuevo o actualiza existente) ──────
 function saveHotelToList() {
-  var nombre    = (document.querySelector('[name="hotel_nombre"]') || {}).value || '';
-  var ciudad    = (document.querySelector('[name="hotel_ciudad"]') || {}).value || '';
-  var categoria = (document.querySelector('[name="hotel_estrellas"]') || {}).value || '';
-  var habitaciones = (document.querySelector('[name="hotel_habitaciones"]') || {}).value || '';
+  var nombre = (document.querySelector('[name="hotel_nombre"]') || {}).value || '';
 
   if (!nombre.trim()) {
     alert('Completa al menos el nombre del hotel antes de guardar.');
@@ -984,21 +1039,37 @@ function saveHotelToList() {
       .replace(/[^A-Z0-9]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'');
   }
 
+  var formData = window.JaimeHotelData.recopilarFormData(document);
+  var hotelId  = new URLSearchParams(window.location.search).get('hotel_id');
+
+  if (hotelId) {
+    var actualizado = window.JaimeHotelData.updateHotel(hotelId, {
+      nombre:       nombre.trim(),
+      slug:         makeSlug(nombre.trim()),
+      ciudad:       formData.hotel_ciudad || '',
+      categoria:    formData.hotel_estrellas || '',
+      habitaciones: formData.hotel_habitaciones || '',
+      formData:     formData,
+      actualizado:  new Date().toISOString(),
+    });
+    if (!actualizado) { alert('No se encontro el hotel a actualizar.'); return; }
+    window.location.href = '/?hotel_saved=1';
+    return;
+  }
+
   var hotel = {
     id:           'dyn_' + Date.now(),
     nombre:       nombre.trim(),
     slug:         makeSlug(nombre.trim()),
-    ciudad:       ciudad.trim(),
-    categoria:    categoria,
-    habitaciones: habitaciones,
+    ciudad:       formData.hotel_ciudad || '',
+    categoria:    formData.hotel_estrellas || '',
+    habitaciones: formData.hotel_habitaciones || '',
+    formData:     formData,
     creado:       new Date().toISOString(),
   };
 
-  var list = [];
-  try { list = JSON.parse(localStorage.getItem('jaime_hoteles_dynamic') || '[]'); } catch(e) {}
-  list.push(hotel);
   try {
-    localStorage.setItem('jaime_hoteles_dynamic', JSON.stringify(list));
+    window.JaimeHotelData.saveDynamicHotel(hotel);
   } catch(e) {
     alert('No se pudo guardar en el navegador. Por favor inténtalo de nuevo.');
     return;
@@ -1501,764 +1572,74 @@ function extGuardarGuiones() {
    RECOPILACIÓN DE DATOS DEL FORMULARIO
    ═══════════════════════════════════════════════════════════════════════════ */
 function recopilarDatosFormulario() {
-  var secciones = [];
-  document.querySelectorAll('.sb').forEach(function(sb) {
-    var sNum = (sb.querySelector('.s-num')   || {}).textContent || '';
-    var sTit = (sb.querySelector('.s-title') || {}).textContent || '';
-    if (!sTit.trim()) return;
-    var campos = [];
-
-    /* 1) Inputs, selects, textareas con label.lbl */
-    sb.querySelectorAll('label.lbl').forEach(function(lbl) {
-      var labelTxt = lbl.textContent.trim();
-      if (!labelTxt) return;
-      if (lbl.htmlFor) {
-        var elFor = document.getElementById(lbl.htmlFor);
-        if (elFor && (elFor.type === 'radio' || elFor.type === 'checkbox')) return;
-      }
-      var cont = lbl.parentElement;
-      var valor = '';
-      var inp = cont.querySelector('input:not([type=radio]):not([type=checkbox]), select, textarea');
-      if (inp) {
-        if (inp.tagName === 'SELECT') {
-          valor = inp.options[inp.selectedIndex] ? inp.options[inp.selectedIndex].text : '';
-        } else {
-          valor = inp.value || '';
-        }
-      } else {
-        var tg = cont.querySelector('.tg');
-        if (tg) {
-          var chk = tg.querySelector('input[type=radio]:checked');
-          if (chk) {
-            var lf = tg.querySelector('label[for="' + chk.id + '"]');
-            valor = lf ? lf.textContent.trim() : chk.value;
-          }
-        }
-      }
-      if (valor.trim()) campos.push({ label: labelTxt, valor: valor.trim() });
-    });
-
-    /* 2) Checkboxes grupales (.cg) */
-    sb.querySelectorAll('.cg').forEach(function(cg) {
-      var marcados = [];
-      cg.querySelectorAll('input[type=checkbox]:checked').forEach(function(cb) {
-        var ci = cb.closest('.ci');
-        if (ci) { var t = ci.textContent.trim(); if (t) marcados.push(t); }
-      });
-      if (!marcados.length) return;
-      var prev = cg.previousElementSibling;
-      var etiq = (prev && prev.classList && prev.classList.contains('lbl'))
-                 ? prev.textContent.trim() : 'Servicios / Amenidades';
-      campos.push({ label: etiq, valor: marcados.join(', ') });
-    });
-
-    /* 3) Tabla de instalaciones (.it-row) */
-    var itRows = sb.querySelectorAll('.it-row');
-    if (itRows.length) {
-      var activos = [];
-      itRows.forEach(function(row) {
-        var cb = row.querySelector('input[type=checkbox]');
-        if (!cb || !cb.checked) return;
-        var sp = row.querySelector('span:first-child');
-        var nombre = sp ? sp.textContent.trim() : '';
-        var inps = row.querySelectorAll('input[type=text]');
-        var partes = [nombre];
-        ['Horario','Costo','Notas'].forEach(function(k,i){ if(inps[i] && inps[i].value.trim()) partes.push(k+': '+inps[i].value.trim()); });
-        activos.push(partes.join(' | '));
-      });
-      if (activos.length) campos.push({ label: 'Instalaciones activas', valor: activos.join('
-') });
-    }
-
-    /* 4) Directorio interno (.dir-row) */
-    var dirRows = sb.querySelectorAll('.dir-row');
-    if (dirRows.length) {
-      var lineas = [];
-      dirRows.forEach(function(row) {
-        var inps = row.querySelectorAll('input');
-        var n = inps[0]?inps[0].value.trim():'', p = inps[1]?inps[1].value.trim():'', t = inps[2]?inps[2].value.trim():'';
-        if (!n && !p && !t) return;
-        var pr = []; if(n) pr.push(n); if(p) pr.push(p); if(t) pr.push('Tel: '+t);
-        lineas.push(pr.join(' — '));
-      });
-      if (lineas.length) campos.push({ label: 'Directorio Interno', valor: lineas.join('
-') });
-    }
-
-    /* 5) Preguntas frecuentes (.faq-row o similar) */
-    var faqRows = sb.querySelectorAll('.faq-row');
-    if (faqRows.length) {
-      var faqs = [];
-      faqRows.forEach(function(row) {
-        var inps = row.querySelectorAll('input, textarea');
-        var q = inps[0]?inps[0].value.trim():'', a = inps[1]?inps[1].value.trim():'';
-        if (!q && !a) return;
-        faqs.push('P: '+(q||'—')+'
-R: '+(a||'—'));
-      });
-      if (faqs.length) campos.push({ label: 'Preguntas Frecuentes', valor: faqs.join('
-
-') });
-    }
-
-    secciones.push({ num: sNum.trim(), titulo: sTit.trim(), campos: campos });
-  });
-  return secciones;
+  return window.JaimeHotelData.recopilarDatosFormulario(document);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   EXPORTAR PDF  (usa jsPDF CDN)
-   ═══════════════════════════════════════════════════════════════════════════ */
 function exportarPDF() {
   if (typeof window.jspdf === 'undefined') {
     alert('La biblioteca PDF aún se está cargando. Espera un segundo e intenta de nuevo.');
     return;
   }
-  var jsPDF = window.jspdf.jsPDF;
-  var doc   = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  var pW = 210, mg = 14, aw = pW - mg * 2, y = 0;
-  var hotelNom = (document.querySelector('[name="hotel_nombre"]') || {}).value || 'Hotel';
-  var fecha    = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
-
-  function chkPag(n) { if (y + n > 280) { doc.addPage(); y = 16; } }
-
-  /* Encabezado */
-  doc.setFillColor(30,58,95); doc.rect(0,0,pW,34,'F');
-  doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(15);
-  doc.text('Ficha de Configuración del Hotel', mg, 13);
-  doc.setFontSize(10); doc.setFont('helvetica','normal');
-  doc.setTextColor(217,179,100); doc.text(hotelNom, mg, 22);
-  doc.setTextColor(200,200,200); doc.setFontSize(8);
-  doc.text('Generado: '+fecha, pW-mg, 22, {align:'right'});
-  doc.text('Jaime Chatbot Hotelero · Configuración ManyChat', pW-mg, 29, {align:'right'});
-  y = 42;
-
-  recopilarDatosFormulario().forEach(function(sec) {
-    if (!sec.campos.length) return;
-    chkPag(16);
-    doc.setFillColor(30,58,95);
-    doc.roundedRect(mg, y-5, aw, 10, 2, 2, 'F');
-    doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(9.5);
-    doc.text(sec.num+'  ·  '+sec.titulo, mg+4, y+2);
-    y += 12;
-
-    sec.campos.forEach(function(c) {
-      var lblLines = doc.splitTextToSize(c.label, aw*0.36);
-      var valLines = doc.splitTextToSize(c.valor||'—', aw*0.60);
-      var lh = Math.max(lblLines.length, valLines.length) * 4.8;
-      chkPag(lh+4);
-      doc.setTextColor(80,80,90); doc.setFont('helvetica','bold'); doc.setFontSize(8);
-      doc.text(lblLines, mg+2, y);
-      var isEmpty = !c.valor||!c.valor.trim();
-      doc.setTextColor(isEmpty?150:28, isEmpty?150:28, isEmpty?160:30);
-      doc.setFont('helvetica','normal');
-      doc.text(valLines, mg+aw*0.38, y);
-      y += lh+1;
-      doc.setDrawColor(220,220,225); doc.setLineWidth(0.2);
-      doc.line(mg, y, mg+aw, y);
-      y += 2.5;
-    });
-    y += 5;
-  });
-
-  /* Paginación */
-  var tot = doc.internal.getNumberOfPages();
-  for (var p=1; p<=tot; p++) {
-    doc.setPage(p);
-    doc.setFontSize(7.5); doc.setTextColor(160,160,165); doc.setFont('helvetica','normal');
-    doc.text('Página '+p+' de '+tot, pW/2, 292, {align:'center'});
-    doc.text('Jaime — Chatbot Hotelero', mg, 292);
-  }
-  doc.save('Ficha_'+hotelNom.replace(/[^a-zA-Z0-9\s]/g,'').replace(/\s+/g,'_')+'.pdf');
+  var r = window.JaimeHotelData.exportarPDF(document);
+  r.doc.save(r.filename);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   EXPORTAR DOC  (Blob HTML → Word)
-   ═══════════════════════════════════════════════════════════════════════════ */
 function exportarDOC() {
-  var hotelNom = (document.querySelector('[name="hotel_nombre"]') || {}).value || 'Hotel';
-  var fecha    = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
-  var secciones = recopilarDatosFormulario();
-  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/
-/g,'<br>'); }
-
-  var html = "<!DOCTYPE html><html xmlns:o='urn:schemas-microsoft-com:office:office' " +
-    "xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>" +
-    "<head><meta charset='utf-8'><title>Ficha "+esc(hotelNom)+"</title>" +
-    "<style>" +
-    "body{font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:2cm;color:#1F2937;}" +
-    "h1{color:#1E3A5F;font-size:20pt;border-bottom:3px solid #1E3A5F;padding-bottom:6pt;margin-bottom:4pt;}" +
-    ".subtit{color:#6B7280;font-size:10pt;margin:0 0 14pt;}" +
-    "h2{color:#fff;background:#1E3A5F;font-size:11pt;padding:5pt 9pt;margin:16pt 0 6pt;}" +
-    ".campo{margin:0 0 7pt;}" +
-    ".lbl2{font-weight:700;color:#374151;font-size:10pt;display:block;}" +
-    ".val{color:#1F2937;font-size:10.5pt;padding-left:10pt;display:block;white-space:pre-wrap;}" +
-    ".vacio{color:#9CA3AF;font-style:italic;}" +
-    "hr{border:none;border-top:1px solid #E5E7EB;margin:4pt 0;}" +
-    "</style></head><body>" +
-    "<h1>Ficha de Configuración del Hotel</h1>" +
-    "<p class='subtit'>"+esc(hotelNom)+" &nbsp;&middot;&nbsp; Generado: "+fecha+"</p>" +
-    "<p style='font-size:9pt;color:#9CA3AF;margin-bottom:20pt;'>Jaime &mdash; Chatbot Hotelero &middot; Configuración ManyChat</p>";
-
-  secciones.forEach(function(sec) {
-    if (!sec.campos.length) return;
-    html += "<h2>"+esc(sec.num)+" &nbsp;&middot;&nbsp; "+esc(sec.titulo)+"</h2>";
-    sec.campos.forEach(function(c) {
-      var isEmpty = !c.valor||!c.valor.trim();
-      html += "<div class='campo'>" +
-        "<span class='lbl2'>"+esc(c.label)+"</span>" +
-        "<span class='val"+(isEmpty?" vacio":"")+"'>"+(isEmpty?"Sin rellenar":esc(c.valor))+"</span>" +
-        "<hr></div>";
-    });
-  });
-
-  html += "</body></html>";
-  var blob = new Blob(['﻿', html], { type: 'application/vnd.ms-word;charset=utf-8' });
-  var url  = URL.createObjectURL(blob);
-  var a    = document.createElement('a');
-  a.href   = url;
-  a.download = 'Ficha_'+hotelNom.replace(/[^a-zA-Z0-9\s]/g,'').replace(/\s+/g,'_')+'.doc';
-  document.body.appendChild(a); a.click();
-  setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+  var r = window.JaimeHotelData.exportarDOC(document);
+  window.JaimeHotelData.descargarDOC(r);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   CONSTRUCTOR DE CONTEXTO MANYCHAT
-   Genera un PDF con la estructura estándar del contexto Jaime
-   ═══════════════════════════════════════════════════════════════════════════ */
 function construirContextoManyChat() {
   if (typeof window.jspdf === 'undefined') {
     alert('La biblioteca PDF aun se esta cargando. Espera un segundo e intenta de nuevo.');
     return;
   }
-  var jsPDF = window.jspdf.jsPDF;
-  var doc   = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-
-  var pW = 210, mg = 14, aw = pW - mg * 2, y = 0;
-  var nombre = (document.querySelector('[name="hotel_nombre"]') || {}).value || 'Hotel';
-  var fecha  = new Date().toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
-
-  // Helper: get field value
-  var g = function(name) {
-    var el = document.querySelector('[name="' + name + '"]');
-    return el ? (el.value || '').trim() : '';
-  };
-
-  // ── Core render functions ─────────────────────────────────────────────────
-
-  function chk(n) {
-    if (y + n > 282) { doc.addPage(); y = 16; }
+  var r = window.JaimeHotelData.construirContexto(document);
+  r.doc.save(r.filename);
+  var hotelId = new URLSearchParams(window.location.search).get('hotel_id');
+  if (hotelId) {
+    window.JaimeHotelData.updateHotel(hotelId, { contexto: r.texto, contextoFecha: new Date().toISOString() });
   }
-
-  function txt(text, bold, size, colorR, colorG, colorB, indent) {
-    if (!text) return;
-    size   = size   || 9;
-    indent = indent || 0;
-    doc.setFontSize(size);
-    doc.setFont('helvetica', bold ? 'bold' : 'normal');
-    doc.setTextColor(colorR || 30, colorG || 30, colorB || 35);
-    var lines = doc.splitTextToSize(String(text), aw - indent);
-    var lh    = size * 0.43;
-    chk(lines.length * lh + 2);
-    doc.text(lines, mg + indent, y);
-    y += lines.length * lh + 1.5;
-  }
-
-  function urlTxt(href) {
-    if (!href) return;
-    doc.setFontSize(8.5); doc.setFont('helvetica', 'normal');
-    doc.setTextColor(14, 100, 200);
-    var lines = doc.splitTextToSize(href, aw - 4);
-    chk(lines.length * 3.8 + 1);
-    doc.text(lines, mg + 4, y);
-    y += lines.length * 3.8 + 1.5;
-  }
-
-  function blank(n) { y += (n || 3); }
-
-  function sep() {
-    chk(6);
-    doc.setDrawColor(200, 200, 205); doc.setLineWidth(0.25);
-    doc.line(mg, y, mg + aw, y); y += 5;
-  }
-
-  function secHeader(title, r, g2, b) {
-    chk(14);
-    r = r || 30; g2 = g2 || 58; b = b || 95;
-    doc.setFillColor(r, g2, b);
-    doc.roundedRect(mg, y - 5, aw, 10, 2, 2, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-    doc.text(title, mg + 5, y + 2);
-    y += 13;
-  }
-
-  function scriptBox(text) {
-    if (!text) return;
-    doc.setFontSize(8); doc.setFont('helvetica', 'bold');
-    doc.setTextColor(100, 100, 110);
-    chk(5); doc.text('Micro guion:', mg + 2, y); y += 4;
-    var lines = doc.splitTextToSize('"' + text + '"', aw - 10);
-    var lh    = 9 * 0.43;
-    var h     = lines.length * lh + 7;
-    chk(h + 2);
-    doc.setFillColor(240, 247, 255); doc.setDrawColor(147, 197, 253);
-    doc.roundedRect(mg + 2, y - 2, aw - 4, h, 2, 2, 'FD');
-    doc.setTextColor(30, 64, 175); doc.setFont('helvetica', 'italic'); doc.setFontSize(9);
-    doc.text(lines, mg + 7, y + 3);
-    y += h + 3;
-  }
-
-  function bullet(text, indent) {
-    indent = indent || 4;
-    doc.setFontSize(9); doc.setFont('helvetica', 'normal');
-    doc.setTextColor(40, 40, 50);
-    var lines = doc.splitTextToSize('- ' + text, aw - indent - 2);
-    chk(lines.length * 3.9 + 1);
-    doc.text(lines, mg + indent, y);
-    y += lines.length * 3.9 + 1;
-  }
-
-  function rowLabel(label, value) {
-    if (!value) return;
-    doc.setFontSize(8.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(70, 70, 80);
-    chk(5); doc.text(label + ':', mg + 4, y);
-    doc.setFont('helvetica', 'normal'); doc.setTextColor(30, 30, 40);
-    doc.text(value, mg + 4 + doc.getTextWidth(label + ':') + 2, y);
-    y += 4.5;
-  }
-
-  // ── PAGE HEADER ───────────────────────────────────────────────────────────
-  doc.setFillColor(15, 23, 42); doc.rect(0, 0, pW, 30, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(15);
-  doc.text('Contexto ManyChat — Jaime', mg, 13);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-  doc.setTextColor(45, 212, 191); doc.text(nombre, mg, 22);
-  doc.setTextColor(148, 163, 184); doc.setFontSize(8);
-  doc.text('Generado: ' + fecha, pW - mg, 22, { align: 'right' });
-  y = 38;
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // BLOQUE IDENTIDAD DEL HOTEL
-  // ══════════════════════════════════════════════════════════════════════════
-  var concepto = g('hotel_concepto');
-  if (concepto) {
-    txt(nombre + ' es ' + concepto, false, 9.5);
-  } else {
-    txt(nombre, true, 11);
-  }
-  urlTxt(g('hotel_web'));
-  blank(2);
-
-  var dirParts = [g('hotel_direccion'), g('hotel_ciudad')].filter(Boolean);
-  if (dirParts.length) txt('Ubicacion: ' + dirParts.join(', '));
-  if (g('hotel_telefono')) txt('Tel: ' + g('hotel_telefono'));
-  if (g('hotel_gmaps')) {
-    txt('Mapa:', false, 9, 60, 60, 60); y -= 4;
-    urlTxt(g('hotel_gmaps'));
-  }
-
-  // Razon social (campos opcionales)
-  var razon = g('razon_social') || g('hotel_razon_social');
-  var rfc   = g('rfc') || g('hotel_rfc');
-  if (razon || rfc) {
-    sep();
-    txt('RAZON SOCIAL', true, 9);
-    var rs = [razon, rfc ? 'RFC: ' + rfc : ''].filter(Boolean).join(' | ');
-    txt(rs, false, 9, 60, 60, 65);
-  }
-
-  sep();
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // HABITACIONES
-  // ══════════════════════════════════════════════════════════════════════════
-  secHeader('HABITACIONES');
-
-  // Room type cards in section s4
-  var roomCards = document.querySelectorAll('#s4 .card');
-  if (roomCards.length) {
-    txt('Tipos de habitacion:', true, 9, 55, 55, 65);
-    roomCards.forEach(function(card) {
-      var cTitle = (card.querySelector('.card-title') || {}).textContent || '';
-      var inps   = Array.from(card.querySelectorAll('input, select, textarea'))
-                       .map(function(i){ return i.value.trim(); }).filter(Boolean);
-      if (cTitle || inps.length) {
-        var row = cTitle + (inps.length ? ': ' + inps.join(' | ') : '');
-        txt(row, false, 9, 30, 30, 40, 6);
-      }
-    });
-    blank(2);
-  }
-
-  // Amenidades (checkboxes en s4)
-  var amenList = [];
-  document.querySelectorAll('#s4 input[type=checkbox]:checked').forEach(function(cb) {
-    var ci = cb.closest('.ci');
-    if (ci) amenList.push(ci.textContent.trim());
-  });
-  if (amenList.length) {
-    txt('Amenidades: ' + amenList.join(', '), false, 9);
-    blank(2);
-  }
-
-  // Info general habitaciones (campos sueltos s4)
-  var habFields = [
-    { name: 'hab_cama',    label: 'Cama' },
-    { name: 'hab_ac',      label: 'Aire acondicionado' },
-    { name: 'hab_tv',      label: 'TV' },
-    { name: 'hab_closet',  label: 'Closet' },
-    { name: 'hab_bano',    label: 'Bano' },
-    { name: 'hab_trabajo', label: 'Area de trabajo' },
-  ];
-  var habSolos = habFields.filter(function(hf){ return g(hf.name); });
-  if (habSolos.length) {
-    habSolos.forEach(function(hf){ txt(hf.label + ': ' + g(hf.name), false, 9, 40, 40, 50, 4); });
-    blank(2);
-  }
-
-  if (g('hotel_habitaciones')) txt('Total habitaciones: ' + g('hotel_habitaciones'));
-
-  var habUrl = g('hotel_web') ? g('hotel_web') + '/habitaciones' : '';
-  if (habUrl) { txt('Mas info:', false, 9, 60, 60, 60); y -= 4; urlTxt(habUrl); }
-
-  sep();
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // REGLAS DE CONVERSION
-  // ══════════════════════════════════════════════════════════════════════════
-  secHeader('REGLAS DE CONVERSION — PRIORIDAD ALTA', 185, 28, 28);
-
-  txt('Reservaciones:', true, 9.5);
-  blank(1);
-  txt('Cuando el huesped quiera reservar:');
-  txt('NO hacer preguntas, invitalo a hacer su reservacion.');
-  txt('Enviar directo el link:');
-  urlTxt(g('hotel_motor'));
-  blank(1);
-  scriptBox(g('reserv_guion'));
-
-  sep();
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // SERVICIOS
-  // ══════════════════════════════════════════════════════════════════════════
-  secHeader('SERVICIOS');
-
-  // ── Desayuno ──────────────────────────────────────────────────────────────
-  var desHor  = g('desayuno_horario');
-  var desTipo = g('desayuno_tipo');
-  var desUbic = g('desayuno_ubic');
-  if (desTipo || desHor || g('desayuno_guion')) {
-    txt('Desayuno:', true, 9.5);
-    if (desTipo) txt(desTipo, false, 9, 40, 40, 50, 4);
-    if (desHor)  txt('Horario: ' + desHor, false, 9, 40, 40, 50, 4);
-    if (desUbic) txt('Ubicacion: ' + desUbic, false, 9, 40, 40, 50, 4);
-    scriptBox(g('desayuno_guion'));
-    urlTxt(g('desayuno_menu_url'));
-    blank(3);
-  }
-
-  // ── Cafeteria / Restaurante ───────────────────────────────────────────────
-  var restNom = g('rest_nombre');
-  var restMen = g('rest_menu');
-  if (restNom || restMen || g('rest_menu_guion')) {
-    txt('Cafeteria' + (restNom ? ' / ' + restNom : '') + ':', true, 9.5);
-    // horarios de desayuno/comida/cena del restaurante
-    var horDesay = g('rest_hor_desay') || g('rest_horario_d');
-    var horComi  = g('rest_hor_comi')  || g('rest_horario_c');
-    var horCena  = g('rest_hor_cena')  || g('rest_horario_n');
-    if (horDesay || horComi || horCena) {
-      var hStr = [horDesay && 'Desayuno ' + horDesay, horComi && 'Comida ' + horComi, horCena && 'Cena ' + horCena].filter(Boolean).join(' | ');
-      txt('Horario: ' + hStr, false, 9, 40, 40, 50, 4);
-    }
-    scriptBox(g('rest_menu_guion'));
-    urlTxt(restMen);
-    blank(3);
-  }
-
-  // ── WiFi ──────────────────────────────────────────────────────────────────
-  if (g('wifi_nombre') || g('wifi_guion')) {
-    txt('WiFi:', true, 9.5);
-    if (g('wifi_nombre')) {
-      var wStr = 'Red: ' + g('wifi_nombre') + (g('wifi_password') ? '  |  Clave: ' + g('wifi_password') : '') + (g('wifi_vel') ? '  |  ' + g('wifi_vel') : '');
-      txt(wStr, false, 9, 40, 40, 50, 4);
-    }
-    scriptBox(g('wifi_guion'));
-    blank(3);
-  }
-
-  // ── Eventos y Salones ─────────────────────────────────────────────────────
-  var eventosUrl = g('salon_url') || g('eventos_url');
-  if (g('eventos_guion') || eventosUrl) {
-    txt('Eventos y Salones:', true, 9.5);
-    // Descripcion de salones (campos de s10)
-    var salonDesc = g('salon_descripcion') || g('salon_info');
-    if (salonDesc) txt(salonDesc, false, 9, 40, 40, 50, 4);
-    scriptBox(g('eventos_guion'));
-    urlTxt(eventosUrl);
-    blank(3);
-  }
-
-  // ── Facturacion ───────────────────────────────────────────────────────────
-  if (g('factura_guion') || g('factura_url')) {
-    txt('Facturacion:', true, 9.5);
-    scriptBox(g('factura_guion'));
-    urlTxt(g('factura_url'));
-    blank(3);
-  }
-
-  // ── Lavanderia ────────────────────────────────────────────────────────────
-  if (g('lavanderia_guion') || g('lavanderia_url')) {
-    txt('Lavanderia:', true, 9.5);
-    scriptBox(g('lavanderia_guion'));
-    urlTxt(g('lavanderia_url'));
-    blank(3);
-  }
-
-  // ── Room Service ──────────────────────────────────────────────────────────
-  if (g('rs_menu_guion') || g('rs_menu_url') || g('rs_ordenar_guion') || g('rs_ordenar_url')) {
-    txt('Room Service:', true, 9.5);
-    txt('Cuando el huesped quiera pedir Room Service:', false, 9, 50, 50, 60, 4);
-    scriptBox(g('rs_menu_guion'));
-    urlTxt(g('rs_menu_url'));
-    blank(1);
-    if (g('rs_ordenar_guion') || g('rs_ordenar_url')) {
-      txt('Cuando el huesped ya sabe lo que desea ordenar:', false, 9, 50, 50, 60, 4);
-      scriptBox(g('rs_ordenar_guion'));
-      urlTxt(g('rs_ordenar_url'));
-    }
-    blank(3);
-  }
-
-  // ── Alberca ───────────────────────────────────────────────────────────────
-  if (g('alberca_guion') || g('alberca_url')) {
-    txt('Alberca:', true, 9.5);
-    scriptBox(g('alberca_guion'));
-    urlTxt(g('alberca_url'));
-    blank(3);
-  }
-
-  // ── Estacionamiento ───────────────────────────────────────────────────────
-  var estacInfo = g('estac_info') || g('estacionamiento_info') || g('estac_nota');
-  var estacToggle = document.querySelector('[name="estac"]:checked') || document.querySelector('[name="estacionamiento"]:checked');
-  if (estacInfo || estacToggle) {
-    txt('Estacionamiento:', true, 9.5);
-    if (estacInfo) txt(estacInfo, false, 9, 40, 40, 50, 4);
-    blank(3);
-  }
-
-  // ── Mascotas ──────────────────────────────────────────────────────────────
-  var mascNota = g('mascota_nota') || g('mascota_info');
-  if (mascNota) {
-    txt('Mascotas:', true, 9.5);
-    txt(mascNota, false, 9, 40, 40, 50, 4);
-    blank(3);
-  }
-
-  // ── Servicios activos de la tabla .it-row ─────────────────────────────────
-  var servActivos = [];
-  document.querySelectorAll('#s9 .it-row').forEach(function(row) {
-    var cb = row.querySelector('input[type=checkbox]');
-    if (!cb || !cb.checked) return;
-    var sp = row.querySelector('span:first-child');
-    if (!sp) return;
-    var name = sp.textContent.trim();
-    var inps = row.querySelectorAll('input[type=text]');
-    var parts = [name];
-    var labels = ['Horario','Costo','Notas'];
-    inps.forEach(function(inp, i) { if (inp.value.trim()) parts.push(labels[i]+': '+inp.value.trim()); });
-    servActivos.push(parts.join(' | '));
-  });
-  if (servActivos.length) {
-    txt('Otros servicios disponibles:', true, 9, 55, 55, 65);
-    servActivos.forEach(function(s) { txt(s, false, 9, 40, 40, 50, 4); });
-    blank(3);
-  }
-
-  // ── Directorio de contactos externos (s15) ────────────────────────────────
-  var dirExt = [];
-  document.querySelectorAll('#s15 .dir-row').forEach(function(row) {
-    var inps = row.querySelectorAll('input');
-    var n = inps[0]?inps[0].value.trim():'', p = inps[1]?inps[1].value.trim():'', t = inps[2]?inps[2].value.trim():'';
-    if (!n && !t) return;
-    dirExt.push([n, p, t?'Tel: '+t:''].filter(Boolean).join(' — '));
-  });
-  if (dirExt.length) {
-    txt('Directorio de servicios externos:', true, 9, 55, 55, 65);
-    dirExt.forEach(function(d) { txt(d, false, 9, 40, 40, 50, 4); });
-    blank(3);
-  }
-
-  sep();
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // POLITICAS
-  // ══════════════════════════════════════════════════════════════════════════
-  var polFields = [
-    { name: 'pol_hospedaje',   label: 'Politica de hospedaje' },
-    { name: 'pol_cancelacion', label: 'Politica de cancelacion' },
-    { name: 'aviso_privacidad',label: 'Aviso de privacidad' },
-    { name: 'politica_url',    label: 'Politicas generales' },
-  ];
-  var polActivas = polFields.filter(function(pf){ return g(pf.name); });
-  if (polActivas.length) {
-    secHeader('POLITICAS Y REGLAMENTOS', 75, 85, 99);
-    polActivas.forEach(function(pf) {
-      txt(pf.label + ':', true, 9);
-      var val = g(pf.name);
-      if (val.startsWith('http')) { urlTxt(val); } else { txt(val, false, 9, 40, 40, 50, 4); }
-      blank(2);
-    });
-    sep();
-  }
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // HORARIOS
-  // ══════════════════════════════════════════════════════════════════════════
-  secHeader('HORARIOS');
-
-  var horarios = [];
-  if (g('hotel_checkin') || g('hotel_checkout')) {
-    horarios.push('Check-in: ' + (g('hotel_checkin')||'—') + ' | Check-out: ' + (g('hotel_checkout')||'—') + ' | Recepcion: 24hrs');
-  }
-  if (g('desayuno_horario'))     horarios.push('Cafeteria/Desayuno: ' + g('desayuno_horario'));
-  if (g('rest_hor_desay'))       horarios.push('Room Service: ' + g('rest_hor_desay'));
-
-  // Servicios con horario de la tabla it-row
-  document.querySelectorAll('#s9 .it-row').forEach(function(row) {
-    var cb = row.querySelector('input[type=checkbox]');
-    if (!cb || !cb.checked) return;
-    var sp = row.querySelector('span:first-child');
-    var h  = row.querySelectorAll('input[type=text]')[0];
-    if (sp && h && h.value.trim()) {
-      horarios.push(sp.textContent.trim() + ': ' + h.value.trim());
-    }
-  });
-
-  if (horarios.length) {
-    horarios.forEach(function(h) { bullet(h); });
-  } else {
-    txt('(Horarios no ingresados)', false, 9, 150, 150, 155);
-  }
-  blank(2);
-
-  sep();
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // ATENCION A INCIDENTES
-  // ══════════════════════════════════════════════════════════════════════════
-  secHeader('ATENCION A INCIDENTES', 146, 64, 14);
-
-  var incidentes = [
-    { label: 'Fallas / Mantenimiento', guion: 'fallas_guion',   url: 'fallas_url' },
-    { label: 'Quejas',                 guion: 'quejas_guion',   url: 'quejas_url' },
-    { label: 'Sugerencias',            guion: 'sugerencias_guion', url: 'sugerencias_url' },
-  ];
-  incidentes.forEach(function(inc) {
-    var gv = g(inc.guion), uv = g(inc.url);
-    if (!gv && !uv) return;
-    txt(inc.label + ':', true, 9.5);
-    scriptBox(gv);
-    urlTxt(uv);
-    blank(2);
-  });
-
-  sep();
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // CONTACTO
-  // ══════════════════════════════════════════════════════════════════════════
-  secHeader('CONTACTO');
-
-  var contactos = [
-    { label: 'Recepcion', fields: ['hotel_email_reservas','email_reservas'] },
-    { label: 'Ventas / Admin', fields: ['hotel_email_admin','email_admin'] },
-    { label: 'Telefono', fields: ['hotel_telefono'] },
-    { label: 'WhatsApp Jaime', fields: ['jaime_whatsapp'] },
-  ];
-  contactos.forEach(function(c) {
-    var val = c.fields.map(g).filter(Boolean)[0] || '';
-    if (val) rowLabel(c.label, val);
-  });
-  blank(2);
-
-  sep();
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // LINEAMIENTOS
-  // ══════════════════════════════════════════════════════════════════════════
-  secHeader('LINEAMIENTOS');
-
-  var lineamientos = [
-    'Actuar como un concierge muy amable y profesional, saluda siempre',
-    'Priorizar respuestas con link directo al servicio',
-    'Responder claro y rapido',
-    'Ser amable y directo',
-    'No inventar informacion',
-    'Escalar a recepcion cuando no se tenga la respuesta',
-  ];
-  lineamientos.forEach(function(l) { bullet(l); });
-  blank(2);
-
-  sep();
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // RESTRICCIONES
-  // ══════════════════════════════════════════════════════════════════════════
-  secHeader('RESTRICCIONES', 146, 64, 14);
-
-  var restricciones = [
-    'No compartir datos internos del hotel',
-    'No compartir numeros de habitacion ni pisos (solo para validar solicitudes/fallas)',
-    'NO confirmar disponibilidad en tiempo real — redirigir siempre al motor de reservas',
-    'Lo que no sepas — escalar a recepcion',
-    'No inventar informacion',
-    'NUNCA compartir nombres de huespedes ni conversaciones con otros huespedes',
-    'Siempre mostrar la URL en servicios que la tengan',
-    'Urgencias CRITICAS — escalar a recepcion de inmediato',
-  ];
-  restricciones.forEach(function(r) { bullet(r); });
-  blank(2);
-
-  sep();
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // REDES SOCIALES
-  // ══════════════════════════════════════════════════════════════════════════
-  txt('REDES SOCIALES', true, 9.5, 30, 58, 95);
-  blank(1);
-  var redes = [
-    { label: 'Reservaciones', field: 'hotel_motor' },
-    { label: 'Facebook',      field: 'hotel_facebook' },
-    { label: 'Instagram',     field: 'hotel_instagram' },
-  ];
-  redes.forEach(function(r) {
-    var val = g(r.field);
-    if (!val) return;
-    txt(r.label + ':', false, 9, 60, 60, 65);
-    y -= 4.5;
-    doc.setFontSize(9); doc.setFont('helvetica', 'normal');
-    var lw = doc.getTextWidth(r.label + ':  ');
-    doc.setTextColor(14, 100, 200);
-    var lns = doc.splitTextToSize(val, aw - lw - 4);
-    chk(lns.length * 3.9 + 1);
-    doc.text(lns, mg + 4 + lw, y);
-    y += lns.length * 3.9 + 1.5;
-  });
-
-  // ── Paginacion ───────────────────────────────────────────────────────────
-  var tot = doc.internal.getNumberOfPages();
-  for (var p = 1; p <= tot; p++) {
-    doc.setPage(p);
-    doc.setFontSize(7.5); doc.setTextColor(160, 160, 165); doc.setFont('helvetica', 'normal');
-    doc.text('Pagina ' + p + ' de ' + tot, pW / 2, 292, { align: 'center' });
-    doc.text('Jaime — Contexto ManyChat', mg, 292);
-  }
-
-  doc.save('Contexto_ManyChat_' + nombre.replace(/[^a-zA-Z0-9\s]/g,'').replace(/\s+/g,'_') + '.pdf');
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BARRA DE PROGRESO POR SECCION (scroll-spy)
+   ═══════════════════════════════════════════════════════════════════════ */
+(function () {
+  var SECTIONS = [
+    'Identidad del hotel', 'Contacto y ubicacion', 'Check-in y Check-out',
+    'Habitaciones', 'WiFi', 'Desayuno', 'Restaurante / A&B', 'Estacionamiento',
+    'Instalaciones', 'Salones y eventos', 'Politicas', 'Metodos de pago',
+    'Integracion operativa', 'Preguntas frecuentes', 'Directorio interno'
+  ];
+  var label = document.getElementById('sectionProgressLabel');
+  var title = document.getElementById('sectionProgressTitle');
+  var fill  = document.getElementById('sectionProgressFill');
+  if (!label || !title || !fill) return;
+
+  var sectionEls = [];
+  for (var i = 1; i <= 15; i++) {
+    var el = document.getElementById('s' + i);
+    if (el) sectionEls.push({ idx: i, el: el });
+  }
+
+  function update() {
+    var refY = window.innerHeight * 0.3;
+    var current = sectionEls[0];
+    for (var i = 0; i < sectionEls.length; i++) {
+      var rect = sectionEls[i].el.getBoundingClientRect();
+      if (rect.top <= refY) current = sectionEls[i];
+    }
+    if (!current) return;
+    label.textContent = 'Seccion ' + current.idx + ' de 15';
+    title.textContent = SECTIONS[current.idx - 1] || '';
+    fill.style.width = ((current.idx / 15) * 100).toFixed(1) + '%';
+  }
+
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  setTimeout(update, 300);
+})();
 </script>
 
 </body>
