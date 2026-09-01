@@ -83,14 +83,15 @@
     .concept-head { padding:14px 20px; display:flex; align-items:center; gap:12px; cursor:pointer; border-bottom:1px solid var(--gray-100); }
     .concept-head:hover { background:var(--gray-50); }
     .concept-icon { width:34px; height:34px; border-radius:8px; background:rgba(27,60,107,.08); color:var(--navy); display:flex; align-items:center; justify-content:center; font-size:.9rem; flex-shrink:0; }
-    .concept-title { flex:1; font-size:.88rem; font-weight:600; color:var(--navy-dark); }
-    .concept-badge { font-size:.7rem; font-weight:600; padding:3px 10px; border-radius:50px; background:var(--gray-100); color:var(--gray-500); }
+    .concept-title { flex:1; min-width:0; font-size:.88rem; font-weight:600; color:var(--navy-dark); overflow-wrap:break-word; }
+    .concept-badge { flex-shrink:0; font-size:.7rem; font-weight:600; padding:3px 10px; border-radius:50px; background:var(--gray-100); color:var(--gray-500); white-space:nowrap; }
     .concept-badge.saved { background:var(--green-lt); color:var(--green); }
     .concept-chevron { color:var(--gray-400); transition:transform .2s; }
     .concept-chevron.open { transform:rotate(180deg); }
     .concept-body { display:none; padding:18px 20px; }
     .concept-body.open { display:block; }
-    .field-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:10px; margin-bottom:14px; }
+    .field-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:10px; margin-bottom:14px; min-width:0; }
+    .fg input { min-width:0; }
     .list-item { border:1px solid var(--gray-200); border-radius:8px; padding:14px; margin-bottom:10px; position:relative; background:var(--gray-50); }
     .list-item .remove-item { position:absolute; top:8px; right:8px; background:none; border:none; color:var(--gray-400); cursor:pointer; }
     .list-item .remove-item:hover { color:var(--red); }
@@ -110,10 +111,16 @@
     .btn-download.secondary { background:white; color:var(--navy); border:1.5px solid var(--gray-200); }
 
     .ficha-report h3 { font-family:'Plus Jakarta Sans',sans-serif; font-size:1rem; color:var(--navy-dark); margin:18px 0 8px; padding-bottom:6px; border-bottom:2px solid var(--gray-100); }
-    .ficha-report .kv { font-size:.82rem; margin-bottom:4px; }
+    .ficha-report .kv { font-size:.82rem; margin-bottom:4px; overflow-wrap:break-word; word-break:break-word; }
     .ficha-report .kv b { color:var(--gray-700); }
-    .ficha-report .item-block { padding:8px 0; border-bottom:1px dashed var(--gray-200); }
+    .ficha-report .item-block { padding:8px 0; border-bottom:1px dashed var(--gray-200); overflow-wrap:break-word; word-break:break-word; }
     .ficha-report .empty { color:var(--gray-400); font-style:italic; font-size:.8rem; }
+
+    .save-all-bar { display:flex; align-items:center; gap:14px; margin-bottom:16px; padding:14px 18px; background:white; border:1px solid var(--gray-200); border-radius:var(--radius); flex-wrap:wrap; }
+    .btn-save-all { padding:10px 22px; background:var(--gold); color:white; border:none; border-radius:8px; font-size:.85rem; font-weight:700; cursor:pointer; flex-shrink:0; }
+    .btn-save-all:hover { background:#B45309; }
+    .btn-save-all:disabled { opacity:.6; cursor:not-allowed; }
+    .save-all-status { font-size:.8rem; color:var(--gray-500); }
   </style>
 </head>
 <body>
@@ -185,6 +192,10 @@
   <!-- STEP 2: RESULTS BY CONCEPT -->
   <div id="results-section">
     <div class="step-label"><div class="num">2</div><span>Revisar, editar y guardar por concepto</span></div>
+    <div class="save-all-bar">
+      <button class="btn-save-all" id="btnGuardarTodo" onclick="guardarTodasSecciones()"><i class="fa-solid fa-cloud-arrow-up"></i> Guardar todas las secciones con información</button>
+      <span class="save-all-status" id="saveAllStatus">Revisa cada sección abajo antes de guardar — puedes editar cualquier campo primero.</span>
+    </div>
     <div id="conceptSections"></div>
   </div>
 
@@ -496,6 +507,21 @@ function toggleConcept(head) {
   chevron.classList.toggle('open');
 }
 
+function isEmptyData(v) {
+  if (Array.isArray(v)) return v.length === 0 || v.every(item => isEmptyData(item));
+  if (v && typeof v === 'object') return Object.values(v).every(x => x === null || x === undefined || x === '');
+  return v === null || v === undefined || v === '';
+}
+
+async function saveSectionData(hotelId, nombre, conceptId) {
+  const res = await fetch(SAVE_URL, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ hotel_id: hotelId, nombre: nombre, seccion: conceptId, datos: extractedData[conceptId] })
+  });
+  if (!res.ok) throw new Error('Error ' + res.status);
+  return res.json();
+}
+
 async function guardarSeccion(conceptId, btn) {
   const hotelId = document.getElementById('hotelId').value.trim();
   const nombre  = document.getElementById('hotelNombre').value.trim();
@@ -506,12 +532,7 @@ async function guardarSeccion(conceptId, btn) {
   btn.disabled = true;
   statusEl.textContent = 'Guardando…'; statusEl.className = 'save-status';
   try {
-    const res = await fetch(SAVE_URL, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ hotel_id: hotelId, nombre: nombre, seccion: conceptId, datos: extractedData[conceptId] })
-    });
-    if (!res.ok) throw new Error('Error ' + res.status);
-    await res.json();
+    await saveSectionData(hotelId, nombre, conceptId);
     statusEl.textContent = 'Guardado ✓'; statusEl.className = 'save-status ok';
     badgeEl.textContent = 'guardado'; badgeEl.classList.add('saved');
   } catch (err) {
@@ -519,6 +540,37 @@ async function guardarSeccion(conceptId, btn) {
   } finally {
     btn.disabled = false;
   }
+}
+
+async function guardarTodasSecciones() {
+  const hotelId = document.getElementById('hotelId').value.trim();
+  const nombre  = document.getElementById('hotelNombre').value.trim();
+  const btnAll  = document.getElementById('btnGuardarTodo');
+  const statusAll = document.getElementById('saveAllStatus');
+  if (!hotelId) { showError('Falta el ID del hotel.'); return; }
+
+  const conceptsToSave = CONCEPTS.filter(c => !isEmptyData(extractedData[c.id]));
+  if (!conceptsToSave.length) { statusAll.textContent = 'No hay secciones con información para guardar.'; return; }
+
+  btnAll.disabled = true;
+  let ok = 0, fail = 0;
+  for (const concept of conceptsToSave) {
+    const statusEl = document.getElementById('status-' + concept.id);
+    const badgeEl  = document.getElementById('badge-' + concept.id);
+    if (statusEl) { statusEl.textContent = 'Guardando…'; statusEl.className = 'save-status'; }
+    statusAll.textContent = `Guardando ${ok + fail + 1}/${conceptsToSave.length}: ${concept.label}…`;
+    try {
+      await saveSectionData(hotelId, nombre, concept.id);
+      ok++;
+      if (statusEl) { statusEl.textContent = 'Guardado ✓'; statusEl.className = 'save-status ok'; }
+      if (badgeEl) { badgeEl.textContent = 'guardado'; badgeEl.classList.add('saved'); }
+    } catch (err) {
+      fail++;
+      if (statusEl) { statusEl.textContent = 'Error: ' + err.message; statusEl.className = 'save-status err'; }
+    }
+  }
+  statusAll.textContent = `Listo: ${ok} sección(es) guardada(s)` + (fail ? `, ${fail} con error.` : '.');
+  btnAll.disabled = false;
 }
 
 // ─── PASO 3: Ficha completa ──────────────────────────────────────────────────
