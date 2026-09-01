@@ -707,6 +707,15 @@ function descargarFichaJSON() {
   a.click();
 }
 
+(function initFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const hid = params.get('hotel_id');
+  if (hid) {
+    document.getElementById('hotelId').value = hid;
+    cargarFichaCompleta();
+  }
+})();
+
 function descargarFichaPDF() {
   if (!fichaCargada) return;
   const { jsPDF } = window.jspdf;
