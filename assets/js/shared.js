@@ -165,10 +165,6 @@
 
       // ── Footer ──
       '<div class="j-sidebar-footer">' +
-        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
-          '<img src="/assets/img/logo-hospitalidad-digital.png" alt="Hospitalidad Digital" style="width:22px;height:22px;object-fit:contain;flex-shrink:0;">' +
-          '<span style="font-size:10.5px;color:rgba(255,255,255,.4);line-height:1.3;">Un producto de<br><strong style="color:rgba(255,255,255,.65);">Hospitalidad Digital</strong></span>' +
-        '</div>' +
         '<div style="font-size:10px;color:rgba(255,255,255,.2);line-height:1.6;">' +
           'JAIME_HMV2 · v2.1<br>' +
           '<a href="https://wa.me/524421314203" style="color:rgba(255,255,255,.3);text-decoration:none;transition:color .15s" ' +
@@ -260,8 +256,67 @@
 
       /* Print overrides */
       '@media print{.j-sidebar,#j-topbar,#j-overlay{display:none!important;}#j-content{margin-left:0!important;}}',
+
+      /* Site footer (mismo diseño que sitio-coanfitriones/Footer.jsx) */
+      '.j-site-footer{background:#1a1a2e;color:#c6c4df;padding:48px 0 26px;margin-top:auto;}',
+      '.j-foot-wrap{max-width:1140px;margin:0 auto;padding:0 24px;}',
+      '.j-foot-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:38px;padding-bottom:30px;border-bottom:1px solid rgba(255,255,255,.1);}',
+      '.j-foot-brand{display:flex;align-items:center;gap:.6rem;color:#fff;margin-bottom:14px;font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:1.15rem;}',
+      '.j-foot-brand small{display:block;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:#7af7e8;}',
+      '.j-foot-about{font-size:.86rem;line-height:1.6;max-width:36ch;color:#a8a6bf;margin:0 0 14px;}',
+      '.j-foot-social{display:flex;gap:12px;}',
+      '.j-foot-social a{color:#c6c4df;transition:color .2s;}',
+      '.j-foot-social a:hover{color:#7af7e8;}',
+      '.j-site-footer h5{color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;margin:0 0 14px;}',
+      '.j-foot-contact{list-style:none;padding:0;margin:0;display:grid;gap:9px;}',
+      '.j-foot-contact li{font-size:.86rem;color:#c6c4df;}',
+      '.j-foot-contact a{color:#c6c4df;text-decoration:none;transition:color .2s;}',
+      '.j-foot-contact a:hover{color:#7af7e8;}',
+      '.j-foot-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:20px;font-size:.8rem;color:#a8a6bf;flex-wrap:wrap;gap:10px;}',
+      '@media(max-width:640px){.j-foot-grid{grid-template-columns:1fr;}}',
     ].join('');
     document.head.appendChild(style);
+
+    if (!document.getElementById('j-fraunces-font')) {
+      var fontLink = document.createElement('link');
+      fontLink.id = 'j-fraunces-font';
+      fontLink.rel = 'stylesheet';
+      fontLink.href = 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&display=swap';
+      document.head.appendChild(fontLink);
+    }
+  }
+
+  // ── Site footer (Hospitalidad Digital / Coanfitriones México) ────────────
+  function buildSiteFooter() {
+    var year = new Date().getFullYear();
+    return '<footer class="j-site-footer"><div class="j-foot-wrap">' +
+      '<div class="j-foot-grid">' +
+        '<div>' +
+          '<div class="j-foot-brand">' +
+            '<img src="/assets/img/logo-hospitalidad-digital.png" alt="Hospitalidad Digital" style="width:34px;height:34px;object-fit:contain;">' +
+            '<span>Hospitalidad Digital<small>Coanfitriones México</small></span>' +
+          '</div>' +
+          '<p class="j-foot-about">Jaime es el chatbot de atención a huéspedes para hoteles, parte del ecosistema de productos de Hospitalidad Digital.</p>' +
+          '<div class="j-foot-social">' +
+            '<a href="https://www.facebook.com/profile.php?id=61589370402861&locale=es_LA" target="_blank" rel="noopener" aria-label="Facebook"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-1.7 0-3 1.3-3 3v2H9v3h2v6h3v-6h2.5l.5-3H14V9z"/></svg></a>' +
+            '<a href="https://www.youtube.com/channel/UCqOjO3Ci3wxENiiKznIv2tg" target="_blank" rel="noopener" aria-label="YouTube"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M22 8.2a3 3 0 0 0-2.1-2.1C18 5.6 12 5.6 12 5.6s-6 0-7.9.5A3 3 0 0 0 2 8.2 31 31 0 0 0 1.6 12 31 31 0 0 0 2 15.8a3 3 0 0 0 2.1 2.1c1.9.5 7.9.5 7.9.5s6 0 7.9-.5a3 3 0 0 0 2.1-2.1c.3-1.9.4-3.8.4-3.8s0-1.9-.4-3.8zM10 15V9l5 3z"/></svg></a>' +
+            '<a href="https://www.linkedin.com/in/ricardo-pe%C3%B1a-covarrubias-7aa958236" target="_blank" rel="noopener" aria-label="LinkedIn"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.11 1 2.48 1 4.98 2.12 4.98 3.5zM.5 8h4V23h-4V8zM8.5 8h3.8v2.05h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V23h-4v-6.9c0-1.65-.03-3.77-2.3-3.77-2.3 0-2.65 1.8-2.65 3.65V23h-4V8z"/></svg></a>' +
+          '</div>' +
+        '</div>' +
+        '<div>' +
+          '<h5>Contacto</h5>' +
+          '<ul class="j-foot-contact">' +
+            '<li>Querétaro, Qro., México</li>' +
+            '<li><a href="mailto:hola@coanfitrionesmexico.com.mx">hola@coanfitrionesmexico.com.mx</a></li>' +
+            '<li><a href="https://wa.me/524421851478" target="_blank" rel="noopener">WhatsApp: 442 185 1478</a></li>' +
+          '</ul>' +
+        '</div>' +
+      '</div>' +
+      '<div class="j-foot-bottom">' +
+        '<span>© ' + year + ' Hospitalidad Digital · Todos los derechos reservados.</span>' +
+        '<span><a href="#">Política de privacidad</a> · <a href="#">Términos de uso</a></span>' +
+      '</div>' +
+    '</div></footer>';
   }
 
 
@@ -318,6 +373,12 @@
     while (document.body.children.length > 2) { // only sidebar, overlay left on body
       content.appendChild(document.body.children[2]);
     }
+
+    // Site footer (Hospitalidad Digital)
+    var footerEl = document.createElement('div');
+    footerEl.innerHTML = buildSiteFooter();
+    content.appendChild(footerEl.firstElementChild);
+
     document.body.appendChild(content);
 
     // Remove old fixed nav if present (pages that still have one)
