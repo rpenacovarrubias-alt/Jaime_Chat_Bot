@@ -68,6 +68,39 @@
     '</details>';
   }
 
+  // ── Hoteles V2 (Postgres, vía webhook) ────────────────────────────────────
+  var V2_HOTELS_URL = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-listar-hoteles';
+
+  function buildV2HotelGroup(h) {
+    var initials = makeInitials(h.nombre || h.hotel_id);
+    var idQ = encodeURIComponent(h.hotel_id);
+    var extractorHref = '/extractor/?hotel_id=' + idQ;
+    var isOpenAttr = isActive('/extractor/') ? ' open' : '';
+
+    return '<details class="j-hotel-group"' + isOpenAttr + '>' +
+      '<summary class="j-hotel-summary">' +
+        '<span class="j-hotel-badge">' + escHtml(initials) + '</span>' +
+        '<span class="j-nav-label" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(h.nombre || h.hotel_id) + '</span>' +
+        '<span class="material-symbols-outlined j-hotel-chevron" style="font-size:18px;">expand_more</span>' +
+      '</summary>' +
+      '<div class="j-hotel-submenu">' +
+        '<p class="j-submenu-cat">Ficha (Jaime v2)</p>' +
+        '<a class="j-submenu-item" href="' + extractorHref + '">Ver / Editar</a>' +
+      '</div>' +
+    '</details>';
+  }
+
+  function loadV2Hotels() {
+    fetch(V2_HOTELS_URL)
+      .then(function (r) { return r.json(); })
+      .then(function (list) {
+        var el = document.getElementById('j-hotel-list-v2');
+        if (!el || !Array.isArray(list)) return;
+        el.innerHTML = list.map(buildV2HotelGroup).join('');
+      })
+      .catch(function () { /* silencioso: no bloquea el resto del sidebar si n8n no responde */ });
+  }
+
   function buildSidebar() {
     var hotels = getDynamicHotels();
     var hotelGroups = hotels.map(buildHotelGroup).join('');
@@ -121,7 +154,8 @@
 
         '<div class="j-nav-group">' +
           '<p class="j-nav-section-label">Hoteles Implementados</p>' +
-          hotelGroups +
+          '<div id="j-hotel-list-v1">' + hotelGroups + '</div>' +
+          '<div id="j-hotel-list-v2"></div>' +
           '<button onclick="window.location.href=\'/plantillas/FORMULARIO_ONBOARDING_HOTEL.html?nuevo=1\'" class="j-nav-item j-add-hotel-btn">' +
             '<span class="material-symbols-outlined j-nav-icon">add_circle</span>Agregar hotel nuevo' +
           '</button>' +
@@ -131,6 +165,10 @@
 
       // ── Footer ──
       '<div class="j-sidebar-footer">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
+          '<img src="/assets/img/logo-hospitalidad-digital.png" alt="Hospitalidad Digital" style="width:22px;height:22px;object-fit:contain;flex-shrink:0;">' +
+          '<span style="font-size:10.5px;color:rgba(255,255,255,.4);line-height:1.3;">Un producto de<br><strong style="color:rgba(255,255,255,.65);">Hospitalidad Digital</strong></span>' +
+        '</div>' +
         '<div style="font-size:10px;color:rgba(255,255,255,.2);line-height:1.6;">' +
           'JAIME_HMV2 · v2.1<br>' +
           '<a href="https://wa.me/524421314203" style="color:rgba(255,255,255,.3);text-decoration:none;transition:color .15s" ' +
@@ -285,6 +323,8 @@
     // Remove old fixed nav if present (pages that still have one)
     var oldNav = document.querySelector('nav[class*="fixed top-0"]');
     if (oldNav && !oldNav.id) oldNav.remove();
+
+    loadV2Hotels();
   }
 
   function open() {
