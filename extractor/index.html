@@ -116,6 +116,19 @@
     .ficha-report .kv b { color:var(--gray-700); }
     .ficha-report .item-block { padding:8px 0; border-bottom:1px dashed var(--gray-200); overflow-wrap:break-word; word-break:break-word; }
     .ficha-report .empty { color:var(--gray-400); font-style:italic; font-size:.8rem; }
+    .ficha-report .missing { color:var(--red); font-size:.78rem; margin:2px 0; }
+    .ficha-report .missing b { font-weight:600; }
+    .ficha-report .concept-block { margin-bottom:22px; padding-bottom:18px; border-bottom:1px solid var(--gray-100); }
+    .nota-box { margin-top:12px; }
+    .nota-box label { display:block; font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--gray-500); margin-bottom:5px; }
+    .nota-box textarea { width:100%; min-height:64px; padding:10px 12px; border:1.5px solid var(--gray-200); border-radius:8px; font-family:'Inter',sans-serif; font-size:.82rem; color:var(--gray-700); resize:vertical; }
+    .nota-actions { display:flex; align-items:center; gap:10px; margin-top:6px; }
+    .btn-save-nota { padding:6px 16px; background:var(--navy); color:white; border:none; border-radius:8px; font-size:.78rem; font-weight:700; cursor:pointer; }
+    .btn-save-nota:hover { background:var(--navy-light); }
+    .btn-save-nota:disabled { opacity:.5; cursor:not-allowed; }
+    .nota-status { font-size:.76rem; color:var(--gray-500); }
+    .nota-status.ok { color:var(--green); }
+    .nota-status.err { color:var(--red); }
 
     .save-all-bar { display:flex; align-items:center; gap:14px; margin-bottom:16px; padding:14px 18px; background:white; border:1px solid var(--gray-200); border-radius:var(--radius); flex-wrap:wrap; }
     .btn-save-all { padding:10px 22px; background:var(--gold); color:white; border:none; border-radius:8px; font-size:.85rem; font-weight:700; cursor:pointer; flex-shrink:0; }
@@ -220,6 +233,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 
 const SAVE_URL = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-guardar-ficha';
 const GET_URL  = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-obtener-ficha';
+const NOTE_URL = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-guardar-nota';
 
 // ─── 19 conceptos (debe coincidir con /api/analyze-v2 y hoteles.ficha) ──────
 const CONCEPTS = [
@@ -590,37 +604,98 @@ async function cargarFichaCompleta() {
   }
 }
 
+function missingFields(concept, val) {
+  if (concept.tipo !== 'objeto') return [];
+  const data = val || {};
+  return concept.campos.filter(f => !data[f.key]).map(f => f.label);
+}
+
 function renderFichaReport(data) {
   const el = document.getElementById('fichaReport');
   const ficha = data.ficha || {};
-  let html = `<h2 style="font-family:'Plus Jakarta Sans',sans-serif;">${escHtml(data.nombre || data.hotel_id || 'Hotel')}</h2>`;
-  html += `<p class="empty">Última actualización: ${data.updated_at ? new Date(data.updated_at).toLocaleString('es-MX') : '—'}</p>`;
+  const notas = data.notas_generales || {};
+  el.innerHTML = '';
+
+  const header = document.createElement('div');
+  header.innerHTML = `<h2 style="font-family:'Plus Jakarta Sans',sans-serif;">${escHtml(data.nombre || data.hotel_id || 'Hotel')}</h2>` +
+    `<p class="empty">Última actualización: ${data.updated_at ? new Date(data.updated_at).toLocaleString('es-MX') : '—'}</p>`;
+  el.appendChild(header);
 
   CONCEPTS.filter(c => c.id !== 'directorio_escalamiento').forEach(concept => {
     const val = ficha[concept.id];
-    html += `<h3>${escHtml(concept.label)}</h3>`;
+    const block = document.createElement('div');
+    block.className = 'concept-block';
+    let bodyHtml = `<h3>${escHtml(concept.label)}</h3>`;
+
     if (concept.tipo === 'objeto') {
-      const entries = Object.entries(val || {}).filter(([,v]) => v);
-      if (!entries.length) { html += `<div class="empty">Sin información guardada.</div>`; return; }
-      entries.forEach(([k, v]) => {
-        const label = (concept.campos.find(f => f.key === k) || {}).label || k;
-        html += `<div class="kv"><b>${escHtml(label)}:</b> ${escHtml(v)}</div>`;
-      });
+      const data2 = val || {};
+      const entries = Object.entries(data2).filter(([,v]) => v);
+      if (!entries.length) {
+        bodyHtml += `<div class="empty">Sin información guardada.</div>`;
+      } else {
+        entries.forEach(([k, v]) => {
+          const label = (concept.campos.find(f => f.key === k) || {}).label || k;
+          bodyHtml += `<div class="kv"><b>${escHtml(label)}:</b> ${escHtml(v)}</div>`;
+        });
+      }
+      const faltan = missingFields(concept, val);
+      if (faltan.length) {
+        bodyHtml += `<div class="missing"><b>Faltan:</b> ${escHtml(faltan.join(', '))}</div>`;
+      }
     } else {
       const items = Array.isArray(val) ? val : [];
-      if (!items.length) { html += `<div class="empty">Sin elementos guardados.</div>`; return; }
-      items.forEach(item => {
-        html += `<div class="item-block">` + concept.campos.map(f => item[f.key] ? `<div class="kv"><b>${escHtml(f.label)}:</b> ${escHtml(item[f.key])}</div>` : '').join('') + `</div>`;
-      });
+      if (!items.length) {
+        bodyHtml += `<div class="empty">Sin elementos guardados.</div>`;
+      } else {
+        items.forEach(item => {
+          bodyHtml += `<div class="item-block">` + concept.campos.map(f => item[f.key] ? `<div class="kv"><b>${escHtml(f.label)}:</b> ${escHtml(item[f.key])}</div>` : '').join('') + `</div>`;
+        });
+      }
     }
+    block.innerHTML = bodyHtml;
+
+    const notaBox = document.createElement('div');
+    notaBox.className = 'nota-box';
+    notaBox.innerHTML = `<label>Notas adicionales (${escHtml(concept.label)})</label>` +
+      `<textarea placeholder="Ej. cuántos pisos tiene, numeración de habitaciones, detalles que no caben arriba…">${escHtml(notas[concept.id] || '')}</textarea>` +
+      `<div class="nota-actions"><button class="btn-save-nota">Guardar nota</button><span class="nota-status"></span></div>`;
+    const textarea = notaBox.querySelector('textarea');
+    const statusEl = notaBox.querySelector('.nota-status');
+    notaBox.querySelector('.btn-save-nota').addEventListener('click', function () {
+      guardarNota(data.hotel_id, concept.id, textarea.value, this, statusEl);
+    });
+    block.appendChild(notaBox);
+
+    el.appendChild(block);
   });
 
-  html += `<h3>Directorio de Escalamiento</h3>`;
+  const dirBlock = document.createElement('div');
+  dirBlock.className = 'concept-block';
+  let dirHtml = `<h3>Directorio de Escalamiento</h3>`;
   const dir = data.directorio_escalamiento || [];
-  if (!dir.length) html += `<div class="empty">Sin directorio guardado.</div>`;
-  else dir.forEach(d => { html += `<div class="item-block"><div class="kv"><b>${escHtml(d.nombre||'')}</b> — ${escHtml(d.puesto||'')} (${escHtml(d.departamento||'')})<br>WhatsApp: ${escHtml(d.whatsapp||'')} · Tipo: ${escHtml(d.tipo_solicitud||'')}</div></div>`; });
+  if (!dir.length) dirHtml += `<div class="empty">Sin directorio guardado.</div>`;
+  else dir.forEach(d => { dirHtml += `<div class="item-block"><div class="kv"><b>${escHtml(d.nombre||'')}</b> — ${escHtml(d.puesto||'')} (${escHtml(d.departamento||'')})<br>WhatsApp: ${escHtml(d.whatsapp||'')} · Tipo: ${escHtml(d.tipo_solicitud||'')}</div></div>`; });
+  dirBlock.innerHTML = dirHtml;
+  el.appendChild(dirBlock);
+}
 
-  el.innerHTML = html;
+async function guardarNota(hotelId, conceptId, nota, btn, statusEl) {
+  if (!hotelId) return;
+  btn.disabled = true;
+  statusEl.textContent = 'Guardando…'; statusEl.className = 'nota-status';
+  try {
+    const res = await fetch(NOTE_URL, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hotel_id: hotelId, concept_id: conceptId, nota: nota })
+    });
+    if (!res.ok) throw new Error('Error ' + res.status);
+    await res.json();
+    statusEl.textContent = 'Guardado ✓'; statusEl.className = 'nota-status ok';
+  } catch (err) {
+    statusEl.textContent = 'Error: ' + err.message; statusEl.className = 'nota-status err';
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 function descargarFichaJSON() {
@@ -648,6 +723,7 @@ function descargarFichaPDF() {
   line('Jaime v2 · ' + new Date().toLocaleDateString('es-MX'), 8);
   y += 4;
   const ficha = fichaCargada.ficha || {};
+  const notas = fichaCargada.notas_generales || {};
   CONCEPTS.filter(c => c.id !== 'directorio_escalamiento').forEach(concept => {
     line(concept.label.toUpperCase(), 10, true);
     const val = ficha[concept.id];
@@ -658,6 +734,8 @@ function descargarFichaPDF() {
         const label = (concept.campos.find(f => f.key === k) || {}).label || k;
         line(label + ': ' + v, 9);
       });
+      const faltan = missingFields(concept, val);
+      if (faltan.length) line('Faltan: ' + faltan.join(', '), 8);
     } else {
       const items = Array.isArray(val) ? val : [];
       if (!items.length) line('Sin elementos.', 9);
@@ -666,6 +744,7 @@ function descargarFichaPDF() {
         if (row) line('- ' + row, 9);
       });
     }
+    if (notas[concept.id]) line('Nota: ' + notas[concept.id], 8);
     y += 2;
   });
   doc.save(`ficha_${fichaCargada.hotel_id || 'hotel'}.pdf`);
