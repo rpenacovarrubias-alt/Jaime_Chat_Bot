@@ -118,6 +118,8 @@
     .ficha-report .empty { color:var(--gray-400); font-style:italic; font-size:.8rem; }
     .ficha-report .missing { color:var(--red); font-size:.78rem; margin:2px 0; }
     .ficha-report .missing b { font-weight:600; }
+    .ficha-report .have { color:var(--green); font-size:.78rem; margin:8px 0 2px; }
+    .ficha-report .have b { font-weight:600; }
     .ficha-report .concept-block { margin-bottom:22px; padding-bottom:18px; border-bottom:1px solid var(--gray-100); }
     .nota-box { margin-top:12px; }
     .nota-box label { display:block; font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--gray-500); margin-bottom:5px; }
@@ -407,6 +409,7 @@ async function analyze() {
     const data = await res.json();
     extractedData = data.fields || {};
     renderConceptSections();
+    if (urls.length) guardarFuentesUrls(urls);
     document.getElementById('progress-section').style.display = 'none';
     document.getElementById('results-section').style.display = 'block';
     document.getElementById('results-section').scrollIntoView({ behavior:'smooth', block:'start' });
@@ -528,6 +531,18 @@ function isEmptyData(v) {
   return v === null || v === undefined || v === '';
 }
 
+async function guardarFuentesUrls(urls) {
+  const hotelId = document.getElementById('hotelId').value.trim();
+  const nombre  = document.getElementById('hotelNombre').value.trim();
+  if (!hotelId) return;
+  try {
+    await fetch(SAVE_URL, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hotel_id: hotelId, nombre: nombre, seccion: 'fuentes_urls', datos: urls })
+    });
+  } catch (err) { /* no bloquea el flujo de analisis si esto falla */ }
+}
+
 async function saveSectionData(hotelId, nombre, conceptId) {
   const res = await fetch(SAVE_URL, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -598,10 +613,26 @@ async function cargarFichaCompleta() {
     const data = await res.json();
     fichaCargada = data;
     renderFichaReport(data);
+    prefillFuentesUrls(data.fuentes_urls);
     document.getElementById('ficha-completa-section').style.display = 'block';
   } catch (err) {
     showError('No se pudo cargar la ficha: ' + err.message);
   }
+}
+
+function prefillFuentesUrls(urls) {
+  if (!Array.isArray(urls) || !urls.length) return;
+  const inputs = [...document.querySelectorAll('.url-input')];
+  const allEmpty = inputs.every(i => !i.value.trim());
+  if (!allEmpty) return; // no pisar URLs que el usuario ya esta escribiendo para un analisis nuevo
+  const container = document.getElementById('urlList');
+  container.innerHTML = '';
+  urls.forEach(u => {
+    const row = document.createElement('div');
+    row.className = 'url-row';
+    row.innerHTML = `<input type="url" placeholder="https://…" class="url-input" value="${escHtml(u)}"><button class="btn-icon del" onclick="removeUrl(this)"><i class="fa-solid fa-xmark"></i></button>`;
+    container.appendChild(row);
+  });
 }
 
 function missingFields(concept, val) {
@@ -621,6 +652,16 @@ function renderFichaReport(data) {
     `<p class="empty">Última actualización: ${data.updated_at ? new Date(data.updated_at).toLocaleString('es-MX') : '—'}</p>`;
   el.appendChild(header);
 
+  const fuentes = Array.isArray(data.fuentes_urls) ? data.fuentes_urls : [];
+  const fuentesBlock = document.createElement('div');
+  fuentesBlock.className = 'concept-block';
+  fuentesBlock.innerHTML = `<h3>Fuentes consultadas</h3>` + (
+    fuentes.length
+      ? fuentes.map(u => `<div class="kv"><a href="${escHtml(u)}" target="_blank" rel="noopener">${escHtml(u)}</a></div>`).join('')
+      : `<div class="empty">Sin URLs registradas todavía (se guardan automáticamente cada vez que analizas con IA).</div>`
+  );
+  el.appendChild(fuentesBlock);
+
   CONCEPTS.filter(c => c.id !== 'directorio_escalamiento').forEach(concept => {
     const val = ficha[concept.id];
     const block = document.createElement('div');
@@ -633,6 +674,7 @@ function renderFichaReport(data) {
       if (!entries.length) {
         bodyHtml += `<div class="empty">Sin información guardada.</div>`;
       } else {
+        bodyHtml += `<div class="have"><b>Ya tenemos:</b></div>`;
         entries.forEach(([k, v]) => {
           const label = (concept.campos.find(f => f.key === k) || {}).label || k;
           bodyHtml += `<div class="kv"><b>${escHtml(label)}:</b> ${escHtml(v)}</div>`;
@@ -647,6 +689,7 @@ function renderFichaReport(data) {
       if (!items.length) {
         bodyHtml += `<div class="empty">Sin elementos guardados.</div>`;
       } else {
+        bodyHtml += `<div class="have"><b>Ya tenemos (${items.length}):</b></div>`;
         items.forEach(item => {
           bodyHtml += `<div class="item-block">` + concept.campos.map(f => item[f.key] ? `<div class="kv"><b>${escHtml(f.label)}:</b> ${escHtml(item[f.key])}</div>` : '').join('') + `</div>`;
         });
@@ -731,6 +774,12 @@ function descargarFichaPDF() {
   line('Ficha completa — ' + (fichaCargada.nombre || fichaCargada.hotel_id), 14, true);
   line('Jaime v2 · ' + new Date().toLocaleDateString('es-MX'), 8);
   y += 4;
+  const fuentes = Array.isArray(fichaCargada.fuentes_urls) ? fichaCargada.fuentes_urls : [];
+  if (fuentes.length) {
+    line('FUENTES CONSULTADAS', 10, true);
+    fuentes.forEach(u => line(u, 8));
+    y += 2;
+  }
   const ficha = fichaCargada.ficha || {};
   const notas = fichaCargada.notas_generales || {};
   CONCEPTS.filter(c => c.id !== 'directorio_escalamiento').forEach(concept => {
@@ -739,10 +788,13 @@ function descargarFichaPDF() {
     if (concept.tipo === 'objeto') {
       const entries = Object.entries(val || {}).filter(([,v]) => v);
       if (!entries.length) line('Sin información.', 9);
-      else entries.forEach(([k, v]) => {
-        const label = (concept.campos.find(f => f.key === k) || {}).label || k;
-        line(label + ': ' + v, 9);
-      });
+      else {
+        line('Ya tenemos:', 8, true);
+        entries.forEach(([k, v]) => {
+          const label = (concept.campos.find(f => f.key === k) || {}).label || k;
+          line(label + ': ' + v, 9);
+        });
+      }
       const faltan = missingFields(concept, val);
       if (faltan.length) line('Faltan: ' + faltan.join(', '), 8);
     } else {
