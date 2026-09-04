@@ -990,7 +990,7 @@ function renderFichaReport(data) {
 
     const notaBox = document.createElement('div');
     notaBox.className = 'nota-box';
-    notaBox.innerHTML = `<label>Notas adicionales (${escHtml(concept.label)}) — se agregan a "Texto adicional" arriba para que Jaime las aprenda</label>` +
+    notaBox.innerHTML = `<label>Notas adicionales (${escHtml(concept.label)}) — Guardar la analiza con IA y la aplica a la ficha al toque</label>` +
       `<textarea placeholder="Ej. cuántos pisos tiene, numeración de habitaciones, detalles que no caben arriba…">${escHtml(notas[concept.id] || '')}</textarea>` +
       `<div class="nota-actions"><button class="btn-save-nota">Guardar nota</button><span class="nota-status"></span></div>`;
     const textarea = notaBox.querySelector('textarea');
