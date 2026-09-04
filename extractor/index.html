@@ -509,6 +509,7 @@ async function analyze() {
     applyUrlTipoOverrides(urlEntries);
     renderConceptSections();
     if (urls.length) guardarFuentesUrls(urls);
+    if (text) document.getElementById('pasteText').value = ''; // ya se combino en extractedData, no dejarlo para reprocesar
     document.getElementById('progress-section').style.display = 'none';
     document.getElementById('results-section').style.display = 'block';
     document.getElementById('results-section').scrollIntoView({ behavior:'smooth', block:'start' });
@@ -826,7 +827,7 @@ function renderFichaReport(data) {
 
     const notaBox = document.createElement('div');
     notaBox.className = 'nota-box';
-    notaBox.innerHTML = `<label>Notas adicionales (${escHtml(concept.label)})</label>` +
+    notaBox.innerHTML = `<label>Notas adicionales (${escHtml(concept.label)}) — se agregan a "Texto adicional" arriba para que Jaime las aprenda</label>` +
       `<textarea placeholder="Ej. cuántos pisos tiene, numeración de habitaciones, detalles que no caben arriba…">${escHtml(notas[concept.id] || '')}</textarea>` +
       `<div class="nota-actions"><button class="btn-save-nota">Guardar nota</button><span class="nota-status"></span></div>`;
     const textarea = notaBox.querySelector('textarea');
@@ -860,12 +861,29 @@ async function guardarNota(hotelId, conceptId, nota, btn, statusEl) {
     });
     if (!res.ok) throw new Error('Error ' + res.status);
     await res.json();
-    statusEl.textContent = 'Guardado ✓'; statusEl.className = 'nota-status ok';
+    const agregada = appendNoteToPasteText(conceptId, nota);
+    statusEl.textContent = agregada ? 'Guardado ✓ (agregado a Texto para analizar)' : 'Guardado ✓';
+    statusEl.className = 'nota-status ok';
   } catch (err) {
     statusEl.textContent = 'Error: ' + err.message; statusEl.className = 'nota-status err';
   } finally {
     btn.disabled = false;
   }
+}
+
+// Las Notas por si solas nunca llegan a Jaime (no se analizan ni se reindexan en documentos_contexto).
+// Para que Jaime las pueda usar, el texto de la nota se agrega tambien a la caja de Texto adicional,
+// donde SI se manda a analizar con IA y de ahi pasa a la ficha/RAG. La nota en si se sigue guardando
+// igual (via NOTE_URL) como respaldo/registro humano.
+function appendNoteToPasteText(conceptId, nota) {
+  const texto = (nota || '').trim();
+  if (!texto) return false;
+  const label = (CONCEPTS.find(c => c.id === conceptId) || {}).label || conceptId;
+  const tagged = `[Nota - ${label}] ${texto}`;
+  const pasteEl = document.getElementById('pasteText');
+  if (pasteEl.value.includes(tagged)) return true; // ya esta, no duplicar
+  pasteEl.value = pasteEl.value ? `${pasteEl.value}\n\n${tagged}` : tagged;
+  return true;
 }
 
 function descargarFichaJSON() {
