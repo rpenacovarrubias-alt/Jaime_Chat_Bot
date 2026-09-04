@@ -243,6 +243,7 @@ const SAVE_URL = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-
 const GET_URL  = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-obtener-ficha';
 const NOTE_URL = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-guardar-nota';
 const REINDEX_URL = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-reindexar-seccion';
+const MINIO_UPLOAD_URL = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-subir-imagen';
 
 // ─── 19 conceptos (debe coincidir con /api/analyze-v2 y hoteles.ficha) ──────
 const CONCEPTS = [
@@ -480,11 +481,35 @@ async function handleFiles(files) {
 }
 const FILE_BADGE = { pdf:'PDF', docx:'Word', jpg:'Imagen', jpeg:'Imagen', png:'Imagen', webp:'Imagen', gif:'Imagen', txt:'Texto', md:'Texto', csv:'Texto', json:'Texto' };
 
+// Sube la imagen ya comprimida a MinIO (via n8n) para que el payload que le llega a Vercel sea
+// solo una URL chiquita en vez del binario completo -- asi varias fotos no chocan con el limite
+// de 4.5MB del cuerpo de la funcion. Si el webhook falla, se hace fallback a mandar el base64
+// directo (mismo comportamiento de antes) para que una caida temporal no rompa el analisis.
+async function uploadImageToMinio(base64, filename, contentType) {
+  const hotelId = document.getElementById('hotelId').value.trim() || 'sin_hotel';
+  const res = await fetch(MINIO_UPLOAD_URL, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ hotel_id: hotelId, filename, content_type: contentType, content_base64: base64 })
+  });
+  if (!res.ok) throw new Error('Error ' + res.status);
+  const data = await res.json();
+  if (!data.url) throw new Error('Sin URL en la respuesta');
+  return data.url;
+}
+
 function readFile(file, ext) {
   return new Promise(resolve => {
     if (['jpg','jpeg','png','webp','gif'].includes(ext)) {
       compressImage(file)
-        .then(dataUrl => resolve({ name:file.name, type:'image/jpeg', kind:'image', content: dataUrl.split(',')[1] }))
+        .then(async dataUrl => {
+          const base64 = dataUrl.split(',')[1];
+          try {
+            const url = await uploadImageToMinio(base64, file.name, 'image/jpeg');
+            resolve({ name:file.name, type:'image/jpeg', kind:'image_url', content: url });
+          } catch (err) {
+            resolve({ name:file.name, type:'image/jpeg', kind:'image', content: base64 }); // fallback: base64 directo
+          }
+        })
         .catch(() => { showError(`${file.name}: no se pudo procesar la imagen.`); resolve(null); });
     } else if (ext === 'pdf') {
       const reader = new FileReader();
@@ -564,7 +589,7 @@ function renderFileList() {
   const list = document.getElementById('fileList');
   list.innerHTML = uploadedFiles.map((f, i) => `
     <div class="file-item">
-      <i class="fa-solid ${f.kind==='image'?'fa-image':'fa-file-lines'}"></i>
+      <i class="fa-solid ${(f.kind==='image'||f.kind==='image_url')?'fa-image':'fa-file-lines'}"></i>
       <span title="${escHtml(f.name)}">${escHtml(f.name)}</span>
       <span class="file-badge">${escHtml(f.badge || 'Texto')}</span>
       <select onchange="uploadedFiles[${i}].tipo = this.value" title="Categoría — misma pista que usan las URLs, ayuda a la IA a saber a qué sección del hotel pertenece">${FILE_TIPO_OPTIONS_HTML}</select>
@@ -603,8 +628,13 @@ async function analyze() {
   document.getElementById('btnAnalyze').disabled = true;
 
   try {
-    const urlsConHint = urlEntries.map(({ url, tipo }) => ({ url, hint: URL_TIPO_LABEL[tipo] || null }));
-    const payload = { urls: urlsConHint, text, files: files.map(f => ({ name:f.name, kind:f.kind, type:f.type, content:f.content, hint: URL_TIPO_LABEL[f.tipo] || null })) };
+    // Las imagenes ya subidas a MinIO (kind: 'image_url') viajan como URL en vez de como archivo
+    // con base64 -- el payload que recibe Vercel se queda chico sin importar cuantas fotos sean.
+    const imageUrlFiles = files.filter(f => f.kind === 'image_url');
+    const otherFiles = files.filter(f => f.kind !== 'image_url');
+    const urlsConHint = urlEntries.map(({ url, tipo }) => ({ url, hint: URL_TIPO_LABEL[tipo] || null }))
+      .concat(imageUrlFiles.map(f => ({ url: f.content, hint: URL_TIPO_LABEL[f.tipo] || null, kind: 'image' })));
+    const payload = { urls: urlsConHint, text, files: otherFiles.map(f => ({ name:f.name, kind:f.kind, type:f.type, content:f.content, hint: URL_TIPO_LABEL[f.tipo] || null })) };
     const res = await fetch('/api/analyze-v2', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
     if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || `Error ${res.status}`); }
     const data = await res.json();

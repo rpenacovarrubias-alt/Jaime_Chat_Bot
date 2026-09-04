@@ -141,9 +141,13 @@ export default async function handler(req, res) {
   // urls puede venir como string[] (legado) o {url, hint}[] -- hint es la categoria que el
   // usuario ya le puso a esa URL en el extractor (ej. "Cotización Sala de Juntas"), asi la IA
   // no tiene que adivinar el tipo de contenido solo por lo que logre scrapear de la pagina.
-  const allUrlEntries = urls.map(u => (typeof u === 'string' ? { url: u, hint: null } : u)).filter(e => e && e.url);
+  const rawUrlEntries = urls.map(u => (typeof u === 'string' ? { url: u, hint: null } : u)).filter(e => e && e.url);
+  // kind:'image' = foto ya subida a MinIO por el extractor (bypass del limite de cuerpo de Vercel
+  // para imagenes) -- se descarga y se relaya a Claude como imagen, no se scrapea como pagina web.
+  const imageUrlEntries = rawUrlEntries.filter(e => e.kind === 'image');
+  const allUrlEntries = rawUrlEntries.filter(e => e.kind !== 'image');
 
-  if (!allUrlEntries.length && !text && !files.length) {
+  if (!allUrlEntries.length && !imageUrlEntries.length && !text && !files.length) {
     return res.status(400).json({ error: 'No se proporcionaron fuentes de información.' });
   }
 
@@ -175,6 +179,24 @@ export default async function handler(req, res) {
         }
       } catch (e) {
         userContent.push({ type: 'text', text: `=== URL${hintTag} ${url}: No se pudo obtener el contenido ===\n` });
+      }
+    }
+
+    // 1b. Fetch images uploaded to MinIO (bypass del body limit de Vercel) y relayarlas a Claude
+    for (const { url, hint } of imageUrlEntries.slice(0, 20)) {
+      const hintTag = hint ? ` (categoría indicada por el usuario: ${hint})` : '';
+      try {
+        const imgRes = await fetch(url);
+        if (!imgRes.ok) throw new Error('HTTP ' + imgRes.status);
+        const arrayBuf = await imgRes.arrayBuffer();
+        const mediaType = imgRes.headers.get('content-type') || 'image/jpeg';
+        userContent.push({
+          type: 'image',
+          source: { type: 'base64', media_type: mediaType, data: Buffer.from(arrayBuf).toString('base64') }
+        });
+        userContent.push({ type: 'text', text: `(Imagen anterior${hintTag}: ${url})` });
+      } catch (e) {
+        userContent.push({ type: 'text', text: `(No se pudo descargar la imagen${hintTag}: ${url})` });
       }
     }
 
