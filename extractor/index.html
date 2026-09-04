@@ -53,7 +53,7 @@
     .url-list { display:flex; flex-direction:column; gap:8px; }
     .url-row { display:flex; gap:8px; }
     .url-row input { flex:1; }
-    .url-row select { flex:0 0 auto; width:150px; border:1.5px solid var(--gray-200); border-radius:8px; padding:0 8px; font-size:13px; color:var(--gray-600); background:white; }
+    .url-row select { flex:0 0 auto; width:190px; border:1.5px solid var(--gray-200); border-radius:8px; padding:0 8px; font-size:13px; color:var(--gray-600); background:white; }
     .btn-icon { width:38px; height:38px; border:1.5px solid var(--gray-200); background:white; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--gray-400); flex-shrink:0; }
     .btn-icon:hover { border-color:var(--navy); color:var(--navy); }
     .btn-icon.del:hover { border-color:var(--red); color:var(--red); }
@@ -175,14 +175,7 @@
     <div class="url-list" id="urlList">
       <div class="url-row">
         <input type="url" placeholder="https://www.nombrehotel.com" class="url-input">
-        <select class="url-tipo" title="Ayuda a identificar la URL sin depender de que la IA adivine">
-          <option value="">General</option>
-          <option value="sitio_web">Sitio web</option>
-          <option value="motor_reservas">Motor de reservas</option>
-          <option value="facebook">Facebook</option>
-          <option value="instagram">Instagram</option>
-          <option value="googlemaps">Google Maps</option>
-        </select>
+        <select class="url-tipo" title="Categoría de la URL — ayuda a clasificarla sin depender de que la IA adivine"></select>
         <button class="btn-icon del" onclick="removeUrl(this)"><i class="fa-solid fa-xmark"></i></button>
       </div>
     </div>
@@ -350,18 +343,29 @@ function mergeExtractedData(newFields) {
 }
 
 // ─── URL MANAGEMENT ──────────────────────────────────────────────────────────
-const URL_TIPO_OPTIONS_HTML = `<option value="">General</option>
-  <option value="sitio_web">Sitio web</option>
-  <option value="motor_reservas">Motor de reservas</option>
-  <option value="facebook">Facebook</option>
-  <option value="instagram">Instagram</option>
-  <option value="googlemaps">Google Maps</option>`;
-// tipo -> campo de identificacion_marca que se asigna directo, sin pasar por la IA
-// (URLs como maps.app.goo.gl no tienen contenido de texto scrapeable para que la IA las clasifique sola)
+// "Identidad" = 1 solo valor por hotel -> se asigna directo a identificacion_marca, sin pasar por la IA
+// (URLs como maps.app.goo.gl no tienen contenido de texto scrapeable para que la IA las clasifique sola).
+// "Categoria de contenido" = puede haber varias (varios restaurantes, varias cotizaciones) -> no se puede
+// asignar directo a un campo; solo se le pasa como pista a la IA para que clasifique mejor esa URL.
 const URL_TIPO_FIELD = { sitio_web:'sitio_web', motor_reservas:'motor_reservas_url', facebook:'facebook_url', instagram:'instagram_url', googlemaps:'googlemaps_url' };
+const URL_TIPO_LABEL = {
+  sitio_web:'Página web', motor_reservas:'Motor de Reservas', facebook:'Facebook', instagram:'Instagram', googlemaps:'Ubicación (Google Maps)',
+  restaurante:'Restaurante', room_service:'Room Service', spa:'Spa', convenio:'Convenio', transporte:'Transporte',
+  cotizacion_eventos:'Cotización Eventos', cotizacion_sala_juntas:'Cotización Sala de Juntas', cotizacion_habitaciones:'Cotización Habitaciones',
+  cotizacion_banquetes:'Cotización Banquetes', servicios:'Servicios', lavanderia:'Lavandería', estacionamiento:'Estacionamiento', cafeteria:'Cafetería'
+};
+const URL_TIPO_OPTIONS_HTML = '<option value="">General</option>' +
+  '<optgroup label="Identidad (se asigna directo)">' +
+  ['sitio_web','motor_reservas','facebook','instagram','googlemaps'].map(t => `<option value="${t}">${URL_TIPO_LABEL[t]}</option>`).join('') +
+  '</optgroup><optgroup label="Categoría de contenido (pista para la IA)">' +
+  ['restaurante','room_service','spa','convenio','transporte','cotizacion_eventos','cotizacion_sala_juntas','cotizacion_habitaciones','cotizacion_banquetes','servicios','lavanderia','estacionamiento','cafeteria']
+    .map(t => `<option value="${t}">${URL_TIPO_LABEL[t]}</option>`).join('') +
+  '</optgroup>';
+document.querySelectorAll('.url-tipo').forEach(sel => { if (!sel.options.length) sel.innerHTML = URL_TIPO_OPTIONS_HTML; });
 
 // Aplica DESPUES del merge de la IA: si el usuario marco el tipo de una URL, ese valor manda
 // siempre (source of truth es el usuario), aunque la IA haya inferido/pisado otra cosa.
+// Solo aplica a los tipos de "identidad" -- los de "categoria de contenido" van como pista al backend.
 function applyUrlTipoOverrides(urlEntries) {
   if (!extractedData.identificacion_marca) extractedData.identificacion_marca = {};
   urlEntries.forEach(({ url, tipo }) => {
@@ -464,7 +468,8 @@ async function analyze() {
   document.getElementById('btnAnalyze').disabled = true;
 
   try {
-    const payload = { urls, text, files: files.map(f => ({ name:f.name, kind:f.kind, type:f.type, content:f.content })) };
+    const urlsConHint = urlEntries.map(({ url, tipo }) => ({ url, hint: URL_TIPO_LABEL[tipo] || null }));
+    const payload = { urls: urlsConHint, text, files: files.map(f => ({ name:f.name, kind:f.kind, type:f.type, content:f.content })) };
     const res = await fetch('/api/analyze-v2', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
     if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || `Error ${res.status}`); }
     const data = await res.json();
@@ -719,6 +724,9 @@ function guessUrlTipo(u) {
   if (lower.includes('instagram.com')) return 'instagram';
   if (lower.includes('maps.app.goo.gl') || lower.includes('google.com/maps') || lower.includes('goo.gl/maps')) return 'googlemaps';
   if (lower.includes('direct-book.com')) return 'motor_reservas';
+  if (lower.includes('sala-nova')) return 'cotizacion_sala_juntas';
+  if (lower.includes('convenio')) return 'convenio';
+  if (lower.includes('cotizacion')) return 'cotizacion_habitaciones';
   return '';
 }
 

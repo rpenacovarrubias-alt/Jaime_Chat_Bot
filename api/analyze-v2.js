@@ -27,6 +27,11 @@ REGLAS:
    "servicios_instalaciones" con el "nombre" que corresponda, no inventes campos fijos).
 7. No incluyas el concepto "horarios" — se arma automáticamente juntando los horarios de las
    demás secciones, no lo extraigas tú.
+8. Cuando un bloque "=== CONTENIDO DE URL ===" traiga "(categoría indicada por el usuario: X)",
+   esa categoría es la fuente de verdad de qué es esa URL — no la reclasifiques por tu cuenta.
+   Úsala para decidir en qué concepto/objeto de lista va el contenido de esa URL (ej. categoría
+   "Cotización Sala de Juntas" → un objeto en "ventas" con tipo "salon" y ese "url"; categoría
+   "Spa" → un objeto en "servicios_instalaciones" con nombre "Spa" y ese contexto).
 
 ESQUEMA JSON A DEVOLVER (19 conceptos):
 {
@@ -119,8 +124,12 @@ export default async function handler(req, res) {
   if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_API_KEY no configurada en variables de entorno de Vercel.' });
 
   const { urls = [], text = '', files = [] } = req.body || {};
+  // urls puede venir como string[] (legado) o {url, hint}[] -- hint es la categoria que el
+  // usuario ya le puso a esa URL en el extractor (ej. "Cotización Sala de Juntas"), asi la IA
+  // no tiene que adivinar el tipo de contenido solo por lo que logre scrapear de la pagina.
+  const urlEntries = urls.map(u => (typeof u === 'string' ? { url: u, hint: null } : u)).filter(e => e && e.url);
 
-  if (!urls.length && !text && !files.length) {
+  if (!urlEntries.length && !text && !files.length) {
     return res.status(400).json({ error: 'No se proporcionaron fuentes de información.' });
   }
 
@@ -129,17 +138,22 @@ export default async function handler(req, res) {
     const userContent = [];
 
     // 1. Fetch URL content
-    for (const url of urls.slice(0, 5)) {
+    for (const { url, hint } of urlEntries.slice(0, 5)) {
+      const hintTag = hint ? ` (categoría indicada por el usuario: ${hint})` : '';
       try {
         const pageText = await fetchUrl(url);
         if (pageText) {
           userContent.push({
             type: 'text',
-            text: `=== CONTENIDO DE URL: ${url} ===\n${pageText.slice(0, 15000)}\n`
+            text: `=== CONTENIDO DE URL${hintTag}: ${url} ===\n${pageText.slice(0, 15000)}\n`
           });
+        } else if (hint) {
+          // Sin contenido scrapeable (ej. redirecciones cortas de Google Maps) -- la categoria
+          // que puso el usuario sigue siendo una senal util aunque no se pudo leer la pagina.
+          userContent.push({ type: 'text', text: `=== URL${hintTag}: ${url} (sin contenido de texto extraíble, usa la categoría indicada) ===\n` });
         }
       } catch (e) {
-        userContent.push({ type: 'text', text: `=== URL ${url}: No se pudo obtener el contenido ===\n` });
+        userContent.push({ type: 'text', text: `=== URL${hintTag} ${url}: No se pudo obtener el contenido ===\n` });
       }
     }
 
