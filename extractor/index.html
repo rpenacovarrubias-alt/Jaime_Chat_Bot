@@ -243,6 +243,10 @@ const SAVE_URL = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-
 const GET_URL  = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-obtener-ficha';
 const NOTE_URL = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-guardar-nota';
 const REINDEX_URL = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-reindexar-seccion';
+// PENDIENTE al agregar el 2do hotel: este webhook y el bucket de MinIO que usa (avanta-imagenes)
+// estan quemados para Avanta -- el workflow ya recibe hotel_id y separa por carpeta, pero el
+// bucket/credencial S3 en si no esta parametrizado por hotel. Ver nota en el workflow de n8n
+// "Jaime v2 - Subir Imagen Cruda (webhook)" antes de dar de alta un hotel nuevo con fotos.
 const MINIO_UPLOAD_URL = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-subir-imagen';
 
 // ─── 19 conceptos (debe coincidir con /api/analyze-v2 y hoteles.ficha) ──────
