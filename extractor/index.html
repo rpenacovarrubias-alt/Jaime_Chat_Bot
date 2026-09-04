@@ -236,6 +236,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 const SAVE_URL = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-guardar-ficha';
 const GET_URL  = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-obtener-ficha';
 const NOTE_URL = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-guardar-nota';
+const REINDEX_URL = 'https://chatbotventas-n8n.h0w0dc.easypanel.host/webhook/jaime-reindexar-seccion';
 
 // ─── 19 conceptos (debe coincidir con /api/analyze-v2 y hoteles.ficha) ──────
 const CONCEPTS = [
@@ -543,12 +544,22 @@ async function guardarFuentesUrls(urls) {
   } catch (err) { /* no bloquea el flujo de analisis si esto falla */ }
 }
 
+async function reindexSectionData(hotelId, conceptId) {
+  try {
+    await fetch(REINDEX_URL, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hotel_id: hotelId, seccion: conceptId, datos: extractedData[conceptId] })
+    });
+  } catch (err) { /* no bloquea el guardado si el reindexado falla */ }
+}
+
 async function saveSectionData(hotelId, nombre, conceptId) {
   const res = await fetch(SAVE_URL, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ hotel_id: hotelId, nombre: nombre, seccion: conceptId, datos: extractedData[conceptId] })
   });
   if (!res.ok) throw new Error('Error ' + res.status);
+  reindexSectionData(hotelId, conceptId);
   return res.json();
 }
 
