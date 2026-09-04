@@ -947,12 +947,21 @@ const CAMPOS_CONDICIONALES = {
 function esRespuestaNegativa(valor) {
   return /^\s*no\b/i.test(String(valor || ''));
 }
+// Marca un campo como decision deliberada de NO capturarlo/publicarlo (ej. el nombre real de la
+// red WiFi, que Ricardo decidio no dar por seguridad). Se excluye por completo del reporte -- ni
+// "Ya tenemos" ni "Faltan" -- a diferencia de CAMPOS_CONDICIONALES (que es "no aplica dada otra
+// respuesta") esto es "aplica pero se omite a proposito". Pedido explicito de Ricardo, 2026-09-04.
+const CAMPO_OMITIDO = '(omitido)';
+function esOmitido(valor) {
+  return valor === CAMPO_OMITIDO;
+}
 function missingFields(concept, val) {
   if (concept.tipo !== 'objeto') return [];
   const data = val || {};
   const condicionales = CAMPOS_CONDICIONALES[concept.id] || {};
   return concept.campos.filter(f => {
     if (data[f.key]) return false;
+    if (esOmitido(data[f.key])) return false;
     const dependeDe = condicionales[f.key];
     if (dependeDe && esRespuestaNegativa(data[dependeDe])) return false; // no aplica, no cuenta como faltante
     return true;
@@ -988,7 +997,7 @@ function renderFichaReport(data) {
 
     if (concept.tipo === 'objeto') {
       const data2 = val || {};
-      const entries = Object.entries(data2).filter(([,v]) => v);
+      const entries = Object.entries(data2).filter(([,v]) => v && !esOmitido(v));
       if (!entries.length) {
         bodyHtml += `<div class="empty">Sin información guardada.</div>`;
       } else {
@@ -1149,7 +1158,7 @@ function descargarFichaPDF() {
     line(concept.label.toUpperCase(), 10, true);
     const val = ficha[concept.id];
     if (concept.tipo === 'objeto') {
-      const entries = Object.entries(val || {}).filter(([,v]) => v);
+      const entries = Object.entries(val || {}).filter(([,v]) => v && !esOmitido(v));
       if (!entries.length) line('Sin información.', 9);
       else {
         line('Ya tenemos:', 8, true);
