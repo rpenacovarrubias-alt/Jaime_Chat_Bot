@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -66,8 +67,10 @@
     .dropzone p { font-size:.82rem; color:var(--gray-500); }
     .file-list { display:flex; flex-direction:column; gap:6px; margin-top:12px; }
     .file-item { display:flex; align-items:center; gap:10px; padding:8px 12px; background:var(--gray-50); border-radius:8px; border:1px solid var(--gray-200); }
-    .file-item span { flex:1; font-size:.78rem; }
+    .file-item span { flex:1; font-size:.78rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .file-item button { background:none; border:none; cursor:pointer; color:var(--gray-400); }
+    .file-badge { flex:0 0 auto; font-size:.7rem; font-weight:600; padding:2px 8px; border-radius:20px; background:var(--navy-light,#2A5299); color:white; opacity:.85; }
+    .file-item select { flex:0 0 auto; width:170px; border:1.5px solid var(--gray-200); border-radius:8px; padding:2px 6px; font-size:.75rem; color:var(--gray-600); background:white; }
 
     .analyze-wrap { text-align:center; margin:28px 0; }
     .btn-analyze { display:inline-flex; align-items:center; gap:10px; padding:13px 40px; background:#D97706; color:white; border:none; border-radius:10px; font-size:.95rem; font-weight:700; cursor:pointer; box-shadow:0 4px 16px rgba(217,119,6,.3); }
@@ -183,13 +186,14 @@
   </div>
 
   <div class="card">
-    <div class="card-title"><i class="fa-solid fa-file-arrow-up"></i> Archivos (PDF, imágenes, documentos)</div>
-    <div class="dropzone" id="dropzone">
-      <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,.txt,.doc,.docx" onchange="handleFiles(this.files)">
+    <div class="card-title"><i class="fa-solid fa-file-arrow-up"></i> Archivos (PDF, Word, imágenes)</div>
+    <div class="dropzone" id="dropzone" tabindex="0">
+      <input type="file" id="fileInput" multiple accept=".pdf,.docx,.jpg,.jpeg,.png,.webp,.gif,.txt,.md,.csv" onchange="handleFiles(this.files)">
       <div><i class="fa-solid fa-cloud-arrow-up" style="font-size:1.6rem;color:var(--gray-400);"></i></div>
-      <p><strong>Arrastra archivos aquí</strong> o haz clic para seleccionar (hasta 10, 20MB c/u)</p>
+      <p><strong>Arrastra archivos aquí</strong>, haz clic para seleccionar, o pega una imagen con Ctrl+V (hasta <span id="maxFilesHint">20</span> archivos). Las imágenes se comprimen automáticamente antes de enviarse. <strong>.doc</strong> (formato antiguo de Word) no se puede leer — usa <strong>.docx</strong>.</p>
     </div>
     <div class="file-list" id="fileList"></div>
+    <div id="payloadWarning" style="display:none;margin-top:8px;padding:10px 12px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:8px;font-size:.82rem;color:#92400E;"></div>
   </div>
 
   <div class="card">
@@ -386,13 +390,18 @@ const URL_TIPO_LABEL = {
   cotizacion_eventos:'Cotización Eventos', cotizacion_sala_juntas:'Cotización Sala de Juntas', cotizacion_habitaciones:'Cotización Habitaciones',
   cotizacion_banquetes:'Cotización Banquetes', servicios:'Servicios', lavanderia:'Lavandería', estacionamiento:'Estacionamiento', cafeteria:'Cafetería'
 };
+const IDENTITY_TIPOS = ['sitio_web','motor_reservas','facebook','instagram','googlemaps'];
+const CONTENT_CATEGORY_TIPOS = ['restaurante','room_service','spa','convenio','transporte','cotizacion_eventos','cotizacion_sala_juntas','cotizacion_habitaciones','cotizacion_banquetes','servicios','lavanderia','estacionamiento','cafeteria'];
 const URL_TIPO_OPTIONS_HTML = '<option value="">General</option>' +
   '<optgroup label="Identidad (se asigna directo)">' +
-  ['sitio_web','motor_reservas','facebook','instagram','googlemaps'].map(t => `<option value="${t}">${URL_TIPO_LABEL[t]}</option>`).join('') +
+  IDENTITY_TIPOS.map(t => `<option value="${t}">${URL_TIPO_LABEL[t]}</option>`).join('') +
   '</optgroup><optgroup label="Categoría de contenido (pista para la IA)">' +
-  ['restaurante','room_service','spa','convenio','transporte','cotizacion_eventos','cotizacion_sala_juntas','cotizacion_habitaciones','cotizacion_banquetes','servicios','lavanderia','estacionamiento','cafeteria']
-    .map(t => `<option value="${t}">${URL_TIPO_LABEL[t]}</option>`).join('') +
+  CONTENT_CATEGORY_TIPOS.map(t => `<option value="${t}">${URL_TIPO_LABEL[t]}</option>`).join('') +
   '</optgroup>';
+// Un archivo no tiene "un valor" que asignar directo a un campo (a diferencia de una URL de
+// identidad), asi que solo ofrece las categorias de contenido -- siempre van como pista a la IA.
+const FILE_TIPO_OPTIONS_HTML = '<option value="">General</option>' +
+  CONTENT_CATEGORY_TIPOS.map(t => `<option value="${t}">${URL_TIPO_LABEL[t]}</option>`).join('');
 document.querySelectorAll('.url-tipo').forEach(sel => { if (!sel.options.length) sel.innerHTML = URL_TIPO_OPTIONS_HTML; });
 
 // Aplica DESPUES del merge de la IA: si el usuario marco el tipo de una URL, ese valor manda
@@ -421,26 +430,62 @@ function removeUrl(btn) {
 }
 
 // ─── FILE MANAGEMENT ─────────────────────────────────────────────────────────
+// La funcion que analiza vive en Vercel y su cuerpo de solicitud tiene un techo real de ~4.5MB
+// (limite de la plataforma, no configurable desde vercel.json). Las imagenes sin comprimir son
+// las que revientan ese limite -- un solo jpg de celular en base64 ya se acerca a 4.5MB. Por eso
+// se recomprimen aqui antes de mandarlas; PDF/Word/texto se convierten a texto plano (mucho mas
+// liviano) y ademas el backend los recorta a 10,000 caracteres por archivo.
+const MAX_FILES = 20;
+const MAX_FILE_SIZE = 20 * 1024 * 1024; // limite de entrada, antes de comprimir imagenes
+const IMAGE_MAX_DIMENSION = 1600; // px del lado mas largo -- de sobra para que la IA lea texto/detalle
+const IMAGE_JPEG_QUALITY = 0.82;
+const TEXT_EXTENSIONS = ['txt','md','csv','json'];
+const VERCEL_BODY_LIMIT_BYTES = 4.5 * 1024 * 1024;
+
 const dropzone = document.getElementById('dropzone');
 dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
 dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
 dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); });
 
+// La caja de Texto adicional no tiene un tope de caracteres fijo (Claude acepta muchisimo mas de
+// lo que alguien pegaria a mano) -- el limite real es el mismo cuerpo de 4.5MB que comparte con
+// los archivos, asi que reusa la misma advertencia en vez de imponer un maxlength arbitrario.
+document.getElementById('pasteText').addEventListener('input', checkPayloadSize);
+
+// Pegar una imagen del portapapeles (Ctrl+V) en cualquier parte de la pagina -- mismo pipeline
+// de compresion que arrastrar/seleccionar, no hay forma de evitar el paso de codificar a base64
+// porque asi es como viaja un binario dentro de un JSON, sin importar como la subiste.
+document.addEventListener('paste', e => {
+  const items = [...(e.clipboardData?.items || [])].filter(i => i.kind === 'file' && i.type.startsWith('image/'));
+  if (!items.length) return;
+  e.preventDefault();
+  handleFiles(items.map(i => i.getAsFile()).filter(Boolean));
+});
+
 async function handleFiles(files) {
   for (const file of files) {
-    if (uploadedFiles.length >= 10) { showError('Máximo 10 archivos.'); break; }
-    if (file.size > 20 * 1024 * 1024) { showError(`${file.name} supera 20MB.`); continue; }
-    const entry = await readFile(file);
-    if (entry) { uploadedFiles.push(entry); renderFileList(); }
+    if (uploadedFiles.length >= MAX_FILES) { showError(`Máximo ${MAX_FILES} archivos.`); break; }
+    if (file.size > MAX_FILE_SIZE) { showError(`${file.name} supera ${MAX_FILE_SIZE / 1024 / 1024}MB.`); continue; }
+    const ext = (file.name.split('.').pop() || '').toLowerCase();
+    if (ext === 'doc') { showError(`${file.name}: el formato .doc antiguo no se puede leer — guárdalo como .docx desde Word y vuelve a intentar.`); continue; }
+    const entry = await readFile(file, ext);
+    if (entry) {
+      entry.badge = FILE_BADGE[ext] || (entry.kind === 'image' ? 'Imagen' : 'Texto');
+      entry.tipo = '';
+      uploadedFiles.push(entry);
+      renderFileList();
+      checkPayloadSize();
+    }
   }
 }
-function readFile(file) {
+const FILE_BADGE = { pdf:'PDF', docx:'Word', jpg:'Imagen', jpeg:'Imagen', png:'Imagen', webp:'Imagen', gif:'Imagen', txt:'Texto', md:'Texto', csv:'Texto', json:'Texto' };
+
+function readFile(file, ext) {
   return new Promise(resolve => {
-    const ext = file.name.split('.').pop().toLowerCase();
     if (['jpg','jpeg','png','webp','gif'].includes(ext)) {
-      const reader = new FileReader();
-      reader.onload = e => resolve({ name:file.name, type:file.type, kind:'image', content: e.target.result.split(',')[1] });
-      reader.readAsDataURL(file);
+      compressImage(file)
+        .then(dataUrl => resolve({ name:file.name, type:'image/jpeg', kind:'image', content: dataUrl.split(',')[1] }))
+        .catch(() => { showError(`${file.name}: no se pudo procesar la imagen.`); resolve(null); });
     } else if (ext === 'pdf') {
       const reader = new FileReader();
       reader.onload = async e => {
@@ -456,20 +501,78 @@ function readFile(file) {
         } catch(err) { resolve({ name:file.name, type:'text/plain', kind:'text', content:`[PDF: ${file.name} — error al leer]` }); }
       };
       reader.readAsArrayBuffer(file);
-    } else {
+    } else if (ext === 'docx') {
+      const reader = new FileReader();
+      reader.onload = async e => {
+        try {
+          const result = await mammoth.extractRawText({ arrayBuffer: e.target.result });
+          resolve({ name:file.name, type:'text/plain', kind:'text', content: (result.value || '').trim() });
+        } catch (err) { resolve({ name:file.name, type:'text/plain', kind:'text', content:`[Word: ${file.name} — error al leer]` }); }
+      };
+      reader.readAsArrayBuffer(file);
+    } else if (TEXT_EXTENSIONS.includes(ext)) {
       const reader = new FileReader();
       reader.onload = e => resolve({ name:file.name, type:'text/plain', kind:'text', content: e.target.result });
       reader.readAsText(file);
+    } else {
+      showError(`${file.name}: formato no soportado (usa PDF, DOCX, imagen o texto plano).`);
+      resolve(null);
     }
   });
+}
+
+// Reduce dimension y recomprime a JPEG en el navegador antes de convertir a base64 -- una foto de
+// celular de 4-8MB queda tipicamente en 150-400KB, suficiente detalle para que la IA lea el
+// contenido (letreros, tarifarios en foto, etc.) sin acercarse al limite de cuerpo de Vercel.
+function compressImage(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > IMAGE_MAX_DIMENSION || height > IMAGE_MAX_DIMENSION) {
+        const scale = IMAGE_MAX_DIMENSION / Math.max(width, height);
+        width = Math.round(width * scale); height = Math.round(height * scale);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL('image/jpeg', IMAGE_JPEG_QUALITY));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('No se pudo leer la imagen')); };
+    img.src = url;
+  });
+}
+
+function estimatePayloadBytes() {
+  let bytes = (document.getElementById('pasteText')?.value.length || 0);
+  uploadedFiles.forEach(f => { bytes += (f.content?.length || 0); });
+  return bytes;
+}
+function checkPayloadSize() {
+  const bytes = estimatePayloadBytes();
+  const warn = document.getElementById('payloadWarning');
+  if (bytes > VERCEL_BODY_LIMIT_BYTES * 0.85) {
+    warn.style.display = 'block';
+    warn.textContent = `Advertencia: lo acumulado (~${(bytes/1024/1024).toFixed(1)}MB) está cerca del límite de la función que analiza (~4.5MB). Quita algún archivo o analiza en 2 tandas para evitar que falle a mitad del análisis.`;
+  } else {
+    warn.style.display = 'none';
+  }
 }
 function renderFileList() {
   const list = document.getElementById('fileList');
   list.innerHTML = uploadedFiles.map((f, i) => `
-    <div class="file-item"><i class="fa-solid ${f.kind==='image'?'fa-image':'fa-file-lines'}"></i><span>${f.name}</span>
-    <button onclick="removeFile(${i})"><i class="fa-solid fa-xmark"></i></button></div>`).join('');
+    <div class="file-item">
+      <i class="fa-solid ${f.kind==='image'?'fa-image':'fa-file-lines'}"></i>
+      <span title="${escHtml(f.name)}">${escHtml(f.name)}</span>
+      <span class="file-badge">${escHtml(f.badge || 'Texto')}</span>
+      <select onchange="uploadedFiles[${i}].tipo = this.value" title="Categoría — misma pista que usan las URLs, ayuda a la IA a saber a qué sección del hotel pertenece">${FILE_TIPO_OPTIONS_HTML}</select>
+      <button onclick="removeFile(${i})"><i class="fa-solid fa-xmark"></i></button>
+    </div>`).join('');
+  list.querySelectorAll('select').forEach((sel, i) => { sel.value = uploadedFiles[i].tipo || ''; });
 }
-function removeFile(idx) { uploadedFiles.splice(idx, 1); renderFileList(); }
+function removeFile(idx) { uploadedFiles.splice(idx, 1); renderFileList(); checkPayloadSize(); }
 
 function showError(msg) {
   const banner = document.getElementById('errorBanner');
@@ -501,7 +604,7 @@ async function analyze() {
 
   try {
     const urlsConHint = urlEntries.map(({ url, tipo }) => ({ url, hint: URL_TIPO_LABEL[tipo] || null }));
-    const payload = { urls: urlsConHint, text, files: files.map(f => ({ name:f.name, kind:f.kind, type:f.type, content:f.content })) };
+    const payload = { urls: urlsConHint, text, files: files.map(f => ({ name:f.name, kind:f.kind, type:f.type, content:f.content, hint: URL_TIPO_LABEL[f.tipo] || null })) };
     const res = await fetch('/api/analyze-v2', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
     if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || `Error ${res.status}`); }
     const data = await res.json();

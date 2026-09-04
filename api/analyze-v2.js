@@ -27,11 +27,12 @@ REGLAS:
    "servicios_instalaciones" con el "nombre" que corresponda, no inventes campos fijos).
 7. No incluyas el concepto "horarios" — se arma automáticamente juntando los horarios de las
    demás secciones, no lo extraigas tú.
-8. Cuando un bloque "=== CONTENIDO DE URL ===" traiga "(categoría indicada por el usuario: X)",
-   esa categoría es la fuente de verdad de qué es esa URL — no la reclasifiques por tu cuenta.
-   Úsala para decidir en qué concepto/objeto de lista va el contenido de esa URL (ej. categoría
-   "Cotización Sala de Juntas" → un objeto en "ventas" con tipo "salon" y ese "url"; categoría
-   "Spa" → un objeto en "servicios_instalaciones" con nombre "Spa" y ese contexto).
+8. Cuando un bloque "=== CONTENIDO DE URL ===", "=== ARCHIVO ===" o "(Imagen anterior)" traiga
+   "(categoría indicada por el usuario: X)", esa categoría es la fuente de verdad de qué es esa
+   fuente (URL o archivo) — no la reclasifiques por tu cuenta. Úsala para decidir en qué
+   concepto/objeto de lista va ese contenido (ej. categoría "Cotización Sala de Juntas" → un
+   objeto en "ventas" con tipo "salon"; categoría "Spa" → un objeto en "servicios_instalaciones"
+   con nombre "Spa" y ese contexto, sea que la fuente haya sido una URL, un PDF/Word o una foto).
 9. PRIORIDAD DE FUENTE para servicios/instalaciones/cotizaciones (Spa, Room Service, Lavandería,
    Cafetería, Estacionamiento, Transporte, restaurantes, cotizaciones, convenio): si existe una URL
    etiquetada con esa categoría específica, esa URL es la fuente principal de los detalles de esa
@@ -183,17 +184,18 @@ export default async function handler(req, res) {
     }
 
     // 3. Add files
-    for (const file of files.slice(0, 10)) {
+    for (const file of files.slice(0, 20)) {
+      const hintTag = file.hint ? ` (categoría indicada por el usuario: ${file.hint})` : '';
       if (file.kind === 'image') {
         userContent.push({
           type: 'image',
           source: { type: 'base64', media_type: file.type || 'image/jpeg', data: file.content }
         });
-        userContent.push({ type: 'text', text: `(Imagen anterior: ${file.name})` });
+        userContent.push({ type: 'text', text: `(Imagen anterior${hintTag}: ${file.name})` });
       } else if (file.kind === 'text' && file.content) {
         userContent.push({
           type: 'text',
-          text: `=== ARCHIVO: ${file.name} ===\n${file.content.slice(0, 10000)}\n`
+          text: `=== ARCHIVO${hintTag}: ${file.name} ===\n${file.content.slice(0, 10000)}\n`
         });
       }
     }

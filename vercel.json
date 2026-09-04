@@ -4,6 +4,10 @@
     "api/analyze.js": {
       "maxDuration": 60,
       "memory": 512
+    },
+    "api/analyze-v2.js": {
+      "maxDuration": 60,
+      "memory": 1024
     }
   },
   "routes": [
