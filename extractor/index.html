@@ -53,6 +53,7 @@
     .url-list { display:flex; flex-direction:column; gap:8px; }
     .url-row { display:flex; gap:8px; }
     .url-row input { flex:1; }
+    .url-row select { flex:0 0 auto; width:150px; border:1.5px solid var(--gray-200); border-radius:8px; padding:0 8px; font-size:13px; color:var(--gray-600); background:white; }
     .btn-icon { width:38px; height:38px; border:1.5px solid var(--gray-200); background:white; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--gray-400); flex-shrink:0; }
     .btn-icon:hover { border-color:var(--navy); color:var(--navy); }
     .btn-icon.del:hover { border-color:var(--red); color:var(--red); }
@@ -174,6 +175,14 @@
     <div class="url-list" id="urlList">
       <div class="url-row">
         <input type="url" placeholder="https://www.nombrehotel.com" class="url-input">
+        <select class="url-tipo" title="Ayuda a identificar la URL sin depender de que la IA adivine">
+          <option value="">General</option>
+          <option value="sitio_web">Sitio web</option>
+          <option value="motor_reservas">Motor de reservas</option>
+          <option value="facebook">Facebook</option>
+          <option value="instagram">Instagram</option>
+          <option value="googlemaps">Google Maps</option>
+        </select>
         <button class="btn-icon del" onclick="removeUrl(this)"><i class="fa-solid fa-xmark"></i></button>
       </div>
     </div>
@@ -341,10 +350,32 @@ function mergeExtractedData(newFields) {
 }
 
 // ─── URL MANAGEMENT ──────────────────────────────────────────────────────────
+const URL_TIPO_OPTIONS_HTML = `<option value="">General</option>
+  <option value="sitio_web">Sitio web</option>
+  <option value="motor_reservas">Motor de reservas</option>
+  <option value="facebook">Facebook</option>
+  <option value="instagram">Instagram</option>
+  <option value="googlemaps">Google Maps</option>`;
+// tipo -> campo de identificacion_marca que se asigna directo, sin pasar por la IA
+// (URLs como maps.app.goo.gl no tienen contenido de texto scrapeable para que la IA las clasifique sola)
+const URL_TIPO_FIELD = { sitio_web:'sitio_web', motor_reservas:'motor_reservas_url', facebook:'facebook_url', instagram:'instagram_url', googlemaps:'googlemaps_url' };
+
+// Aplica DESPUES del merge de la IA: si el usuario marco el tipo de una URL, ese valor manda
+// siempre (source of truth es el usuario), aunque la IA haya inferido/pisado otra cosa.
+function applyUrlTipoOverrides(urlEntries) {
+  if (!extractedData.identificacion_marca) extractedData.identificacion_marca = {};
+  urlEntries.forEach(({ url, tipo }) => {
+    const field = URL_TIPO_FIELD[tipo];
+    if (field) extractedData.identificacion_marca[field] = url;
+  });
+}
+
 function addUrl() {
   const row = document.createElement('div');
   row.className = 'url-row';
-  row.innerHTML = `<input type="url" placeholder="https://…" class="url-input"><button class="btn-icon del" onclick="removeUrl(this)"><i class="fa-solid fa-xmark"></i></button>`;
+  row.innerHTML = `<input type="url" placeholder="https://…" class="url-input">
+    <select class="url-tipo" title="Ayuda a identificar la URL sin depender de que la IA adivine">${URL_TIPO_OPTIONS_HTML}</select>
+    <button class="btn-icon del" onclick="removeUrl(this)"><i class="fa-solid fa-xmark"></i></button>`;
   document.getElementById('urlList').appendChild(row);
 }
 function removeUrl(btn) {
@@ -417,7 +448,10 @@ function escHtml(str) {
 
 // ─── MAIN ANALYZE (paso 1 → analyze-v2) ─────────────────────────────────────
 async function analyze() {
-  const urls  = [...document.querySelectorAll('.url-input')].map(i => i.value.trim()).filter(Boolean);
+  const urlEntries = [...document.querySelectorAll('.url-row')]
+    .map(row => ({ url: row.querySelector('.url-input').value.trim(), tipo: row.querySelector('.url-tipo')?.value || '' }))
+    .filter(e => e.url);
+  const urls  = urlEntries.map(e => e.url);
   const text  = document.getElementById('pasteText').value.trim();
   const files = uploadedFiles;
 
@@ -435,6 +469,7 @@ async function analyze() {
     if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || `Error ${res.status}`); }
     const data = await res.json();
     mergeExtractedData(data.fields || {});
+    applyUrlTipoOverrides(urlEntries);
     renderConceptSections();
     if (urls.length) guardarFuentesUrls(urls);
     document.getElementById('progress-section').style.display = 'none';
@@ -668,9 +703,23 @@ function prefillFuentesUrls(urls) {
   urls.forEach(u => {
     const row = document.createElement('div');
     row.className = 'url-row';
-    row.innerHTML = `<input type="url" placeholder="https://…" class="url-input" value="${escHtml(u)}"><button class="btn-icon del" onclick="removeUrl(this)"><i class="fa-solid fa-xmark"></i></button>`;
+    row.innerHTML = `<input type="url" placeholder="https://…" class="url-input" value="${escHtml(u)}">
+      <select class="url-tipo" title="Ayuda a identificar la URL sin depender de que la IA adivine">${URL_TIPO_OPTIONS_HTML}</select>
+      <button class="btn-icon del" onclick="removeUrl(this)"><i class="fa-solid fa-xmark"></i></button>`;
+    const guess = guessUrlTipo(u);
+    if (guess) row.querySelector('.url-tipo').value = guess;
     container.appendChild(row);
   });
+}
+
+// Solo para pre-seleccionar el <select> al recargar URLs ya guardadas; el usuario puede corregirlo.
+function guessUrlTipo(u) {
+  const lower = u.toLowerCase();
+  if (lower.includes('facebook.com')) return 'facebook';
+  if (lower.includes('instagram.com')) return 'instagram';
+  if (lower.includes('maps.app.goo.gl') || lower.includes('google.com/maps') || lower.includes('goo.gl/maps')) return 'googlemaps';
+  if (lower.includes('direct-book.com')) return 'motor_reservas';
+  return '';
 }
 
 function missingFields(concept, val) {
