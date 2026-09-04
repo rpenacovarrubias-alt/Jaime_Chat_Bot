@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jaime v2 — Extractor y Ficha del Hotel</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=Kodchasan:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -23,6 +23,10 @@
       --radius: 12px;
     }
     body { font-family:'Inter',sans-serif; background:var(--gray-50); color:var(--gray-700); min-height:100vh; }
+    /* Tipografia de marca por hotel -- hoy solo Avanta la pidio explicitamente (Kodchasan,
+       la misma que ya usan en sus PDFs de convenios/cotizaciones via ReportLab). Se activa
+       solo cuando el hotel_id activo es "avanta", nunca global -- el extractor es multi-hotel. */
+    body.brand-avanta, body.brand-avanta * { font-family:'Kodchasan',sans-serif !important; }
 
     .page-header { background:var(--navy-dark); padding:28px 32px 26px; border-bottom:1px solid rgba(255,255,255,.07); }
     .page-header-inner { max-width:1080px; margin:0 auto; }
@@ -1032,6 +1036,16 @@ function descargarFichaJSON() {
   a.click();
 }
 
+// Tipografia de marca por hotel_id. Agregar aqui si otro hotel pide su propia fuente.
+const BRAND_FONT_CLASS = { avanta: 'brand-avanta' };
+function applyBrandFont() {
+  const hotelId = document.getElementById('hotelId').value.trim().toLowerCase();
+  Object.values(BRAND_FONT_CLASS).forEach(cls => document.body.classList.remove(cls));
+  const cls = BRAND_FONT_CLASS[hotelId];
+  if (cls) document.body.classList.add(cls);
+}
+document.getElementById('hotelId').addEventListener('input', applyBrandFont);
+
 (function initFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const hid = params.get('hotel_id');
@@ -1039,6 +1053,7 @@ function descargarFichaJSON() {
     document.getElementById('hotelId').value = hid;
     cargarFichaCompleta();
   }
+  applyBrandFont();
 })();
 
 function descargarFichaPDF() {
