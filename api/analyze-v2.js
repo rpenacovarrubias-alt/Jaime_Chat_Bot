@@ -32,6 +32,19 @@ REGLAS:
    Úsala para decidir en qué concepto/objeto de lista va el contenido de esa URL (ej. categoría
    "Cotización Sala de Juntas" → un objeto en "ventas" con tipo "salon" y ese "url"; categoría
    "Spa" → un objeto en "servicios_instalaciones" con nombre "Spa" y ese contexto).
+9. PRIORIDAD DE FUENTE para servicios/instalaciones/cotizaciones (Spa, Room Service, Lavandería,
+   Cafetería, Estacionamiento, Transporte, restaurantes, cotizaciones, convenio): si existe una URL
+   etiquetada con esa categoría específica, esa URL es la fuente principal de los detalles de esa
+   sección. Si NO hay URL etiquetada para una categoría, busca esa información en el contenido del
+   sitio web general y en el texto proporcionado antes de darla por ausente — no la ignores solo
+   porque no tiene URL propia.
+10. Si después de revisar TODAS las fuentes disponibles (URL específica si existe, sitio web general,
+    texto) — y solo cuando esas fuentes cubren de forma razonablemente amplia los servicios del hotel
+    (una página de sitio web completa, una descripción general, no un fragmento suelto de un solo
+    tema) — no hay ninguna evidencia de que el hotel ofrezca un servicio común de hotelería (ej. Spa,
+    Lavandería, Cafetería), agrega igual una entrada en "servicios_instalaciones" con "nombre" el
+    servicio, "disponible":"No" y "detalles":"No tiene este servicio", en vez de omitirlo en silencio
+    — así queda explícito que se revisó y no se encontró, no que falta capturar el dato todavía.
 
 ESQUEMA JSON A DEVOLVER (19 conceptos):
 {

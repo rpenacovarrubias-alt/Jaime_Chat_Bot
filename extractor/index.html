@@ -316,6 +316,13 @@ let uploadedFiles = [];
 let extractedData = {};
 let fichaCargada = null;
 
+// Campo que identifica a un elemento dentro de cada concepto tipo LISTA, para poder combinar
+// (en vez de reemplazar la lista completa) cuando llega un analisis nuevo.
+const LIST_ITEM_KEY = {
+  habitaciones:'tipo', restaurante:'nombre', servicios_instalaciones:'nombre', ventas:'nombre',
+  preguntas_frecuentes:'pregunta', concierge:'nombre', transportacion:'tipo', directorio_escalamiento:'nombre'
+};
+
 // Combina campos nuevos sobre lo que ya hay en memoria, sin borrar lo que el nuevo lote no menciona.
 // Necesario porque la info del hotel se sube en varios lotes de texto/URLs a lo largo de varias sesiones.
 function mergeExtractedData(newFields) {
@@ -333,8 +340,33 @@ function mergeExtractedData(newFields) {
       }
       extractedData[concept.id] = merged;
     } else {
+      // lista: combina por elemento (usando LIST_ITEM_KEY) en vez de reemplazar la lista entera,
+      // para que una edicion manual (ej. corregir "No tiene Spa" -> "Si, spa desde 2027") no se
+      // pierda si un analisis posterior vuelve a traer ese mismo elemento.
       if (Array.isArray(incoming) && incoming.length && !incoming.every(isEmptyData)) {
-        extractedData[concept.id] = incoming;
+        const existingList = Array.isArray(extractedData[concept.id]) ? extractedData[concept.id] : [];
+        const key = LIST_ITEM_KEY[concept.id];
+        if (!key) {
+          extractedData[concept.id] = incoming;
+        } else {
+          const norm = v => String(v || '').toLowerCase().trim();
+          const byKey = new Map(existingList.map(item => [norm(item[key]), item]));
+          incoming.forEach(newItem => {
+            if (isEmptyData(newItem)) return;
+            const k = norm(newItem[key]);
+            const match = k && byKey.get(k);
+            if (match) {
+              Object.keys(newItem).forEach(f => {
+                const v = newItem[f];
+                if (v !== null && v !== undefined && v !== '') match[f] = v;
+              });
+            } else {
+              existingList.push(newItem);
+              if (k) byKey.set(k, newItem);
+            }
+          });
+          extractedData[concept.id] = existingList;
+        }
       } else if (!Array.isArray(extractedData[concept.id])) {
         extractedData[concept.id] = [];
       }
