@@ -336,6 +336,19 @@ const LIST_ITEM_KEY = {
   preguntas_frecuentes:'pregunta', concierge:'nombre', transportacion:'tipo', directorio_escalamiento:'nombre'
 };
 
+// Decide que valor gana cuando ya hay uno guardado y llega uno nuevo del mismo campo. Vacio nunca
+// gana. Si ambos tienen contenido, gana el mas largo/detallado -- no el mas reciente a ciegas.
+// Sin esto, un analisis posterior con menos contexto (ej. una URL que solo trae tarifas, sin la
+// descripcion completa con numeros de habitacion) borraba silenciosamente lo mas completo que ya
+// se tenia guardado. Le paso a Ricardo con la numeracion y las tarifas de "habitaciones" el
+// 2026-09-04 -- se perdieron sin ningun aviso hasta que el lo noto.
+function mergeValue(existing, incoming) {
+  const vacio = v => v === null || v === undefined || v === '';
+  if (vacio(incoming)) return existing;
+  if (vacio(existing)) return incoming;
+  return String(incoming).length > String(existing).length ? incoming : existing;
+}
+
 // Combina campos nuevos sobre lo que ya hay en memoria, sin borrar lo que el nuevo lote no menciona.
 // Necesario porque la info del hotel se sube en varios lotes de texto/URLs a lo largo de varias sesiones.
 function mergeExtractedData(newFields) {
@@ -346,10 +359,7 @@ function mergeExtractedData(newFields) {
       const existing = (extractedData[concept.id] && typeof extractedData[concept.id] === 'object') ? extractedData[concept.id] : {};
       const merged = { ...existing };
       if (incoming && typeof incoming === 'object') {
-        Object.keys(incoming).forEach(k => {
-          const v = incoming[k];
-          if (v !== null && v !== undefined && v !== '') merged[k] = v;
-        });
+        Object.keys(incoming).forEach(k => { merged[k] = mergeValue(existing[k], incoming[k]); });
       }
       extractedData[concept.id] = merged;
     } else {
@@ -369,10 +379,7 @@ function mergeExtractedData(newFields) {
             const k = norm(newItem[key]);
             const match = k && byKey.get(k);
             if (match) {
-              Object.keys(newItem).forEach(f => {
-                const v = newItem[f];
-                if (v !== null && v !== undefined && v !== '') match[f] = v;
-              });
+              Object.keys(newItem).forEach(f => { match[f] = mergeValue(match[f], newItem[f]); });
             } else {
               existingList.push(newItem);
               if (k) byKey.set(k, newItem);
@@ -926,10 +933,30 @@ function guessUrlTipo(u) {
   return '';
 }
 
+// Algunos campos solo tienen sentido si otro campo del mismo concepto lo habilita -- ej. "Peso
+// max. mascotas" no aplica si "Mascotas" ya dice que no se aceptan; "Costo cama extra" no aplica
+// si "Cama extra" ya dice que no hay. Sin esto el "Faltan" seguia pidiendo datos que ya no tienen
+// una respuesta posible dado lo que el usuario ya contesto (reportado por Ricardo, 2026-09-04).
+const CAMPOS_CONDICIONALES = {
+  checkin_checkout: { early_checkin_costo: 'early_checkin', late_checkout_costo: 'late_checkout', cama_extra_costo: 'cama_extra' },
+  wifi: { wifi_huespedes_ssid: 'wifi_red_separada', wifi_huespedes_pass: 'wifi_red_separada' },
+  politicas_generales: { mascotas_peso_max: 'politica_mascotas', mascotas_costo: 'politica_mascotas' },
+  estacionamiento: { estac_costo_tipo: 'estac_disponible', estac_costo: 'estac_disponible', estac_techado: 'estac_disponible', estac_vigilado: 'estac_disponible', estac_capacidad: 'estac_disponible', valet_costo: 'valet_parking' },
+  reservas: { deposito_monto: 'deposito_garantia' },
+};
+function esRespuestaNegativa(valor) {
+  return /^\s*no\b/i.test(String(valor || ''));
+}
 function missingFields(concept, val) {
   if (concept.tipo !== 'objeto') return [];
   const data = val || {};
-  return concept.campos.filter(f => !data[f.key]).map(f => f.label);
+  const condicionales = CAMPOS_CONDICIONALES[concept.id] || {};
+  return concept.campos.filter(f => {
+    if (data[f.key]) return false;
+    const dependeDe = condicionales[f.key];
+    if (dependeDe && esRespuestaNegativa(data[dependeDe])) return false; // no aplica, no cuenta como faltante
+    return true;
+  }).map(f => f.label);
 }
 
 function renderFichaReport(data) {
