@@ -461,6 +461,28 @@ dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.
 // los archivos, asi que reusa la misma advertencia en vez de imponer un maxlength arbitrario.
 document.getElementById('pasteText').addEventListener('input', checkPayloadSize);
 
+// Respaldo en el navegador de lo que se va escribiendo en Texto adicional, por hotel -- si se
+// refresca o se cierra la pestana por accidente ANTES de darle "Analizar", no se pierde. Se borra
+// solo cuando el analisis ya se hizo con exito (mergeExtractedData ya lo tiene en memoria).
+function draftKey() {
+  const hotelId = document.getElementById('hotelId').value.trim().toLowerCase() || 'sin_hotel';
+  return 'jaime_extractor_draft_' + hotelId;
+}
+function guardarBorradorTexto() {
+  try { localStorage.setItem(draftKey(), document.getElementById('pasteText').value); } catch (e) {}
+}
+function restaurarBorradorTexto() {
+  try {
+    const guardado = localStorage.getItem(draftKey());
+    const pasteEl = document.getElementById('pasteText');
+    if (guardado && !pasteEl.value) pasteEl.value = guardado;
+  } catch (e) {}
+}
+function borrarBorradorTexto() {
+  try { localStorage.removeItem(draftKey()); } catch (e) {}
+}
+document.getElementById('pasteText').addEventListener('input', guardarBorradorTexto);
+
 // Pegar una imagen del portapapeles (Ctrl+V) en cualquier parte de la pagina -- mismo pipeline
 // de compresion que arrastrar/seleccionar, no hay forma de evitar el paso de codificar a base64
 // porque asi es como viaja un binario dentro de un JSON, sin importar como la subiste.
@@ -650,7 +672,7 @@ async function analyze() {
     applyUrlTipoOverrides(urlEntries);
     renderConceptSections();
     if (urls.length) guardarFuentesUrls(urls);
-    if (text) document.getElementById('pasteText').value = ''; // ya se combino en extractedData, no dejarlo para reprocesar
+    if (text) { document.getElementById('pasteText').value = ''; borrarBorradorTexto(); } // ya se combino en extractedData, no dejarlo para reprocesar
     document.getElementById('progress-section').style.display = 'none';
     document.getElementById('results-section').style.display = 'block';
     document.getElementById('results-section').scrollIntoView({ behavior:'smooth', block:'start' });
@@ -991,40 +1013,50 @@ function renderFichaReport(data) {
   el.appendChild(dirBlock);
 }
 
+// "Guardar nota" hace el ciclo completo en un solo clic: guarda la nota como respaldo, la analiza
+// con IA, y guarda en la ficha lo que resulte -- todo de una vez. Antes solo la metia a la caja de
+// "Texto adicional" a la espera de que el usuario le diera "Analizar" y despues "Guardar" por su
+// cuenta; si refrescaba la pagina entre esos pasos (la caja de texto nunca se guarda sola), la nota
+// se perdia sin ningun aviso y el "Faltan" en rojo se quedaba ahi aunque el usuario ya habia
+// escrito la respuesta -- Ricardo lo reporto el 2026-09-04. Ahora "Guardado ✓" significa que ya
+// esta en la base de datos, sin pasos intermedios que se puedan perder.
 async function guardarNota(hotelId, conceptId, nota, btn, statusEl) {
   if (!hotelId) return;
+  const texto = (nota || '').trim();
   btn.disabled = true;
   statusEl.textContent = 'Guardando…'; statusEl.className = 'nota-status';
   try {
-    const res = await fetch(NOTE_URL, {
+    await fetch(NOTE_URL, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ hotel_id: hotelId, concept_id: conceptId, nota: nota })
+      body: JSON.stringify({ hotel_id: hotelId, concept_id: conceptId, nota: texto })
     });
-    if (!res.ok) throw new Error('Error ' + res.status);
-    await res.json();
-    const agregada = appendNoteToPasteText(conceptId, nota);
-    statusEl.textContent = agregada ? 'Guardado ✓ (agregado a Texto para analizar)' : 'Guardado ✓';
-    statusEl.className = 'nota-status ok';
+
+    if (!texto) { statusEl.textContent = 'Guardado ✓'; statusEl.className = 'nota-status ok'; return; }
+
+    statusEl.textContent = 'Analizando con IA…';
+    const label = (CONCEPTS.find(c => c.id === conceptId) || {}).label || conceptId;
+    const analyzeRes = await fetch('/api/analyze-v2', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ urls: [], text: `[Nota - ${label}] ${texto}`, files: [] })
+    });
+    if (!analyzeRes.ok) { const err = await analyzeRes.json().catch(() => ({})); throw new Error(err.error || 'Error al analizar'); }
+    const analyzeData = await analyzeRes.json();
+    mergeExtractedData(analyzeData.fields || {});
+
+    statusEl.textContent = 'Guardando en la ficha…';
+    const nombre = document.getElementById('hotelNombre').value.trim();
+    const conceptsToSave = CONCEPTS.filter(c => !isEmptyData(extractedData[c.id]));
+    for (const concept of conceptsToSave) {
+      await saveSectionData(hotelId, nombre, concept.id);
+    }
+
+    statusEl.textContent = 'Guardado ✓ — ya está en la ficha'; statusEl.className = 'nota-status ok';
+    await cargarFichaCompleta(); // refresca el reporte para que el "Faltan" en rojo se actualice al toque
   } catch (err) {
     statusEl.textContent = 'Error: ' + err.message; statusEl.className = 'nota-status err';
   } finally {
     btn.disabled = false;
   }
-}
-
-// Las Notas por si solas nunca llegan a Jaime (no se analizan ni se reindexan en documentos_contexto).
-// Para que Jaime las pueda usar, el texto de la nota se agrega tambien a la caja de Texto adicional,
-// donde SI se manda a analizar con IA y de ahi pasa a la ficha/RAG. La nota en si se sigue guardando
-// igual (via NOTE_URL) como respaldo/registro humano.
-function appendNoteToPasteText(conceptId, nota) {
-  const texto = (nota || '').trim();
-  if (!texto) return false;
-  const label = (CONCEPTS.find(c => c.id === conceptId) || {}).label || conceptId;
-  const tagged = `[Nota - ${label}] ${texto}`;
-  const pasteEl = document.getElementById('pasteText');
-  if (pasteEl.value.includes(tagged)) return true; // ya esta, no duplicar
-  pasteEl.value = pasteEl.value ? `${pasteEl.value}\n\n${tagged}` : tagged;
-  return true;
 }
 
 function descargarFichaJSON() {
@@ -1044,7 +1076,7 @@ function applyBrandFont() {
   const cls = BRAND_FONT_CLASS[hotelId];
   if (cls) document.body.classList.add(cls);
 }
-document.getElementById('hotelId').addEventListener('input', applyBrandFont);
+document.getElementById('hotelId').addEventListener('input', () => { applyBrandFont(); restaurarBorradorTexto(); });
 
 (function initFromUrl() {
   const params = new URLSearchParams(window.location.search);
@@ -1054,6 +1086,7 @@ document.getElementById('hotelId').addEventListener('input', applyBrandFont);
     cargarFichaCompleta();
   }
   applyBrandFont();
+  restaurarBorradorTexto();
 })();
 
 function descargarFichaPDF() {
