@@ -1068,11 +1068,17 @@ async function guardarNota(hotelId, conceptId, nota, btn, statusEl) {
     });
     if (!analyzeRes.ok) { const err = await analyzeRes.json().catch(() => ({})); throw new Error(err.error || 'Error al analizar'); }
     const analyzeData = await analyzeRes.json();
-    mergeExtractedData(analyzeData.fields || {});
+    const fields = analyzeData.fields || {};
+    mergeExtractedData(fields);
 
+    // Solo guarda los conceptos que ESTA nota realmente aporto (fields no vacios de la respuesta
+    // de la IA) -- nunca todo lo que haya en memoria del navegador. Guardar "todo lo no vacio" es
+    // peligroso si esta pestana tiene datos viejos de otro concepto (ej. otra pestana ya actualizo
+    // "Habitaciones" mientras tanto): guardar de mas aqui pisaria ese avance con la version vieja
+    // que esta pestana nunca supo que cambio. Le paso a Ricardo el 2026-09-04.
     statusEl.textContent = 'Guardando en la ficha…';
     const nombre = document.getElementById('hotelNombre').value.trim();
-    const conceptsToSave = CONCEPTS.filter(c => !isEmptyData(extractedData[c.id]));
+    const conceptsToSave = CONCEPTS.filter(c => !isEmptyData(fields[c.id]));
     for (const concept of conceptsToSave) {
       await saveSectionData(hotelId, nombre, concept.id);
     }
