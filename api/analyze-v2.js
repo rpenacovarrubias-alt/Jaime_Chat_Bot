@@ -140,18 +140,25 @@ export default async function handler(req, res) {
   // urls puede venir como string[] (legado) o {url, hint}[] -- hint es la categoria que el
   // usuario ya le puso a esa URL en el extractor (ej. "Cotización Sala de Juntas"), asi la IA
   // no tiene que adivinar el tipo de contenido solo por lo que logre scrapear de la pagina.
-  const urlEntries = urls.map(u => (typeof u === 'string' ? { url: u, hint: null } : u)).filter(e => e && e.url);
+  const allUrlEntries = urls.map(u => (typeof u === 'string' ? { url: u, hint: null } : u)).filter(e => e && e.url);
 
-  if (!urlEntries.length && !text && !files.length) {
+  if (!allUrlEntries.length && !text && !files.length) {
     return res.status(400).json({ error: 'No se proporcionaron fuentes de información.' });
   }
+
+  // El sitio web general es la fuente de respaldo (regla 9 del prompt) para cualquier categoria
+  // sin URL propia, asi que siempre debe entrar al cupo de fetch aunque haya mas de 5 URLs y no
+  // sea de las primeras.
+  const sitioWeb = allUrlEntries.filter(e => e.hint === 'Página web');
+  const resto = allUrlEntries.filter(e => e.hint !== 'Página web');
+  const urlEntries = [...sitioWeb, ...resto].slice(0, 6);
 
   try {
     // Build message content for Claude
     const userContent = [];
 
     // 1. Fetch URL content
-    for (const { url, hint } of urlEntries.slice(0, 5)) {
+    for (const { url, hint } of urlEntries) {
       const hintTag = hint ? ` (categoría indicada por el usuario: ${hint})` : '';
       try {
         const pageText = await fetchUrl(url);
