@@ -314,6 +314,32 @@ let uploadedFiles = [];
 let extractedData = {};
 let fichaCargada = null;
 
+// Combina campos nuevos sobre lo que ya hay en memoria, sin borrar lo que el nuevo lote no menciona.
+// Necesario porque la info del hotel se sube en varios lotes de texto/URLs a lo largo de varias sesiones.
+function mergeExtractedData(newFields) {
+  if (!newFields || typeof newFields !== 'object') return;
+  CONCEPTS.forEach(concept => {
+    const incoming = newFields[concept.id];
+    if (concept.tipo === 'objeto') {
+      const existing = (extractedData[concept.id] && typeof extractedData[concept.id] === 'object') ? extractedData[concept.id] : {};
+      const merged = { ...existing };
+      if (incoming && typeof incoming === 'object') {
+        Object.keys(incoming).forEach(k => {
+          const v = incoming[k];
+          if (v !== null && v !== undefined && v !== '') merged[k] = v;
+        });
+      }
+      extractedData[concept.id] = merged;
+    } else {
+      if (Array.isArray(incoming) && incoming.length && !incoming.every(isEmptyData)) {
+        extractedData[concept.id] = incoming;
+      } else if (!Array.isArray(extractedData[concept.id])) {
+        extractedData[concept.id] = [];
+      }
+    }
+  });
+}
+
 // ─── URL MANAGEMENT ──────────────────────────────────────────────────────────
 function addUrl() {
   const row = document.createElement('div');
@@ -408,7 +434,7 @@ async function analyze() {
     const res = await fetch('/api/analyze-v2', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
     if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || `Error ${res.status}`); }
     const data = await res.json();
-    extractedData = data.fields || {};
+    mergeExtractedData(data.fields || {});
     renderConceptSections();
     if (urls.length) guardarFuentesUrls(urls);
     document.getElementById('progress-section').style.display = 'none';
@@ -623,6 +649,7 @@ async function cargarFichaCompleta() {
     if (!res.ok) throw new Error('Error ' + res.status);
     const data = await res.json();
     fichaCargada = data;
+    mergeExtractedData({ ...(data.ficha || {}), directorio_escalamiento: data.directorio_escalamiento });
     renderFichaReport(data);
     prefillFuentesUrls(data.fuentes_urls);
     document.getElementById('ficha-completa-section').style.display = 'block';
